@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>filmalisa - home</title>
     <!-- BOOTSTRAP -->
@@ -72,37 +73,37 @@
           />
         </a>
       </nav>
+
+      <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
+        <img src="../../assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+      </button>
     </aside>
 
-    <section class="hero">
+    <section class="hero" id="hero">
       <img
+        id="heroBg"
         src="../../assets/images/godzilla-vs-kong.svg"
-        alt="Godzilla vs. Kong"
+        alt=""
         class="hero-bg"
       />
       <div class="hero-overlay">
-        <span class="category-tag hero-tag">Science Fiction</span>
+        <span class="category-tag hero-tag" id="heroTag">Science Fiction</span>
         <div class="rating">
-          <img src="../../assets/icons/star.svg" alt="star" class="star-icon" />
-          <img src="../../assets/icons/star.svg" alt="star" class="star-icon" />
-          <img src="../../assets/icons/star.svg" alt="star" class="star-icon" />
-          <img src="../../assets/icons/star.svg" alt="star" class="star-icon" />
-          <img src="../../assets/icons/star.svg" alt="star" class="star-icon" />
-          <img src="../../assets/icons/star.svg" alt="star" class="star-icon" />
+          <span id="heroRating"></span>
         </div>
-        <h1 class="hero-title">Godzilla vs. Kong</h1>
-        <p class="hero-desc">
+        <h1 class="hero-title" id="heroTitle">Godzilla vs. Kong</h1>
+        <p class="hero-desc" id="heroDesc">
           In a time when monsters walk the Earth, humanity's fight for its
           future sets Godzilla and Kong on a collision course that will see the
           two most powerful forces of nature on the planet collide in a
           spectacular battle for the ages.
         </p>
-        <button class="watch-now-btn">Watch now</button>
+        <button class="watch-now-btn" id="heroWatchBtn">Watch now</button>
       </div>
     </section>
 
     <!-- MAIN -->
-    <main class="content">
+    <main class="content" id="content">
       <!-- ACTION ROW -->
       <section class="movie-row">
         <div class="row-header">
@@ -424,7 +425,8 @@
         </div>
       </section>
     </main>
-    <script src="../../global/movies-data.js"></script>
+    <script src="../../global/api.js"></script>
+    <script src="../../global/movie-ui.js"></script>
     <script src="./home.js"></script>
   </body>
 </html>

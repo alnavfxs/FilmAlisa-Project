@@ -236,3 +236,9 @@ body {
   font-size: 15px;
   font-weight: 500;
 }
+.sidebar-logout {
+  margin-top: auto;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}

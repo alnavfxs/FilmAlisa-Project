@@ -4,8 +4,18 @@
    base URL, token, xəta idarəsi, login/logout, qoruma (requireAuth).
    Səhifədən ƏVVƏL yüklənməlidir:
    <script src="../../global/api.js"></script>
+
+   Məzmun:
+   1. Konfiqurasiya (API_BASE, SITE_ROOT, TOKEN_KEY...)
+   2. Sessiya köməkçiləri (getToken, saveSession, logout, requireAuth...)
+   3. Ortaq UI köməkçiləri (esc, toast, confirmDialog, formatDate)
+   4. Əsas sorğu funksiyası (apiRequest)
+   5. Endpoint-lər (api.* / api.admin.*)
    ========================================================= */
 
+/* ===========================================
+   1. KONFİQURASİYA
+   =========================================== */
 const API_BASE = "https://api.sarkhanrahimli.dev/api/filmalisa";
 
 // global/ içindədir → kök = "../" (alt-qovluqda deploy olunsa da işləyir)
@@ -16,6 +26,7 @@ const LOGIN_PAGE = {
   client: "client/login/login.html",
   admin: "admin/admin_panel/admin_panel.html",
 };
+const REGISTER_PAGE = "client/register/register.html";
 const TOKEN_KEY = { client: "filmalisa-token", admin: "filmalisa-admin-token" };
 const PROFILE_KEY = { client: "filmalisa-profile", admin: "filmalisa-admin-profile" };
 
@@ -26,7 +37,9 @@ class ApiError extends Error {
   }
 }
 
-/* ---------- Session ---------- */
+/* ===========================================
+   2. SESSİYA KÖMƏKÇİLƏRİ
+   =========================================== */
 const getToken = (role) => localStorage.getItem(TOKEN_KEY[role]);
 
 function getProfile(role = "client") {
@@ -55,23 +68,102 @@ function requireAuth(role) {
   return false;
 }
 
-/* ---------- Ortaq köməkçilər ---------- */
+/* Client səhifələri (home, detail, favourite, account...) üçün qoruma.
+   Qeydiyyatsız/token-siz ziyarətçi login-ə yox, birbaşa register-ə göndərilir. */
+function requireClientAuth() {
+  if (getToken("client")) return true;
+  location.replace(pageUrl(REGISTER_PAGE));
+  return false;
+}
+
+/* ===========================================
+   3. ORTAQ UI KÖMƏKÇİLƏRİ
+   =========================================== */
 const esc = (v) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+function toastContainer() {
+  let el = document.querySelector(".toast-container");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "toast-container";
+    document.body.appendChild(el);
+  }
+  return el;
+}
 
 function toast(message, type = "error") {
   const el = document.createElement("div");
   el.className = `toast toast--${type}`;
   el.setAttribute("role", "status");
-  el.textContent = message;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3500);
+  el.innerHTML =
+    '<span class="toast__icon" aria-hidden="true"></span>' +
+    '<span class="toast__message"></span>' +
+    '<button class="toast__close" type="button" aria-label="Bağla">&times;</button>';
+  el.querySelector(".toast__message").textContent = message;
+
+  const remove = () => el.remove();
+  el.querySelector(".toast__close").addEventListener("click", remove);
+
+  toastContainer().appendChild(el);
+  setTimeout(remove, 4000);
+}
+
+/* Dizaynlı təsdiq pəncərəsi — window.confirm() əvəzinə.
+   confirmDialog("Silmək istədiyinizə əminsiniz?", { danger: true }).then(ok => ...) */
+function confirmDialog(message, opts = {}) {
+  const {
+    confirmLabel = "Təsdiqlə",
+    cancelLabel = "Ləğv et",
+    danger = false,
+  } = opts;
+
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "confirm-overlay";
+    overlay.innerHTML = `
+      <div class="confirm-box" role="alertdialog" aria-modal="true">
+        <div class="confirm-box__icon${danger ? " confirm-box__icon--danger" : ""}" aria-hidden="true"></div>
+        <p class="confirm-box__message"></p>
+        <div class="confirm-box__actions">
+          <button type="button" class="confirm-box__btn confirm-box__btn--cancel"></button>
+          <button type="button" class="confirm-box__btn confirm-box__btn--ok${danger ? " confirm-box__btn--danger" : ""}"></button>
+        </div>
+      </div>`;
+
+    overlay.querySelector(".confirm-box__message").textContent = message;
+    overlay.querySelector(".confirm-box__btn--cancel").textContent = cancelLabel;
+    overlay.querySelector(".confirm-box__btn--ok").textContent = confirmLabel;
+
+    function settle(result) {
+      document.removeEventListener("keydown", onKeydown);
+      overlay.classList.remove("confirm-overlay--active");
+      setTimeout(() => overlay.remove(), 180);
+      resolve(result);
+    }
+
+    function onKeydown(e) {
+      if (e.key === "Escape") settle(false);
+    }
+
+    overlay.querySelector(".confirm-box__btn--cancel").addEventListener("click", () => settle(false));
+    overlay.querySelector(".confirm-box__btn--ok").addEventListener("click", () => settle(true));
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) settle(false);
+    });
+    document.addEventListener("keydown", onKeydown);
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("confirm-overlay--active"));
+  });
 }
 
 const formatDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
-/* ---------- Əsas sorğu funksiyası ---------- */
+/* ===========================================
+   4. ƏSAS SORĞU FUNKSİYASI
+   =========================================== */
 async function apiRequest(path, { method = "GET", body, role, auth = true } = {}) {
   role = role || (path.startsWith("/admin") ? "admin" : "client");
 
@@ -81,15 +173,25 @@ async function apiRequest(path, { method = "GET", body, role, auth = true } = {}
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
   let res;
+  const url = API_BASE + path;
+  console.log(`[Filmalisa API] → ${method} ${url}`);
   try {
-    res = await fetch(API_BASE + path, {
+    res = await fetch(url, {
       method,
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-  } catch {
-    throw new ApiError("Network error. Check your connection and try again.", 0);
+  } catch (networkErr) {
+    // Əsl səbəb (CORS / DNS / mixed-content / server tamam əlçatmazdır) brauzerin
+    // Console-unda görünür — burada raw xətanı çap edirik ki, itməsin.
+    console.error(`[Filmalisa API] ✕ ${method} ${url} — fetch failed:`, networkErr);
+    const hint =
+      location.protocol === "file:"
+        ? "Server-ə qoşulmadı. Faylı birbaşa (file://) yox, local server (məs. VS Code Live Server) ilə açın."
+        : "Server-ə qoşulmadı. İnternetinizi yoxlayın və yenidən cəhd edin.";
+    throw new ApiError(hint, 0);
   }
+  console.log(`[Filmalisa API] ← ${res.status} ${method} ${url}`);
 
   let json = null;
   try {
@@ -105,12 +207,15 @@ async function apiRequest(path, { method = "GET", body, role, auth = true } = {}
   }
 
   if (!res.ok || (json && json.result === false)) {
+    console.error(`[Filmalisa API] ✕ ${method} ${url} responded ${res.status}:`, json);
     throw new ApiError((json && json.message) || `Request failed (${res.status})`, res.status);
   }
   return json ? json.data : null;
 }
 
-/* ---------- Endpoint-lər (Postman kolleksiyasına görə) ---------- */
+/* ===========================================
+   5. ENDPOINT-LƏR (Postman kolleksiyasına görə)
+   =========================================== */
 const api = {
   /* Auth */
   async login(email, password) {
@@ -141,6 +246,7 @@ const api = {
 
   /* Admin */
   admin: {
+    profile: () => apiRequest("/profile", { role: "admin" }),
     dashboard: () => apiRequest("/admin/dashboard"),
     users: () => apiRequest("/admin/users"),
 
@@ -167,3 +273,20 @@ const api = {
     removeContact: (id) => apiRequest(`/admin/contact/${id}`, { method: "DELETE" }),
   },
 };
+
+/* Client səhifələrinin (home/search/account/favourite/detail) öz statik
+   sidebar-larındakı #appLogoutBtn-i avtomatik qoşur — hər səhifədə ayrıca
+   yazmağa ehtiyac qalmasın deyə mərkəzi burada edilir. */
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("appLogoutBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const confirmed = await confirmDialog(
+      "Çıxış etmək istədiyinizə əminsiniz?",
+      { confirmLabel: "Çıxış et", danger: true },
+    );
+    if (confirmed) logout("client");
+  });
+});

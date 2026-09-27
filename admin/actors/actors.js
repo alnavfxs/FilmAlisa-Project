@@ -1,3 +1,5 @@
+requireAuth("admin");
+
 document.addEventListener("DOMContentLoaded", () => {
   setupActorsCRUD();
 });
@@ -9,25 +11,26 @@ function setupActorsCRUD() {
   const modalTitle = document.querySelector("#modalTitle");
   const createBtn = document.querySelector("#createActorBtn");
   const closeBtn = document.querySelector("#closeModalBtn");
+  const submitBtn = form.querySelector(".category-form__submit");
 
   const nameInput = document.querySelector("#actorName");
+  const surnameInput = document.querySelector("#actorSurname");
   const imgInput = document.querySelector("#actorImage");
-  const bioInput = document.querySelector("#actorBio");
 
   let editingRow = null;
 
-  function buildRow(id, name, image, bio) {
+  function buildRow(id, name, surname, image) {
     const row = document.createElement("tr");
     row.dataset.id = id;
     row.innerHTML = `
       <td>${id}</td>
       <td>
         <div class="cell-profile">
-          <img src="${image}" alt="${name}">
-          <span class="cell-name">${name}</span>
+          <img src="${image}" alt="${esc(name)} ${esc(surname)}">
+          <span class="cell-name">${esc(name)}</span>
+          <span class="cell-surname">${esc(surname)}</span>
         </div>
       </td>
-      <td class="cell-bio">${bio}</td>
       <td>
         <button class="table-btn table-btn--edit" type="button" title="Edit">
           <i class="fa-solid fa-pen"></i>
@@ -40,11 +43,22 @@ function setupActorsCRUD() {
     return row;
   }
 
-  function nextId() {
-    const ids = [...tableBody.querySelectorAll("tr")].map(
-      (row) => Number(row.dataset.id) || 0,
-    );
-    return ids.length ? Math.max(...ids) + 1 : 1;
+  async function loadActors() {
+    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Yüklənir…</td></tr>`;
+    try {
+      const actors = await api.admin.actors();
+      tableBody.innerHTML = "";
+      if (!actors || !actors.length) {
+        tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Hələ aktyor yoxdur.</td></tr>`;
+        return;
+      }
+      actors.forEach((a) =>
+        tableBody.appendChild(buildRow(a.id, a.name, a.surname, a.img_url)),
+      );
+    } catch (err) {
+      tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Aktyorlar yüklənmədi.</td></tr>`;
+      toast(err.message || "Aktyorlar yüklənmədi.", "error");
+    }
   }
 
   function openModal(mode, row = null) {
@@ -54,8 +68,8 @@ function setupActorsCRUD() {
     if (mode === "edit" && row) {
       modalTitle.textContent = "Edit Actor";
       nameInput.value = row.querySelector(".cell-name").textContent;
+      surnameInput.value = row.querySelector(".cell-surname").textContent;
       imgInput.value = row.querySelector("img").src;
-      bioInput.value = row.querySelector(".cell-bio").textContent;
     } else {
       modalTitle.textContent = "Create Actor";
     }
@@ -76,9 +90,13 @@ function setupActorsCRUD() {
     if (e.target === modal) closeModal();
   });
 
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) closeModal();
+  });
+
   tableBody.addEventListener("click", (e) => {
     const row = e.target.closest("tr");
-    if (!row) return;
+    if (!row || !row.dataset.id) return;
 
     if (e.target.closest(".table-btn--edit")) {
       openModal("edit", row);
@@ -86,33 +104,60 @@ function setupActorsCRUD() {
 
     if (e.target.closest(".table-btn--delete")) {
       const name = row.querySelector(".cell-name").textContent;
-      if (
-        window.confirm(`"${name}" adlı aktyoru silmək istədiyinizə əminsiniz?`)
-      ) {
-        row.remove();
-      }
+      confirmDialog(`"${name}" adlı aktyoru silmək istədiyinizə əminsiniz?`, {
+        confirmLabel: "Sil",
+        danger: true,
+      }).then(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await api.admin.removeActor(row.dataset.id);
+          row.remove();
+          toast("Aktyor silindi.", "success");
+        } catch (err) {
+          toast(err.message || "Aktyor silinmədi.", "error");
+        }
+      });
     }
   });
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = nameInput.value.trim();
-    const image = imgInput.value.trim();
-    const bio = bioInput.value.trim();
+    const body = {
+      name: nameInput.value.trim(),
+      surname: surnameInput.value.trim(),
+      img_url: imgInput.value.trim(),
+    };
 
-    if (!name || !image || !bio) return;
+    if (!body.name || !body.surname || !body.img_url) return;
 
-    if (editingRow) {
-      editingRow.querySelector(".cell-name").textContent = name;
-      editingRow.querySelector("img").src = image;
-      editingRow.querySelector("img").alt = name;
-      editingRow.querySelector(".cell-bio").textContent = bio;
-    } else {
-      const row = buildRow(nextId(), name, image, bio);
-      tableBody.appendChild(row);
+    submitBtn.disabled = true;
+    const originalLabel = submitBtn.textContent;
+    submitBtn.textContent = editingRow ? "Yenilənir…" : "Əlavə olunur…";
+
+    try {
+      if (editingRow) {
+        await api.admin.updateActor(editingRow.dataset.id, body);
+        editingRow.querySelector(".cell-name").textContent = body.name;
+        editingRow.querySelector(".cell-surname").textContent = body.surname;
+        editingRow.querySelector("img").src = body.img_url;
+        editingRow.querySelector("img").alt = `${body.name} ${body.surname}`;
+        toast("Aktyor yeniləndi.", "success");
+      } else {
+        const created = await api.admin.createActor(body);
+        tableBody.appendChild(
+          buildRow(created.id, created.name, created.surname, created.img_url),
+        );
+        toast("Aktyor əlavə olundu.", "success");
+      }
+      closeModal();
+    } catch (err) {
+      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
     }
-
-    closeModal();
   });
+
+  loadActors();
 }

@@ -280,3 +280,10 @@ body {
   width: 292px;
   height: 440px;
 }
+
+.sidebar-logout {
+  margin-top: auto;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}

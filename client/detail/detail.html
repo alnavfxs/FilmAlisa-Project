@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>filmalisa - detail</title>
     <!-- BOOTSTRAP -->
@@ -61,6 +62,10 @@
           />
         </a>
       </nav>
+
+      <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
+        <img src="../../assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+      </button>
     </aside>
 
     <!-- COVER -->
@@ -112,13 +117,11 @@
           ></span>
 
           <dl class="detail-meta">
-            <div><dt>Type</dt><dd id="metaType"></dd></div>
-            <div><dt>Status</dt><dd id="metaStatus"></dd></div>
-            <div><dt>No. of episodes</dt><dd id="metaEpisodes"></dd></div>
-            <div><dt>First air date</dt><dd id="metaFirst"></dd></div>
-            <div><dt>Last air date</dt><dd id="metaLast"></dd></div>
-            <div><dt>Episode run time</dt><dd id="metaRuntime"></dd></div>
-            <div class="wide"><dt>Genres</dt><dd id="metaGenres"></dd></div>
+            <div><dt>Category</dt><dd id="metaCategory"></dd></div>
+            <div><dt>Run time</dt><dd id="metaRuntime"></dd></div>
+            <div><dt>IMDB</dt><dd id="metaImdb"></dd></div>
+            <div><dt>Adult content</dt><dd id="metaAdult"></dd></div>
+            <div><dt>Added</dt><dd id="metaAdded"></dd></div>
           </dl>
 
           <h3 class="detail-sub">Top cast</h3>
@@ -179,7 +182,8 @@
       </div>
     </div>
 
-    <script src="../../global/movies-data.js"></script>
+    <script src="../../global/api.js"></script>
+    <script src="../../global/movie-ui.js"></script>
     <script src="./detail.js"></script>
   </body>
 </html>

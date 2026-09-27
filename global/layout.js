@@ -83,6 +83,9 @@ function renderAppSidebar(active) {
         <img src="${BASE}assets/images/filmalisa.svg" alt="Filmalisa Logo" class="svg-logo" />
       </div>
       <nav class="sidebar-nav">${links}</nav>
+      <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
+        <img src="${BASE}assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+      </button>
     </aside>`;
 }
 
@@ -96,21 +99,25 @@ function initLayout() {
   mount.outerHTML =
     type === "app" ? renderAppSidebar(active) : renderAdminSidebar(active);
 
-  if (type !== "app") {
-    setupLogout();
+  if (type === "app") {
+    setupLogout("client", "#appLogoutBtn");
+  } else {
+    setupLogout("admin", "#logoutBtn");
   }
 }
 
-// Çıxışdan əvvəl təsdiq istəyir (admin sidebar-ın Logout düyməsi üçün)
-function setupLogout() {
-  const logoutBtn = document.querySelector("#logoutBtn");
+// Çıxışdan əvvəl təsdiq istəyir (həm admin, həm də app sidebar-ın Logout düyməsi üçün)
+function setupLogout(role, selector) {
+  const logoutBtn = document.querySelector(selector);
   if (!logoutBtn) return;
 
-  logoutBtn.addEventListener("click", (e) => {
-    const confirmed = window.confirm("Çıxış etmək istədiyinizə əminsiniz?");
-    if (!confirmed) {
-      e.preventDefault();
-    }
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const confirmed = await confirmDialog(
+      "Çıxış etmək istədiyinizə əminsiniz?",
+      { confirmLabel: "Çıxış et", danger: true },
+    );
+    if (confirmed) logout(role);
   });
 }
 

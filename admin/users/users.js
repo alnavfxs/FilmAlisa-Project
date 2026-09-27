@@ -1,32 +1,33 @@
+requireAuth("admin");
+
 document.addEventListener("DOMContentLoaded", () => {
-  // Saxta məlumatlar (API bağlantısına qədər)
-  const mockUsers = [
-    { id: 1, name: "Ali Valiyev", email: "ali@example.com", role: "User" },
-    {
-      id: 2,
-      name: "Aysel Mammadova",
-      email: "aysel@example.com",
-      role: "Admin",
-    },
-    { id: 3, name: "Hasan Huseynov", email: "hasan@example.com", role: "User" },
-  ];
+  loadUsers();
+});
 
+async function loadUsers() {
   const tableBody = document.querySelector("#usersTableBody");
+  tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Yüklənir…</td></tr>`;
 
-  function renderUsers(users) {
+  try {
+    const users = await api.admin.users();
     tableBody.innerHTML = "";
+    if (!users || !users.length) {
+      tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Hələ istifadəçi yoxdur.</td></tr>`;
+      return;
+    }
     users.forEach((user) => {
       const row = document.createElement("tr");
       row.dataset.id = user.id;
       row.innerHTML = `
         <td>${user.id}</td>
-        <td class="cell-name">${user.name}</td>
-        <td>${user.email}</td>
-        <td>${user.role}</td>
+        <td class="cell-name">${esc(user.full_name)}</td>
+        <td>${esc(user.email)}</td>
+        <td>${formatDate(user.created_at)}</td>
       `;
       tableBody.appendChild(row);
     });
+  } catch (err) {
+    tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">İstifadəçilər yüklənmədi.</td></tr>`;
+    toast(err.message || "İstifadəçilər yüklənmədi.", "error");
   }
-
-  renderUsers(mockUsers);
-});
+}

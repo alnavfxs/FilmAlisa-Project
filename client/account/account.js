@@ -1,69 +1,97 @@
+requireClientAuth();
+
 document.addEventListener("DOMContentLoaded", () => {
-  // ===========================================
-  // AVATAR UPLOAD
-  // ===========================================
   const avatarContainer = document.querySelector("#avatarContainer");
   const avatarPlaceholder = document.querySelector("#avatarPlaceholder");
   const avatarImg = document.querySelector("#avatarImg");
-  const fileInput = document.querySelector("#fileInput");
 
-  avatarContainer.addEventListener("click", () => {
-    fileInput.click();
-  });
+  const accountForm = document.querySelector("#accountForm");
+  const imageUrlInput = document.querySelector("#imageUrl");
+  const fullNameInput = document.querySelector("#fullName");
+  const emailInput = document.querySelector("#email");
+  const passwordInput = document.querySelector("#password");
+  const submitBtn = accountForm.querySelector(".save-btn");
 
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      avatarImg.src = e.target.result;
+  // ===========================================
+  // AVATAR ÖNİZLƏMƏSİ — URL yazıldıqca canlı yenilənir
+  // ===========================================
+  function updateAvatarPreview() {
+    const url = imageUrlInput.value.trim();
+    if (url) {
+      avatarImg.src = url;
       avatarImg.classList.remove("d-none");
       avatarPlaceholder.classList.add("d-none");
-    };
-    reader.readAsDataURL(file);
-  });
+    } else {
+      avatarImg.classList.add("d-none");
+      avatarPlaceholder.classList.remove("d-none");
+    }
+  }
+
+  imageUrlInput.addEventListener("input", updateAvatarPreview);
+  avatarContainer.addEventListener("click", () => imageUrlInput.focus());
 
   // ===========================================
   // PASSWORD SHOW/HIDE TOGGLE
   // ===========================================
-  const passwordInput = document.querySelector("#password");
   const passwordWrapper = passwordInput.closest(".input-wrapper");
   const passwordToggleIcon = passwordWrapper.querySelector(".action-icon");
 
   passwordToggleIcon.addEventListener("click", () => {
-    if (passwordInput.type === "password") {
-      passwordInput.type = "text";
-    } else {
-      passwordInput.type = "password";
-    }
+    passwordInput.type = passwordInput.type === "password" ? "text" : "password";
   });
 
   // ===========================================
-  // FORM SUBMIT
+  // PROFİLİ YÜKLƏ VƏ FORMANI DOLDUR
   // ===========================================
-  const accountForm = document.querySelector("#accountForm");
-  const usernameInput = document.querySelector("#username");
-  const fullNameInput = document.querySelector("#fullName");
+  let currentProfile = null;
 
-  accountForm.addEventListener("submit", (e) => {
+  async function loadProfile() {
+    try {
+      currentProfile = await api.profile();
+      fullNameInput.value = currentProfile.full_name || "";
+      emailInput.value = currentProfile.email || "";
+      imageUrlInput.value = currentProfile.img_url || "";
+      updateAvatarPreview();
+    } catch (err) {
+      toast(err.message || "Profil yüklənmədi.", "error");
+    }
+  }
+
+  // ===========================================
+  // FORM SUBMIT — real API-ya PUT /profile
+  // ===========================================
+  accountForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const fullName = fullNameInput.value.trim();
-
-    if (!fullName) {
-      alert("Please enter your full name.");
+    const full_name = fullNameInput.value.trim();
+    if (!full_name) {
+      toast("Zəhmət olmasa adınızı daxil edin.", "error");
       return;
     }
 
-    console.log("Saving account:", {
-      profileManageUrl: usernameInput.value.trim(),
-      fullName,
-      password: passwordInput.value,
-      avatarFile: fileInput.files[0] || null,
-    });
+    const body = {
+      full_name,
+      email: emailInput.value,
+      img_url: imageUrlInput.value.trim(),
+    };
+    if (passwordInput.value) body.password = passwordInput.value;
 
-    // Backend hazır olunca burada fetch/request çağrısı yapılacak
-    // örn: updateAccount({ fullName, password, ... });
+    submitBtn.disabled = true;
+    const originalLabel = submitBtn.textContent;
+    submitBtn.textContent = "Yadda saxlanılır…";
+
+    try {
+      const updated = await api.updateProfile(body);
+      currentProfile = updated;
+      passwordInput.value = "";
+      toast("Profil yeniləndi.", "success");
+    } catch (err) {
+      toast(err.message || "Profil yenilənmədi.", "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
+    }
   });
+
+  loadProfile();
 });

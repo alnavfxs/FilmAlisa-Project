@@ -1,8 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <title>Filmalisa</title>
     <link rel="stylesheet" href="./style/style.css" />
   </head>
@@ -18,11 +23,40 @@
             />
             <span class="landing-header__name">Filmalisa</span>
           </div>
-          <a href="./client/login/login.html">
-            <button class="landing-header__signin" type="button">
+          <a href="./client/login/login.html" id="headerAuthLink">
+            <button class="landing-header__signin" type="button" id="headerAuthBtn">
               Sign in
             </button>
           </a>
+
+          <div class="landing-header__profile" id="headerProfile" hidden>
+            <button
+              class="landing-header__profile-trigger"
+              type="button"
+              id="headerProfileTrigger"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <img
+                src="./assets/icons/account.svg"
+                alt=""
+                class="landing-header__avatar"
+                id="headerAvatar"
+              />
+              <span class="landing-header__username" id="headerUsername"></span>
+            </button>
+
+            <div class="landing-header__menu" id="headerMenu" hidden>
+              <a href="./client/account/account.html" class="landing-header__menu-item">
+                <span>Settings</span>
+                <i class="fa-solid fa-gear"></i>
+              </a>
+              <button type="button" class="landing-header__menu-item" id="headerLogoutBtn">
+                <span>Logout</span>
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
         </header>
 
         <section class="landing-hero">
@@ -38,7 +72,7 @@
           </p>
 
           <!-- Action register səhifəsinə yönləndirir -->
-          <form class="landing-hero__form" action="/client/register/register.html">
+          <form class="landing-hero__form" action="./client/register/register.html">
             <input
               class="landing-hero__input"
               type="email"
@@ -315,5 +349,67 @@
         </div>
       </footer>
     </main>
+
+    <script src="./global/api.js"></script>
+    <script>
+      (function () {
+        if (!getToken("client")) return;
+
+        const profile = getProfile("client") || {};
+
+        document.getElementById("headerAuthLink").hidden = true;
+        document.getElementById("headerProfile").hidden = false;
+        document.getElementById("headerUsername").textContent =
+          profile.full_name || profile.email || "Account";
+        if (profile.img_url) {
+          document.getElementById("headerAvatar").src = profile.img_url;
+        }
+
+        const trigger = document.getElementById("headerProfileTrigger");
+        const menu = document.getElementById("headerMenu");
+        const logoutBtn = document.getElementById("headerLogoutBtn");
+
+        function openMenu() {
+          menu.hidden = false;
+          trigger.setAttribute("aria-expanded", "true");
+        }
+        function closeMenu() {
+          menu.hidden = true;
+          trigger.setAttribute("aria-expanded", "false");
+        }
+
+        trigger.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (menu.hidden) openMenu();
+          else closeMenu();
+        });
+
+        // Menyudan kənara klik → bağla (menyunun öz içinə klik istisna)
+        document.addEventListener("click", (e) => {
+          if (menu.hidden) return;
+          if (menu.contains(e.target) || trigger.contains(e.target)) return;
+          closeMenu();
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && !menu.hidden) closeMenu();
+        });
+
+        logoutBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          closeMenu();
+
+          const confirmed = await confirmDialog(
+            "Çıxış etmək istədiyinizə əminsiniz?",
+            { confirmLabel: "Çıxış et", danger: true },
+          );
+          if (!confirmed) return;
+
+          logout("client", false);
+          location.reload();
+        });
+      })();
+    </script>
   </body>
 </html>

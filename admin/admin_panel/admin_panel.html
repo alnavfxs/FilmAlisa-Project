@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin_Panel</title>
     <link rel="stylesheet" href="./admin_panel.css" />
@@ -18,7 +19,7 @@
           <h1 class="admin-page__title">Admin</h1>
         </div>
 
-        <form class="admin-form" action="#" method="post">
+        <form class="admin-form" id="adminLoginForm" action="#" novalidate>
           <div class="admin-form__field">
             <span
               ><img
@@ -30,6 +31,7 @@
               class="admin-form__input"
               type="text"
               name="username"
+              id="usernameInput"
               placeholder="username"
               autocomplete="username"
               required
@@ -62,13 +64,13 @@
             </button>
           </div>
 
-          <button class="admin-form__submit" type="submit">
-            <a href="../dashboard/dashboard.html">login</a>
-          </button>
+          <p class="form-error" id="formError" role="alert"></p>
+          <button class="admin-form__submit" type="submit">login</button>
         </form>
       </div>
     </main>
 
+    <script src="../../global/api.js"></script>
     <script src="./admin_panel.js"></script>
   </body>
 </html>

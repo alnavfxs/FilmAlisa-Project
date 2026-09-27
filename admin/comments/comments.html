@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Comments — Filmalisa Admin</title>
     <link rel="stylesheet" href="./comments.css" />
@@ -43,55 +44,8 @@
               </tr>
             </thead>
             <tbody id="commentsTableBody">
-              <tr data-id="1">
-                <td>1</td>
-                <td>
-                  <div class="cell-movie">
-                    <img
-                      src="../../assets/images/wonder-woman.svg"
-                      alt="Wonder Woman poster"
-                    />
-                    <span>Wonder Woman</span>
-                  </div>
-                </td>
-                <td class="cell-comment">
-                  Bu film həyatımı dəyişdi, vizuallar möhtəşəmdir! Çox qarışıq
-                  idi amma yenə də bəyəndim.
-                </td>
-                <td>
-                  <button
-                    class="table-btn table-btn--delete"
-                    type="button"
-                    title="Delete"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-
-              <tr data-id="2">
-                <td>2</td>
-                <td>
-                  <div class="cell-movie">
-                    <img
-                      src="../../assets/images/lost-in-space-poster.svg"
-                      alt="Lost in Space poster"
-                    />
-                    <span>Lost in Space</span>
-                  </div>
-                </td>
-                <td class="cell-comment">
-                  Hans Zimmer musiqiləri bir başqadır. Çox təsirləndim.
-                </td>
-                <td>
-                  <button
-                    class="table-btn table-btn--delete"
-                    type="button"
-                    title="Delete"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
+              <tr>
+                <td colspan="4" class="table-empty">Yüklənir…</td>
               </tr>
             </tbody>
           </table>
@@ -133,6 +87,7 @@
       </div>
     </div>
 
+    <script src="../../global/api.js"></script>
     <script src="../../global/layout.js"></script>
     <script src="./comments.js"></script>
   </body>
