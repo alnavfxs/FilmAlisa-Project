@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>filmalisa - favourites</title>
     <!-- BOOTSTRAP -->
@@ -64,6 +65,10 @@
           />
         </a>
       </nav>
+
+      <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
+        <img src="../../assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+      </button>
     </aside>
 
     <!-- MAIN -->
@@ -84,7 +89,8 @@
       </div>
     </main>
     <!-- FAVOURITE JS -->
-    <script src="../../global/movies-data.js"></script>
+    <script src="../../global/api.js"></script>
+    <script src="../../global/movie-ui.js"></script>
     <script src="./favourite.js"></script>
   </body>
 </html>

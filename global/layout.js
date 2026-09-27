@@ -24,20 +24,70 @@
 const BASE = new URL("../", document.currentScript.src).href;
 
 const ADMIN_NAV = [
-  { key: "dashboard",  href: "admin/dashboard/dashboard.html",   icon: "Dashboard.svg",  label: "Dashboard" },
-  { key: "movies",     href: "admin/movies/movies.html",         icon: "Movies.svg",     label: "Movies" },
-  { key: "categories", href: "admin/categories/categories.html", icon: "Categories.svg", label: "Categories" },
-  { key: "users",      href: "admin/users/users.html",           icon: "Users.svg",      label: "Users" },
-  { key: "comments",   href: "admin/comments/comments.html",     icon: "Comments.svg",   label: "Comments" },
-  { key: "contact",    href: "admin/contact/contact.html",       icon: "Contact us.svg", label: "Contact us" },
-  { key: "actors",     href: "admin/actors/actors.html",         icon: "Users.svg",      label: "Actors" },
+  {
+    key: "dashboard",
+    href: "admin/dashboard/dashboard.html",
+    icon: "Dashboard.svg",
+    label: "Dashboard",
+  },
+  {
+    key: "movies",
+    href: "admin/movies/movies.html",
+    icon: "Movies.svg",
+    label: "Movies",
+  },
+  {
+    key: "categories",
+    href: "admin/categories/categories.html",
+    icon: "Categories.svg",
+    label: "Categories",
+  },
+  {
+    key: "users",
+    href: "admin/users/users.html",
+    icon: "Users.svg",
+    label: "Users",
+  },
+  {
+    key: "comments",
+    href: "admin/comments/comments.html",
+    icon: "Comments.svg",
+    label: "Comments",
+  },
+  {
+    key: "contact",
+    href: "admin/contact/contact.html",
+    icon: "Contact us.svg",
+    label: "Contact us",
+  },
+  {
+    key: "actors",
+    href: "admin/actors/actors.html",
+    icon: "Users.svg",
+    label: "Actors",
+  },
 ];
 
 const APP_NAV = [
-  { key: "home",      href: "client/home/home.html",               icon: "home",      title: "Home" },
-  { key: "search",    href: "client/search-panel/search.html", icon: "search",    title: "Movies/Series" },
-  { key: "account",   href: "client/account/account.html",     icon: "account",   title: "Account" },
-  { key: "favourite", href: "client/favourite/favourite.html", icon: "favourite", title: "Favorites" },
+  { key: "home", href: "client/home/home.html", icon: "home", title: "Home" },
+  {
+    key: "search",
+    href: "client/search-panel/search.html",
+    icon: "search",
+    title: "Movies/Series",
+  },
+  {
+    key: "account",
+    href: "client/account/account.html",
+    icon: "account",
+    title: "Account",
+  },
+  {
+    key: "favourite",
+    href: "client/favourite/favourite.html",
+    icon: "favourite",
+    title: "Favorites",
+  },
 ];
 
 function renderAdminSidebar(active) {
@@ -48,7 +98,7 @@ function renderAdminSidebar(active) {
           <img src="${BASE}assets/icons/${item.icon}" alt="" />
           <span>${item.label}</span>
         </a>
-      </li>`
+      </li>`,
   ).join("");
 
   return `
@@ -83,6 +133,9 @@ function renderAppSidebar(active) {
         <img src="${BASE}assets/images/filmalisa.svg" alt="Filmalisa Logo" class="svg-logo" />
       </div>
       <nav class="sidebar-nav">${links}</nav>
+      <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
+        <img src="${BASE}assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+      </button>
     </aside>`;
 }
 
@@ -96,22 +149,84 @@ function initLayout() {
   mount.outerHTML =
     type === "app" ? renderAppSidebar(active) : renderAdminSidebar(active);
 
-  if (type !== "app") {
-    setupLogout();
+  if (type === "app") {
+    setupLogout("client", "#appLogoutBtn");
+  } else {
+    setupLogout("admin", "#logoutBtn");
   }
 }
 
-// Çıxışdan əvvəl təsdiq istəyir (admin sidebar-ın Logout düyməsi üçün)
-function setupLogout() {
-  const logoutBtn = document.querySelector("#logoutBtn");
+// Çıxışdan əvvəl təsdiq istəyir (həm admin, həm də app sidebar-ın Logout düyməsi üçün)
+function setupLogout(role, selector) {
+  const logoutBtn = document.querySelector(selector);
   if (!logoutBtn) return;
 
-  logoutBtn.addEventListener("click", (e) => {
-    const confirmed = window.confirm("Çıxış etmək istədiyinizə əminsiniz?");
-    if (!confirmed) {
-      e.preventDefault();
-    }
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const confirmed = await confirmDialog(
+      "Çıxış etmək istədiyinizə əminsiniz?",
+      { confirmLabel: "Çıxış et", danger: true },
+    );
+    if (confirmed) logout(role);
   });
 }
 
 document.addEventListener("DOMContentLoaded", initLayout);
+(function () {
+  if (!getToken("client")) return;
+
+  const profile = getProfile("client") || {};
+
+  document.getElementById("headerAuthLink").hidden = true;
+  document.getElementById("headerProfile").hidden = false;
+  document.getElementById("headerUsername").textContent =
+    profile.full_name || profile.email || "Account";
+  if (profile.img_url) {
+    document.getElementById("headerAvatar").src = profile.img_url;
+  }
+
+  const trigger = document.getElementById("headerProfileTrigger");
+  const menu = document.getElementById("headerMenu");
+  const logoutBtn = document.getElementById("headerLogoutBtn");
+
+  function openMenu() {
+    menu.hidden = false;
+    trigger.setAttribute("aria-expanded", "true");
+  }
+  function closeMenu() {
+    menu.hidden = true;
+    trigger.setAttribute("aria-expanded", "false");
+  }
+
+  trigger.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (menu.hidden) openMenu();
+    else closeMenu();
+  });
+
+  // Menyudan kənara klik → bağla (menyunun öz içinə klik istisna)
+  document.addEventListener("click", (e) => {
+    if (menu.hidden) return;
+    if (menu.contains(e.target) || trigger.contains(e.target)) return;
+    closeMenu();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !menu.hidden) closeMenu();
+  });
+
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    closeMenu();
+
+    const confirmed = await confirmDialog(
+      "Çıxış etmək istədiyinizə əminsiniz?",
+      { confirmLabel: "Çıxış et", danger: true },
+    );
+    if (!confirmed) return;
+
+    logout("client", false);
+    location.reload();
+  });
+})();

@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="tr">
+<html translate="no" lang="tr">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>filmalisa - account</title>
     <!-- BOOTSTRAP -->
@@ -72,6 +73,10 @@
           />
         </a>
       </nav>
+
+      <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
+        <img src="../../assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+      </button>
     </aside>
 
     <!-- MAIN -->
@@ -85,18 +90,11 @@
         <img src="" alt="Profile" class="avatar-img d-none" id="avatarImg" />
       </div>
 
-      <input
-        type="file"
-        id="fileInput"
-        accept="image/*"
-        style="display: none"
-      />
-
       <!-- FORM -->
       <form id="accountForm" class="account-form">
         <div class="input-wrapper">
-          <img src="../../assets/icons/login2.svg" class="input-icon" alt="user" />
-          <input type="text" id="username" placeholder="Profile manage url" />
+          <img src="../../assets/icons/login2.svg" class="input-icon" alt="image" />
+          <input type="url" id="imageUrl" placeholder="Profile image URL" />
         </div>
 
         <div class="input-wrapper">
@@ -111,7 +109,7 @@
 
         <div class="input-wrapper">
           <img src="../../assets/icons/login2.svg" class="input-icon" alt="lock" />
-          <input type="password" id="password" placeholder="Password" />
+          <input type="password" id="password" placeholder="New password (optional)" />
           <img
             src="../../assets/icons/passwordtog.svg"
             class="action-icon"
@@ -123,6 +121,7 @@
       </form>
     </main>
 
+    <script src="../../global/api.js"></script>
     <script src="../../global/layout.js"></script>
     <script src="./account.js"></script>
   </body>

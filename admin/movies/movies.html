@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Movies — Filmalisa Admin</title>
     <link rel="stylesheet" href="./movies.css" />
@@ -39,48 +40,16 @@
           <table class="table_content">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Poster</th>
                 <th>Title</th>
                 <th>Overview</th>
-                <th>Category</th>
                 <th>IMDB</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="moviesTableBody">
-              <tr
-                data-id="1"
-                data-cover="../../assets/images/lost-in-space-poster.svg"
-              >
-                <td>1</td>
-                <td>
-                  <img
-                    class="poster-thumb"
-                    src="../../assets/images/lost-in-space-poster.svg"
-                    alt=""
-                  />
-                </td>
-                <td class="cell-title">Lost in Space</td>
-                <td class="cell-overview">Lorem ipsum dolor sit amet.</td>
-                <td class="cell-category">Action</td>
-                <td class="cell-imdb">7.6</td>
-                <td>
-                  <button
-                    class="table-btn table-btn--edit"
-                    type="button"
-                    title="Edit"
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                  </button>
-                  <button
-                    class="table-btn table-btn--delete"
-                    type="button"
-                    title="Delete"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
+              <tr>
+                <td colspan="5" class="table-empty">Yüklənir…</td>
               </tr>
             </tbody>
           </table>
@@ -163,16 +132,15 @@
               required
             >
               <option value="" disabled selected>category</option>
-              <option value="Action">Action</option>
-              <option value="Comedy">Comedy</option>
-              <option value="Drama">Drama</option>
-              <option value="Horror">Horror</option>
-              <option value="Sci-Fi">Sci-Fi</option>
-              <option value="Thriller">Thriller</option>
-              <option value="Romance">Romance</option>
-              <option value="Animation">Animation</option>
-              <option value="Documentary">Documentary</option>
             </select>
+
+            <label class="movie-form__label" for="movieActors">actors</label>
+            <select
+              class="movie-form__input movie-form__select movie-form__select--multi"
+              id="movieActors"
+              multiple
+              size="5"
+            ></select>
 
             <div class="movie-form__footer">
               <label class="movie-form__checkbox">
@@ -229,6 +197,7 @@
       </div>
     </div>
 
+    <script src="../../global/api.js"></script>
     <script src="../../global/layout.js"></script>
     <script src="./movies.js"></script>
   </body>

@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact Us — Filmalisa Admin</title>
     <link rel="stylesheet" href="./contact.css" />
@@ -39,50 +40,13 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Subject</th>
-                <th>Message</th>
+                <th>Reason</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="contactTableBody">
-              <tr data-id="1">
-                <td>1</td>
-                <td class="cell-name">Tural Gasimov</td>
-                <td>tural@example.com</td>
-                <td>Advertising Offer</td>
-                <td class="cell-message" title="Hello, I'm interested in your pricing for placing ads on your platform.">
-                  Hello, I'm interested in your pricing for placing ads on
-                  your platform.
-                </td>
-                <td>
-                  <button
-                    class="table-btn table-btn--delete"
-                    type="button"
-                    title="Delete"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-
-              <tr data-id="2">
-                <td>2</td>
-                <td class="cell-name">Leyla Aliyeva</td>
-                <td>leyla@example.com</td>
-                <td>Site Bug</td>
-                <td class="cell-message" title="The video player sometimes freezes when opening movies, could you please check.">
-                  The video player sometimes freezes when opening movies,
-                  could you please check.
-                </td>
-                <td>
-                  <button
-                    class="table-btn table-btn--delete"
-                    type="button"
-                    title="Delete"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
+              <tr>
+                <td colspan="5" class="table-empty">Yüklənir…</td>
               </tr>
             </tbody>
           </table>
@@ -126,6 +90,7 @@
       </div>
     </div>
 
+    <script src="../../global/api.js"></script>
     <script src="../../global/layout.js"></script>
     <script src="./contact.js"></script>
   </body>

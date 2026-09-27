@@ -156,12 +156,9 @@
   border: 1px solid #ccc;
 }
 
-.cell-bio {
-  max-width: 280px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
+.cell-surname {
+  font-weight: 400;
+  opacity: 0.8;
 }
 
 /* ===========================================

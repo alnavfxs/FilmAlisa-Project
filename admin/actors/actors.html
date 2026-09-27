@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Actors — Filmalisa Admin</title>
     <link rel="stylesheet" href="./actors.css" />
@@ -43,7 +44,6 @@
               <tr>
                 <th>ID</th>
                 <th>Photo & Name</th>
-                <th>Biography / Role</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -132,7 +132,14 @@
             class="category-form__input"
             type="text"
             id="actorName"
-            placeholder="Actor Name"
+            placeholder="First name"
+            required
+          />
+          <input
+            class="category-form__input"
+            type="text"
+            id="actorSurname"
+            placeholder="Surname"
             required
           />
           <input
@@ -142,19 +149,13 @@
             placeholder="Image URL (e.g. https://...)"
             required
           />
-          <input
-            class="category-form__input"
-            type="text"
-            id="actorBio"
-            placeholder="Biography or Role"
-            required
-          />
 
           <button class="category-form__submit" type="submit">Submit</button>
         </form>
       </div>
     </div>
 
+    <script src="../../global/api.js"></script>
     <script src="../../global/layout.js"></script>
     <script src="./actors.js"></script>
   </body>

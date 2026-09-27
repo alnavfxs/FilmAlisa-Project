@@ -10,6 +10,7 @@ function setupMovieModal() {
 
   const createBtn = document.querySelector("#createMovieBtn");
   const closeBtn = document.querySelector("#closeModalBtn");
+  const submitBtn = form.querySelector(".movie-form__submit");
 
   const titleInput = document.querySelector("#movieTitle");
   const overviewInput = document.querySelector("#movieOverview");
@@ -19,6 +20,7 @@ function setupMovieModal() {
   const imdbInput = document.querySelector("#movieImdb");
   const runtimeInput = document.querySelector("#movieRuntime");
   const categoryInput = document.querySelector("#movieCategory");
+  const actorsInput = document.querySelector("#movieActors");
   const adultInput = document.querySelector("#movieAdult");
   const previewImg = document.querySelector("#moviePreviewImg");
 
@@ -32,36 +34,83 @@ function setupMovieModal() {
   const placeholderPoster =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='296' viewBox='0 0 200 296'%3E%3Crect width='200' height='296' rx='10' fill='%231c1c24'/%3E%3Cpath d='M70 118h60v60H70z' fill='%232c2c3a'/%3E%3C/svg%3E";
 
-  let editingRow = null; // holds the <tr> being edited, or null when creating
+  // Yalnız edit üçün lazım olan id burada saxlanılır — cədvəldə görünmür,
+  // hər sətirdə isə yalnız görüntü üçün lazım olan yüngül sahələr var.
+  let editingId = null;
 
   function updatePreview() {
     previewImg.src = coverInput.value.trim() || placeholderPoster;
   }
 
-  function openModal(mode, row = null) {
-    editingRow = row;
-    form.reset();
-
-    if (mode === "edit" && row) {
-      titleInput.value = row.querySelector(".cell-title").textContent;
-      overviewInput.value = row.querySelector(".cell-overview").textContent;
-      categoryInput.value = row.querySelector(".cell-category").textContent;
-      imdbInput.value = row.querySelector(".cell-imdb").textContent;
-      coverInput.value = row.dataset.cover || "";
-      trailerInput.value = row.dataset.trailer || "";
-      watchUrlInput.value = row.dataset.watchUrl || "";
-      runtimeInput.value = row.dataset.runtime || "";
-      adultInput.checked = row.dataset.adult === "true";
+  // category/actors seçimləri — bir dəfə yüklənir, modal hər açılanda təzədən çəkilmir
+  async function loadOptions() {
+    try {
+      const [categories, actors] = await Promise.all([
+        api.admin.categories(),
+        api.admin.actors(),
+      ]);
+      categoryInput.innerHTML =
+        '<option value="" disabled selected>category</option>' +
+        categories.map((c) => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+      actorsInput.innerHTML = actors
+        .map((a) => `<option value="${a.id}">${esc(a.name)} ${esc(a.surname)}</option>`)
+        .join("");
+    } catch (err) {
+      toast(err.message || "Kateqoriya/aktyor siyahısı yüklənmədi.", "error");
     }
+  }
 
+  // Serverdən gələn (nested) obyekti formaya doldurur
+  function fillForm(data) {
+    titleInput.value = data.title || "";
+    overviewInput.value = data.overview || "";
+    imdbInput.value = data.imdb || "";
+    coverInput.value = data.cover_url || "";
+    trailerInput.value = data.fragman || "";
+    watchUrlInput.value = data.watch_url || "";
+    runtimeInput.value = data.run_time_min || "";
+    adultInput.checked = !!data.adult;
+
+    categoryInput.value = data.category ? String(data.category.id) : "";
+    const actorIds = new Set((data.actors || []).map((a) => String(a.id)));
+    Array.from(actorsInput.options).forEach((opt) => {
+      opt.selected = actorIds.has(opt.value);
+    });
+  }
+
+  function openCreateModal() {
+    editingId = null;
+    form.reset();
+    Array.from(actorsInput.options).forEach((opt) => (opt.selected = false));
     updatePreview();
     modal.classList.add("active");
+  }
+
+  // Edit-ə basanda tam məlumat YALNIZ bu anda serverdən çəkilir (id burada işə düşür)
+  async function openEditModal(id, triggerBtn) {
+    const originalIcon = triggerBtn.innerHTML;
+    triggerBtn.disabled = true;
+    triggerBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+      const movie = await api.admin.movie(id);
+      editingId = id;
+      form.reset();
+      fillForm(movie);
+      updatePreview();
+      modal.classList.add("active");
+    } catch (err) {
+      toast(err.message || "Film məlumatı yüklənmədi.", "error");
+    } finally {
+      triggerBtn.disabled = false;
+      triggerBtn.innerHTML = originalIcon;
+    }
   }
 
   function closeModal() {
     modal.classList.remove("active");
     form.reset();
-    editingRow = null;
+    editingId = null;
     updatePreview();
   }
 
@@ -74,10 +123,20 @@ function setupMovieModal() {
   closeDeleteBtn.addEventListener("click", closeDeleteModal);
   cancelDeleteBtn.addEventListener("click", closeDeleteModal);
 
-  confirmDeleteBtn.addEventListener("click", () => {
-    if (rowToDelete) {
+  confirmDeleteBtn.addEventListener("click", async () => {
+    if (!rowToDelete) return;
+    const id = rowToDelete.dataset.id;
+
+    confirmDeleteBtn.disabled = true;
+    try {
+      await api.admin.removeMovie(id);
       rowToDelete.remove();
+      toast("Film silindi.", "success");
       closeDeleteModal();
+    } catch (err) {
+      toast(err.message || "Film silinmədi.", "error");
+    } finally {
+      confirmDeleteBtn.disabled = false;
     }
   });
 
@@ -87,31 +146,16 @@ function setupMovieModal() {
   });
   // ------------------------------------
 
-  function nextId() {
-    const ids = [...tableBody.querySelectorAll("tr")].map(
-      (row) => Number(row.dataset.id) || 0,
-    );
-    return ids.length ? Math.max(...ids) + 1 : 1;
-  }
-
-  function applyExtraData(row, data) {
-    row.dataset.cover = data.cover || "";
-    row.dataset.trailer = data.trailer || "";
-    row.dataset.watchUrl = data.watchUrl || "";
-    row.dataset.runtime = data.runtime || "";
-    row.dataset.adult = data.adult ? "true" : "false";
-  }
-
+  // /admin/movies (list) yalnız bu sahələri qaytarır — category/actors YOXDUR,
+  // onlar üçün Edit-ə basanda /admin/movies/:id çağırılır.
   function buildRow(id, data) {
     const row = document.createElement("tr");
     row.dataset.id = id;
     row.innerHTML = `
-      <td>${id}</td>
-      <td><img class="poster-thumb" src="${data.cover || placeholderPoster}" alt=""></td>
-      <td class="cell-title">${data.title}</td>
-      <td class="cell-overview">${data.overview}</td>
-      <td class="cell-category">${data.category}</td>
-      <td class="cell-imdb">${data.imdb}</td>
+      <td><img class="poster-thumb" src="${data.cover_url || placeholderPoster}" alt=""></td>
+      <td class="cell-title">${esc(data.title)}</td>
+      <td class="cell-overview">${esc(data.overview || "—")}</td>
+      <td class="cell-imdb">${esc(data.imdb)}</td>
       <td>
         <button class="table-btn table-btn--edit" type="button" title="Edit">
           <i class="fa-solid fa-pen"></i>
@@ -121,11 +165,26 @@ function setupMovieModal() {
         </button>
       </td>
     `;
-    applyExtraData(row, data);
     return row;
   }
 
-  createBtn.addEventListener("click", () => openModal("create"));
+  async function loadMovies() {
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Yüklənir…</td></tr>`;
+    try {
+      const movies = await api.admin.movies();
+      tableBody.innerHTML = "";
+      if (!movies || !movies.length) {
+        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Hələ film əlavə olunmayıb.</td></tr>`;
+        return;
+      }
+      movies.forEach((movie) => tableBody.appendChild(buildRow(movie.id, movie)));
+    } catch (err) {
+      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Filmlər yüklənmədi.</td></tr>`;
+      toast(err.message || "Filmlər yüklənmədi.", "error");
+    }
+  }
+
+  createBtn.addEventListener("click", openCreateModal);
   closeBtn.addEventListener("click", closeModal);
   coverInput.addEventListener("input", updatePreview);
 
@@ -144,57 +203,66 @@ function setupMovieModal() {
 
   // Edit / Delete — delegated so it also works for rows added later
   tableBody.addEventListener("click", (e) => {
-    //closest kullanarak butona tıklanmasını garantiye alıyoruz (ikonlara tıklanma sorununu çözer)
     const editBtn = e.target.closest(".table-btn--edit");
     const deleteBtn = e.target.closest(".table-btn--delete");
     const row = e.target.closest("tr");
 
-    if (!row) return;
+    if (!row || !row.dataset.id) return;
 
     if (editBtn) {
-      openModal("edit", row);
+      openEditModal(row.dataset.id, editBtn);
     }
 
     if (deleteBtn) {
       rowToDelete = row;
-      // İstersen silinecek filmin ismini modal'a yazdırabilirsin:
-      // const title = row.querySelector(".cell-title").textContent;
-      // deleteModal.querySelector(".modal-title").textContent = `Delete "${title}"?`;
-
       deleteModal.classList.add("active");
     }
   });
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    const actorIds = Array.from(actorsInput.selectedOptions).map((o) => Number(o.value));
 
     const data = {
       title: titleInput.value.trim(),
       overview: overviewInput.value.trim() || "—",
-      category: categoryInput.value,
+      cover_url: coverInput.value.trim(),
+      fragman: trailerInput.value.trim(),
+      watch_url: watchUrlInput.value.trim(),
       imdb: imdbInput.value.trim(),
-      cover: coverInput.value.trim(),
-      trailer: trailerInput.value.trim(),
-      watchUrl: watchUrlInput.value.trim(),
-      runtime: runtimeInput.value.trim(),
+      run_time_min: runtimeInput.value ? Number(runtimeInput.value) : 0,
+      category: categoryInput.value ? Number(categoryInput.value) : null,
+      actors: actorIds,
       adult: adultInput.checked,
     };
 
     if (!data.title || !data.category || !data.imdb) return;
 
-    if (editingRow) {
-      editingRow.querySelector(".cell-title").textContent = data.title;
-      editingRow.querySelector(".cell-overview").textContent = data.overview;
-      editingRow.querySelector(".cell-category").textContent = data.category;
-      editingRow.querySelector(".cell-imdb").textContent = data.imdb;
-      editingRow.querySelector(".poster-thumb").src =
-        data.cover || placeholderPoster;
-      applyExtraData(editingRow, data);
-    } else {
-      const row = buildRow(nextId(), data);
-      tableBody.appendChild(row);
-    }
+    const originalLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = editingId ? "Yenilənir…" : "Əlavə olunur…";
 
-    closeModal();
+    try {
+      if (editingId) {
+        await api.admin.updateMovie(editingId, data);
+        const row = tableBody.querySelector(`tr[data-id="${editingId}"]`);
+        if (row) row.replaceWith(buildRow(editingId, data));
+        toast("Film yeniləndi.", "success");
+      } else {
+        const created = await api.admin.createMovie(data);
+        tableBody.appendChild(buildRow(created.id, created));
+        toast("Film əlavə olundu.", "success");
+      }
+      closeModal();
+    } catch (err) {
+      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
+    }
   });
+
+  loadOptions();
+  loadMovies();
 }

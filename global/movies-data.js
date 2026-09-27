@@ -122,7 +122,6 @@ const MOVIES = {
 
 /* Yollar: bu fayl global/ içindədir → kök = "../".
    Səhifə hansı qovluqdadır fərqi yoxdur, deploy alt-qovluqda olsa da işləyir. */
-const SITE_ROOT = new URL("../", document.currentScript.src).href;
 const assetUrl = (file) => SITE_ROOT + IMG + file;
 const detailUrl = (id) => SITE_ROOT + "client/detail/detail.html?id=" + encodeURIComponent(id);
 

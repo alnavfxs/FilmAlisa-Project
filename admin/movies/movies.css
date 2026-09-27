@@ -317,6 +317,20 @@
   color: var(--db-text-primary);
 }
 
+.movie-form__label {
+  font-size: 13px;
+  color: var(--db-text-secondary, #9a9dae);
+  margin: -4px 0 -8px 2px;
+}
+
+.movie-form__select--multi {
+  appearance: auto;
+  -webkit-appearance: auto;
+  background-image: none;
+  height: auto;
+  padding: 8px;
+}
+
 .movie-form__footer {
   display: flex;
   align-items: center;

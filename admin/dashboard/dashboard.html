@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html translate="no" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard — Filmalisa Admin</title>
     <link rel="stylesheet" href="./dashboard.css" />
@@ -27,37 +28,38 @@
           <div class="dashboards_cards">
             <div class="card">
               <p>Favorite actions</p>
-              <h3>121</h3>
+              <h3 id="statFavorites">—</h3>
             </div>
             <div class="card">
               <p>Users</p>
-              <h3>10</h3>
+              <h3 id="statUsers">—</h3>
             </div>
             <div class="card">
               <p>Movies</p>
-              <h3>40</h3>
+              <h3 id="statMovies">—</h3>
             </div>
             <div class="card">
               <p>Comments</p>
-              <h3>45</h3>
+              <h3 id="statComments">—</h3>
             </div>
             <div class="card">
               <p>Categories</p>
-              <h3>12</h3>
+              <h3 id="statCategories">—</h3>
             </div>
             <div class="card">
               <p>Actors</p>
-              <h3>20</h3>
+              <h3 id="statActors">—</h3>
             </div>
             <div class="card">
               <p>Contacts</p>
-              <h3>20</h3>
+              <h3 id="statContacts">—</h3>
             </div>
           </div>
         </main>
       </div>
     </div>
 
+    <script src="../../global/api.js"></script>
     <script src="../../global/layout.js"></script>
     <script src="./dashboard.js"></script>
   </body>

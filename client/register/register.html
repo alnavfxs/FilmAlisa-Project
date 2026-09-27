@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="az">
+<html translate="no" lang="az">
   <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>filmalisa — register</title>
     <link rel="stylesheet" href="./register.css" />
@@ -20,7 +21,7 @@
 
         <h2 class="login-page__subtitle">Register</h2>
 
-        <form class="login-form" action="#" method="post">
+        <form class="login-form" id="registerForm" action="#">
           <div class="login-form__field">
             <span
               ><img
@@ -32,6 +33,7 @@
               class="login-form__input"
               type="text"
               name="fullname"
+              id="fullnameInput"
               placeholder="Full name"
               autocomplete="name"
               required
@@ -49,6 +51,7 @@
               class="login-form__input"
               type="email"
               name="email"
+              id="emailInput"
               placeholder="Email"
               autocomplete="email"
               required
@@ -92,6 +95,7 @@
       </div>
     </main>
 
+    <script src="../../global/api.js"></script>
     <script src="./register.js"></script>
   </body>
 </html>
