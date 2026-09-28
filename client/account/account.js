@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const img = new Image();
         img.onerror = reject;
         img.onload = () => {
-          const size = 256;
+          const size = 160;
           const canvas = document.createElement("canvas");
           canvas.width = canvas.height = size;
           const side = Math.min(img.width, img.height);
@@ -113,7 +113,10 @@ document.addEventListener("DOMContentLoaded", () => {
       imageUrlInput.value = currentProfile.img_url || "";
       storedAvatar = getLocalAvatar(currentProfile.email);
       updateAvatarPreview();
-      localStorage.setItem(PROFILE_KEY.client, JSON.stringify({ ...(getProfile("client") || {}), ...currentProfile }));
+      localStorage.setItem(
+        PROFILE_KEY.client,
+        JSON.stringify({ ...(getProfile("client") || {}), ...currentProfile, avatar_local: storedAvatar }),
+      );
     } catch (err) {
       toast(err.message || "Failed to load profile.", "error");
     }
@@ -131,38 +134,57 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const body = {
-      full_name,
-      email: emailInput.value,
-      img_url: imageUrlInput.value.trim(),
-    };
+    const typedUrl = imageUrlInput.value.trim();
+    const body = { full_name, email: emailInput.value, img_url: typedUrl };
     if (passwordInput.value) body.password = passwordInput.value;
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
     submitBtn.textContent = "Saving…";
 
-    try {
-      const updated = await api.updateProfile(body);
-
-      // Şəkli yaddaşa yaz (email-ə görə) — səhifə/logout sonrası da qalır
-      if (pendingAvatar) {
-        storedAvatar = pendingAvatar;
-        setLocalAvatar(body.email, storedAvatar);
-        pendingAvatar = null;
-      } else if (body.img_url) {
-        // URL yazılıb → o istifadə olunsun, köhnə yerli şəkil silinsin
-        storedAvatar = "";
-        setLocalAvatar(body.email, "");
-      }
-      currentProfile = { ...currentProfile, ...(updated || {}), ...body };
+    // 1) ŞƏKLİ ƏVVƏLCƏ BRAUZERƏ YAZ — server nə cavab versə də şəkil itməsin
+    const uploadedNow = pendingAvatar;
+    if (pendingAvatar) {
+      storedAvatar = pendingAvatar;
+      setLocalAvatar(body.email, storedAvatar);
+      pendingAvatar = null;
+    } else if (typedUrl) {
+      storedAvatar = "";
+      setLocalAvatar(body.email, "");
+    }
+    const syncSession = (extra = {}) => {
+      currentProfile = { ...currentProfile, full_name, ...extra };
       delete currentProfile.password;
-      // Landing page header-i bu profili localStorage-dan oxuyur → sinxronlaşdır
-      localStorage.setItem(PROFILE_KEY.client, JSON.stringify({ ...(getProfile("client") || {}), ...currentProfile }));
+      localStorage.setItem(
+        PROFILE_KEY.client,
+        JSON.stringify({ ...(getProfile("client") || {}), ...currentProfile, avatar_local: storedAvatar }),
+      );
+    };
+    syncSession({ img_url: typedUrl || (currentProfile && currentProfile.img_url) || "" });
+    updateAvatarPreview();
+
+    // 2) SERVERƏ GÖNDƏR (fayl seçilibsə şəkil data-URL kimi cəhd olunur)
+    try {
+      if (uploadedNow) body.img_url = uploadedNow;
+      let updated;
+      try {
+        updated = await api.updateProfile(body);
+      } catch (firstErr) {
+        if (!uploadedNow) throw firstErr;
+        // Server data-URL qəbul etmədi → şəkilsiz yenilə, şəkil yalnız bu brauzerdə qalır
+        console.warn("[account] server şəkli qəbul etmədi:", firstErr);
+        body.img_url = (currentProfile && currentProfile.img_url) || "";
+        updated = await api.updateProfile(body);
+        syncSession({ ...(updated || {}), img_url: body.img_url });
+        passwordInput.value = "";
+        toast("Profile saved. The photo is stored on this device (the server only accepts image links).", "success");
+        return;
+      }
+      syncSession({ ...(updated || {}), img_url: body.img_url });
       passwordInput.value = "";
       toast("Profile updated.", "success");
     } catch (err) {
-      toast(err.message || "Failed to update profile.", "error");
+      toast((err.message || "Failed to update profile.") + " Photo is saved on this device.", "error");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;

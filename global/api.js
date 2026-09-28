@@ -54,10 +54,16 @@ function getProfile(role = "client") {
    logout/login etsən də, server img_url saxlamasa da itmir. */
 const avatarKey = (email) => "filmalisa-avatar:" + String(email || "").toLowerCase();
 const getLocalAvatar = (email) => localStorage.getItem(avatarKey(email)) || "";
+const AVATAR_LAST_KEY = "filmalisa-avatar:last";
 function setLocalAvatar(email, dataUrl) {
   try {
-    if (dataUrl) localStorage.setItem(avatarKey(email), dataUrl);
-    else localStorage.removeItem(avatarKey(email));
+    if (dataUrl) {
+      localStorage.setItem(avatarKey(email), dataUrl);
+      localStorage.setItem(AVATAR_LAST_KEY, dataUrl); // ehtiyat: email uyğunlaşmasa belə tapılsın
+    } else {
+      localStorage.removeItem(avatarKey(email));
+      localStorage.removeItem(AVATAR_LAST_KEY);
+    }
   } catch (e) {
     console.error("[avatar] yaddaşa yazıla bilmədi:", e);
   }
@@ -65,7 +71,7 @@ function setLocalAvatar(email, dataUrl) {
 /* Header/landing üçün: yerli şəkil → server img_url → boş */
 function resolveAvatar(profile) {
   if (!profile) return "";
-  return getLocalAvatar(profile.email) || profile.img_url || "";
+  return profile.avatar_local || getLocalAvatar(profile.email) || localStorage.getItem(AVATAR_LAST_KEY) || profile.img_url || "";
 }
 
 function saveSession(role, data) {
@@ -238,6 +244,11 @@ const api = {
   /* Auth */
   async login(email, password) {
     const data = await apiRequest("/auth/login", { method: "POST", body: { email, password }, role: "client", auth: false });
+    // Server profilində email/şəkil olmaya bilər → yazılan email ilə yerli şəkli bərpa et
+    data.profile = { ...(data.profile || {}) };
+    data.profile.email = data.profile.email || email;
+    const localAvatar = getLocalAvatar(data.profile.email) || getLocalAvatar(email) || localStorage.getItem(AVATAR_LAST_KEY) || "";
+    if (localAvatar) data.profile.avatar_local = localAvatar;
     saveSession("client", data);
     return data.profile;
   },
