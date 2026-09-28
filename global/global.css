@@ -347,3 +347,11 @@ select:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px var(--background-color) inset !important;
   transition: background-color 99999s ease-in-out 0s;
 }
+
+/* Boş nəticə / yüklənir mətni (home, search, detail) — grid daxilində bütün sətri tutur */
+.empty-state {
+  grid-column: 1 / -1;
+  color: var(--white-transparent-60, rgba(255, 255, 255, 0.6));
+  font-size: 16px;
+  line-height: 1.6;
+}

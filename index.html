@@ -24,11 +24,7 @@
             <span class="landing-header__name">Filmalisa</span>
           </div>
           <a href="./client/login/login.html" id="headerAuthLink">
-            <button
-              class="landing-header__signin"
-              type="button"
-              id="headerAuthBtn"
-            >
+            <button class="landing-header__signin" type="button" id="headerAuthBtn">
               Sign in
             </button>
           </a>
@@ -51,18 +47,11 @@
             </button>
 
             <div class="landing-header__menu" id="headerMenu" hidden>
-              <a
-                href="./client/account/account.html"
-                class="landing-header__menu-item"
-              >
+              <a href="./client/account/account.html" class="landing-header__menu-item">
                 <span>Settings</span>
                 <i class="fa-solid fa-gear"></i>
               </a>
-              <button
-                type="button"
-                class="landing-header__menu-item"
-                id="headerLogoutBtn"
-              >
+              <button type="button" class="landing-header__menu-item" id="headerLogoutBtn">
                 <span>Logout</span>
                 <i class="fa-solid fa-right-from-bracket"></i>
               </button>
@@ -83,10 +72,7 @@
           </p>
 
           <!-- Action register səhifəsinə yönləndirir -->
-          <form
-            class="landing-hero__form"
-            action="./client/register/register.html"
-          >
+          <form class="landing-hero__form" action="./client/register/register.html">
             <input
               class="landing-hero__input"
               type="email"
@@ -183,11 +169,12 @@
         <div class="landing-contact__container">
           <h2 class="landing-contact__title">Contact us</h2>
 
-          <form class="landing-contact__form" action="#">
+          <form class="landing-contact__form" id="contactForm" action="#">
             <input
               class="landing-contact__input"
               type="text"
               name="fullname"
+              id="contactName"
               placeholder="Fullname"
               required
             />
@@ -196,6 +183,7 @@
               class="landing-contact__input"
               type="email"
               name="email"
+              id="contactEmail"
               placeholder="Email address"
               required
             />
@@ -203,6 +191,7 @@
             <textarea
               class="landing-contact__textarea"
               name="reason"
+              id="contactReason"
               placeholder="Reason"
               rows="5"
               required
@@ -365,6 +354,6 @@
     </main>
 
     <script src="./global/api.js"></script>
-    <script src="./global/layout.js"></script>
+    <script src="./global/landing.js"></script>
   </body>
 </html>
