@@ -821,6 +821,15 @@ details[open] .landing-faq__answer {
   /* planşet və telefonun çərçivəsi iMac ekranının üstünə düşən hissələri kəsilir */
   clip-path: polygon(0 0, 100% 0, 100% 56.5%, 79% 56.5%, 79% 100%, 3.4% 100%, 3.4% 90%, 0 90%);
 }
+/* kompüter ekranındakı GIF — CSS animasiyanın üstündə oturur */
+.screen__gif {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 3;
+}
 .imac-live {
   position: absolute;
   top: 5%;
