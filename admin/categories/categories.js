@@ -53,7 +53,7 @@ function setupCategoryModal() {
   }
 
   async function loadCategories() {
-    tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Loading…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Loading...</td></tr>`;
     try {
       const categories = await api.admin.categories();
       tableBody.innerHTML = "";
@@ -92,15 +92,16 @@ function setupCategoryModal() {
 
     if (e.target.closest(".table-btn--delete")) {
       const name = row.querySelector(".cell-name").textContent;
-      confirmDialog(`Are you sure you want to delete the category "${name}"?`, {
+      confirmDialog(`Are you sure you want to delete the "${name}" category?`, {
         confirmLabel: "Delete",
+        cancelLabel: "Cancel" ,
         danger: true,
       }).then(async (confirmed) => {
         if (!confirmed) return;
         try {
           await api.admin.removeCategory(row.dataset.id);
           row.remove();
-          toast("Category deleted.", "success");
+          toast("Category deleted successfully.", "success");
         } catch (err) {
           toast(err.message || "Failed to delete category.", "error");
         }
@@ -116,17 +117,17 @@ function setupCategoryModal() {
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = editingRow ? "Updating…" : "Adding…";
+    submitBtn.textContent = editingRow ? "Updating..." : "Adding...";
 
     try {
       if (editingRow) {
         await api.admin.updateCategory(editingRow.dataset.id, name);
         editingRow.querySelector(".cell-name").textContent = name;
-        toast("Category updated.", "success");
+        toast("Category updated successfully.", "success");
       } else {
         const created = await api.admin.createCategory(name);
         tableBody.appendChild(buildRow(created.id, created.name));
-        toast("Category added.", "success");
+        toast("Category added successfully.", "success");
       }
       closeModal();
     } catch (err) {

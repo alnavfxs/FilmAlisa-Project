@@ -206,11 +206,13 @@
   color: var(--db-text-muted);
   cursor: pointer;
   transition: color 0.2s ease;
+  z-index: 10; 
 }
 
 .close:hover {
   color: var(--db-text-primary);
 }
+
 
 /* Silme Modalı Metin ve Butonları */
 .modal-title {
@@ -263,6 +265,7 @@
   display: flex;
   gap: 40px;
   align-items: flex-start;
+  margin-top: 16px; 
 }
 
 .movie-form__fields {

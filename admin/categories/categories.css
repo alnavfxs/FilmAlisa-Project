@@ -184,6 +184,7 @@
   color: var(--db-text-muted);
   cursor: pointer;
   transition: color 0.2s ease;
+  z-index: 10; 
 }
 
 .close:hover {
@@ -194,7 +195,9 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
+  margin-top: 16px; 
 }
+
 
 .category-form__input {
   width: 100%;

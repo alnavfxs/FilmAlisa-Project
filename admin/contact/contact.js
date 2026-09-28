@@ -6,12 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupContactTable() {
   const tableBody = document.querySelector("#contactTableBody");
-  const modal = document.querySelector("#deleteModal");
-  const closeBtn = document.querySelector("#closeModalBtn");
-  const cancelBtn = document.querySelector("#cancelDeleteBtn");
-  const confirmBtn = document.querySelector("#confirmDeleteBtn");
-
-  let rowToDelete = null;
 
   function buildRow(c) {
     const row = document.createElement("tr");
@@ -31,7 +25,7 @@ function setupContactTable() {
   }
 
   async function loadContacts() {
-    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading...</td></tr>`;
     try {
       const contacts = await api.admin.contacts();
       tableBody.innerHTML = "";
@@ -46,40 +40,35 @@ function setupContactTable() {
     }
   }
 
-  // Delete button click opens the modal
   tableBody.addEventListener("click", (e) => {
-    if (e.target.closest(".table-btn--delete")) {
-      rowToDelete = e.target.closest("tr");
-      modal.classList.add("active");
+    const deleteBtn = e.target.closest(".table-btn--delete");
+    const row = e.target.closest("tr");
+
+    if (!row || !row.dataset.id) return;
+
+    if (deleteBtn) {
+      const contactName = row.querySelector(".cell-name").textContent;
+      confirmDialog(
+        `Are you sure you want to delete the message from "${contactName}"?`,
+        {
+          confirmLabel: "Delete",
+          cancelLabel: "Cancel",
+          danger: true,
+        },
+      ).then(async (confirmed) => {
+        if (!confirmed) return;
+
+        const id = row.dataset.id;
+
+        try {
+          await api.admin.removeContact(id);
+          row.remove();
+          toast("Message deleted successfully.", "success");
+        } catch (err) {
+          toast(err.message || "Failed to delete message.", "error");
+        }
+      });
     }
-  });
-
-  function closeModal() {
-    modal.classList.remove("active");
-    rowToDelete = null;
-  }
-
-  closeBtn.addEventListener("click", closeModal);
-  cancelBtn.addEventListener("click", closeModal);
-
-  confirmBtn.addEventListener("click", async () => {
-    if (!rowToDelete) return;
-    const id = rowToDelete.dataset.id;
-    confirmBtn.disabled = true;
-    try {
-      await api.admin.removeContact(id);
-      rowToDelete.remove();
-      toast("Message deleted.", "success");
-      closeModal();
-    } catch (err) {
-      toast(err.message || "Failed to delete message.", "error");
-    } finally {
-      confirmBtn.disabled = false;
-    }
-  });
-
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
   });
 
   loadContacts();

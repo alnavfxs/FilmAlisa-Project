@@ -44,7 +44,7 @@ function setupActorsCRUD() {
   }
 
   async function loadActors() {
-    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Loading…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Loading...</td></tr>`;
     try {
       const actors = await api.admin.actors();
       tableBody.innerHTML = "";
@@ -106,13 +106,14 @@ function setupActorsCRUD() {
       const name = row.querySelector(".cell-name").textContent;
       confirmDialog(`Are you sure you want to delete the actor "${name}"?`, {
         confirmLabel: "Delete",
+        cancelLabel: "Cancel",
         danger: true,
       }).then(async (confirmed) => {
         if (!confirmed) return;
         try {
           await api.admin.removeActor(row.dataset.id);
           row.remove();
-          toast("Actor deleted.", "success");
+          toast("Actor deleted successfully.", "success");
         } catch (err) {
           toast(err.message || "Failed to delete actor.", "error");
         }
@@ -133,7 +134,7 @@ function setupActorsCRUD() {
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = editingRow ? "Updating…" : "Adding…";
+    submitBtn.textContent = editingRow ? "Updating..." : "Adding...";
 
     try {
       if (editingRow) {
@@ -142,13 +143,13 @@ function setupActorsCRUD() {
         editingRow.querySelector(".cell-surname").textContent = body.surname;
         editingRow.querySelector("img").src = body.img_url;
         editingRow.querySelector("img").alt = `${body.name} ${body.surname}`;
-        toast("Actor updated.", "success");
+        toast("Actor updated successfully.", "success");
       } else {
         const created = await api.admin.createActor(body);
         tableBody.appendChild(
           buildRow(created.id, created.name, created.surname, created.img_url),
         );
-        toast("Actor added.", "success");
+        toast("Actor added successfully.", "success");
       }
       closeModal();
     } catch (err) {
