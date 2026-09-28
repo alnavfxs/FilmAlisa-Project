@@ -47,7 +47,9 @@ body {
   justify-content: space-between;
   padding: 30px 50px;
   position: relative;
-  z-index: 2;
+  /* .landing-hero (z-index: 2) sonra gəlir və header-in altına düşən açılan
+     menyunun (Logout) üstünü örtüb klikləri udurdu — ona görə daha yüksək */
+  z-index: 20;
 }
 
 .landing-header__brand {

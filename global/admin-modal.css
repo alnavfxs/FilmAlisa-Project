@@ -1,0 +1,61 @@
+/* ===========================================
+   ADMIN MODAL — X düyməsi inputlardan ayrı, səliqəli
+   Hər admin səhifəsinin öz CSS-indən SONRA yüklənir
+   (categories, actors, movies, comments, contact)
+   =========================================== */
+
+/* Form olan modallar: X üçün yuxarıda ayrıca zolaq */
+.modalContent:has(form) {
+  padding-top: 64px;
+}
+
+/* Təsdiq (silmə) modalları: başlıq X-in altında qalsın */
+.modalContent--small,
+.modalContent:has(.modal-body) {
+  padding-top: 52px;
+}
+
+.close {
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 22px;
+  line-height: 1;
+  z-index: 2;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--db-text-primary);
+  transform: rotate(90deg);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--db-button, #9b51e0);
+  outline-offset: 2px;
+}
+
+/* Cədvəl boş / yüklənir sətri */
+.table-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--placeholder-color);
+  font-size: var(--fs-s14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .close:hover {
+    transform: none;
+  }
+}
