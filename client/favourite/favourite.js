@@ -3,13 +3,13 @@ requireClientAuth();
 const grid = document.getElementById("movieGrid");
 
 async function renderFavourites() {
-  grid.innerHTML = `<p class="empty-state">Yüklənir…</p>`;
+  grid.innerHTML = `<p class="empty-state">Loading…</p>`;
 
   let movies = [];
   try {
     movies = await api.favorites();
   } catch (err) {
-    grid.innerHTML = emptyState(err.message || "Favoritlər yüklənmədi.");
+    grid.innerHTML = emptyState(err.message || "Failed to load favorites.");
     return;
   }
 

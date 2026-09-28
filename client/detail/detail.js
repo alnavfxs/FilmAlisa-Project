@@ -11,7 +11,7 @@ async function init() {
   try {
     movie = await api.movie(movieId);
   } catch (err) {
-    toast(err.message || "Film tapılmadı.", "error");
+    toast(err.message || "Movie not found.", "error");
     location.replace(pageUrl("client/home/home.html"));
     return;
   }
@@ -36,9 +36,9 @@ function renderInfo() {
   $("detailRating").textContent = movie.imdb ?? "—";
 
   $("metaCategory").textContent = movie.category ? movie.category.name : "—";
-  $("metaRuntime").textContent = movie.run_time_min ? `${movie.run_time_min} dəq` : "—";
+  $("metaRuntime").textContent = movie.run_time_min ? `${movie.run_time_min} min` : "—";
   $("metaImdb").textContent = movie.imdb ?? "—";
-  $("metaAdult").textContent = movie.adult ? "Bəli" : "Xeyr";
+  $("metaAdult").textContent = movie.adult ? "Yes" : "No";
   $("metaAdded").textContent = movie.created_at
     ? new Date(movie.created_at).toLocaleDateString()
     : "—";
@@ -87,7 +87,7 @@ async function setupFavourite() {
       isOn = !isOn;
       paint();
     } catch (err) {
-      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+      toast(err.message || "Operation failed.", "error");
     } finally {
       btn.disabled = false;
     }
@@ -173,7 +173,7 @@ function setupComments() {
       input.value = "";
       reload();
     } catch (err) {
-      toast(err.message || "Şərh göndərilmədi.", "error");
+      toast(err.message || "Comment could not be sent.", "error");
     }
   });
 
