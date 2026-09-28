@@ -53,18 +53,18 @@ function setupCategoryModal() {
   }
 
   async function loadCategories() {
-    tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Yüklənir…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Loading...</td></tr>`;
     try {
       const categories = await api.admin.categories();
       tableBody.innerHTML = "";
       if (!categories || !categories.length) {
-        tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Hələ kateqoriya yoxdur.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">No categories yet.</td></tr>`;
         return;
       }
       categories.forEach((c) => tableBody.appendChild(buildRow(c.id, c.name)));
     } catch (err) {
-      tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Kateqoriyalar yüklənmədi.</td></tr>`;
-      toast(err.message || "Kateqoriyalar yüklənmədi.", "error");
+      tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Failed to load categories.</td></tr>`;
+      toast(err.message || "Failed to load categories.", "error");
     }
   }
 
@@ -92,17 +92,18 @@ function setupCategoryModal() {
 
     if (e.target.closest(".table-btn--delete")) {
       const name = row.querySelector(".cell-name").textContent;
-      confirmDialog(`"${name}" kateqoriyasını silmək istədiyinizə əminsiniz?`, {
-        confirmLabel: "Sil",
+      confirmDialog(`Are you sure you want to delete the "${name}" category?`, {
+        confirmLabel: "Delete",
+        cancelLabel: "Cancel" ,
         danger: true,
       }).then(async (confirmed) => {
         if (!confirmed) return;
         try {
           await api.admin.removeCategory(row.dataset.id);
           row.remove();
-          toast("Kateqoriya silindi.", "success");
+          toast("Category deleted successfully.", "success");
         } catch (err) {
-          toast(err.message || "Kateqoriya silinmədi.", "error");
+          toast(err.message || "Failed to delete category.", "error");
         }
       });
     }
@@ -116,21 +117,21 @@ function setupCategoryModal() {
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = editingRow ? "Yenilənir…" : "Əlavə olunur…";
+    submitBtn.textContent = editingRow ? "Updating..." : "Adding...";
 
     try {
       if (editingRow) {
         await api.admin.updateCategory(editingRow.dataset.id, name);
         editingRow.querySelector(".cell-name").textContent = name;
-        toast("Kateqoriya yeniləndi.", "success");
+        toast("Category updated successfully.", "success");
       } else {
         const created = await api.admin.createCategory(name);
         tableBody.appendChild(buildRow(created.id, created.name));
-        toast("Kateqoriya əlavə olundu.", "success");
+        toast("Category added successfully.", "success");
       }
       closeModal();
     } catch (err) {
-      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+      toast(err.message || "Operation failed.", "error");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;

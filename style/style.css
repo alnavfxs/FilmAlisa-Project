@@ -22,9 +22,9 @@ body {
   background-image:
     linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.15) 0%,
       rgba(0, 0, 0, 0.35) 50%,
-      rgba(0, 0, 0, 0.75) 100%
+      rgba(0, 0, 0, 5) 100%
     ),
     url("../assets/images/backgroundimg.jpg");
   background-size: cover;
@@ -45,7 +45,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30px 50px;
+  padding: 30px 12% 0 12%; 
   position: relative;
   z-index: 2;
 }
@@ -250,7 +250,7 @@ body {
   width: 100%;
   background-color: #000000;
   box-sizing: border-box;
-  padding: 100px 48px;
+  padding: 100px 12%; 
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -277,22 +277,26 @@ body {
   position: relative;
   flex-shrink: 0;
   width: 720px;
+  overflow: hidden;
 }
 
 .landing-tv__image {
   width: 100%;
   height: auto;
   display: block;
+  position: relative;
+  z-index: 2;
 }
 
 .landing-tv__video {
   position: absolute;
-  top: 8%;
-  left: 6%;
-  width: 88%;
-  height: 68%;
-  pointer-events: none;
   z-index: 1;
+  top: 15%;
+  left: 10%;
+  width: 80%;
+  height: 60%;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 /* --- DEVICES BÖLMƏSİ --- */
@@ -301,7 +305,7 @@ body {
   background-color: #000000;
   border-top: 8px solid #232326;
   box-sizing: border-box;
-  padding: 100px 48px;
+  padding: 100px 12%; 
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -338,6 +342,8 @@ body {
   width: 100%;
   height: auto;
   display: block;
+  position: relative;
+  z-index: 2;
 }
 
 .landing-devices__video {
@@ -346,6 +352,11 @@ body {
   background-color: #000000;
   pointer-events: none;
   z-index: 1;
+
+  top: 10%;
+  left: 17%;
+  width: 63%;
+  height: 47%;
 }
 
 .landing-devices__video--tablet {
@@ -370,7 +381,7 @@ body {
   background-color: #000000;
   border-top: 8px solid #232326;
   box-sizing: border-box;
-  padding: 100px 48px;
+  padding: 100px 12%; 
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -460,7 +471,6 @@ body {
   transition: border-color 0.2s ease;
 }
 
-/* Siçanı xanaların üzərinə gətirdikdə çərçivə bənövşəyi olsun */
 .landing-contact__input:hover,
 .landing-contact__textarea:hover {
   border-color: var(--hover-color);
@@ -511,13 +521,13 @@ body {
 
 .landing-faq__container {
   width: 100%;
-  max-width: 800px; /* Sətirlərin çox uzun olmaması üçün limit */
+  max-width: 1100px; 
 }
 
 .landing-faq__title {
   font-size: var(--fs-s48);
   font-weight: var(--fw-bold);
-  color: var(--white-color);
+  color: var(--white-color, #ffffff);
   margin: 0 0 40px 0;
   text-align: center;
 }
@@ -525,30 +535,32 @@ body {
 .landing-faq__item {
   background-color: #2d2d2d;
   margin-bottom: 8px;
-  color: var(--white-color);
+  color: var(--white-color, #ffffff);
   transition: background-color 0.2s ease;
-}
-
-.landing-faq__item:hover {
-  background-color: #414141; /* Üzərinə gələndə rəngin bir az açılması */
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .landing-faq__question {
   padding: 24px;
   font-size: var(--fs-s24);
   cursor: pointer;
-  list-style: none; /* Standart HTML oxunu gizlədir */
+  list-style: none;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #2d2d2d;
+  transition: background-color 0.2s ease;
 }
 
-/* Safari brauzeri üçün standart oxu gizlətmək */
+.landing-faq__question:hover {
+  background-color: #414141;
+}
+
 .landing-faq__question::-webkit-details-marker {
   display: none;
 }
 
-/* Sualın sağına + işarəsi əlavə edirik */
 .landing-faq__question::after {
   content: "+";
   font-size: 40px;
@@ -557,17 +569,35 @@ body {
   transition: transform 0.3s ease;
 }
 
-/* Sual kliklənib açılanda + işarəsi 45 dərəcə fırlanıb X (çarpaz) olur */
 details[open] .landing-faq__question::after {
   transform: rotate(45deg);
 }
 
 .landing-faq__answer {
-  background-color: #282828;
+  background-color: #414141;
   padding: 24px;
   font-size: var(--fs-s20);
   line-height: 1.5;
-  color: #d4d4d8;
+  color: #ffffff;
+}
+
+details[open] .landing-faq__answer {
+  animation: slideDown 0.35s ease-out forwards;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  100% {
+    opacity: 1;
+    max-height: 1000px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
 }
 
 /* --- FOOTER BÖLMƏSİ --- */
@@ -583,14 +613,14 @@ details[open] .landing-faq__question::after {
 
 .landing-footer__container {
   width: 100%;
-  max-width: 1000px; /* Linklərin ortada səliqəli dayanması üçün limit */
+  max-width: 1000px; 
 }
 
 .landing-footer__links {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 bərabər sütun */
+  grid-template-columns: repeat(4, 1fr); 
   gap: 16px;
-  list-style: none; /* Yanındakı nöqtələri gizlədirik */
+  list-style: none; 
   padding: 0;
   margin: 0;
 }
@@ -600,13 +630,13 @@ details[open] .landing-faq__question::after {
 }
 
 .landing-footer__link {
-  color: #a3a3a3; /* Şəkildəki kimi tünd boz rəng */
+  color: #a3a3a3;
   font-size: var(--fs-s14);
-  text-decoration: underline; /* Altından xətt */
+  text-decoration: underline; 
   transition: color 0.2s ease;
 }
 
-/* Siçanı üzərinə gətirəndə rəngi biraz açılsın (istəyə bağlı, UX üçün yaxşıdır) */
+
 .landing-footer__link:hover {
   color: #ffffff;
 }
@@ -617,7 +647,6 @@ details[open] .landing-faq__question::after {
 
 /* --- PLANŞET EKRANLARI ÜÇÜN (900px-ə qədər) --- */
 @media only screen and (max-width: 900px) {
-  /* TV və Kids bölmələri alt-alta düşür */
   .landing-tv,
   .landing-kids {
     flex-direction: column;
@@ -625,21 +654,19 @@ details[open] .landing-faq__question::after {
     padding: 60px 24px;
   }
 
-  /* Devices bölməsi alt-alta və tərsinə (şəkil üstdə, mətn altdə) düşür */
+
   .landing-devices {
     flex-direction: column-reverse;
     text-align: center;
     padding: 60px 24px;
   }
 
-  /* Media elementləri tam ekran genişliyini alır */
   .landing-tv__media,
   .landing-devices__media,
   .landing-kids__media {
     width: 100%;
   }
 
-  /* Footer linkləri 3 sütuna keçir */
   .landing-footer__links {
     grid-template-columns: repeat(3, 1fr);
   }

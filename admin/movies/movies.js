@@ -24,25 +24,15 @@ function setupMovieModal() {
   const adultInput = document.querySelector("#movieAdult");
   const previewImg = document.querySelector("#moviePreviewImg");
 
-  // --- Silme Modalı İçin Gerekli Değişkenler ---
-  const deleteModal = document.querySelector("#deleteModal");
-  const closeDeleteBtn = document.querySelector("#closeDeleteModalBtn");
-  const cancelDeleteBtn = document.querySelector("#cancelDeleteBtn");
-  const confirmDeleteBtn = document.querySelector("#confirmDeleteBtn");
-  let rowToDelete = null;
-
   const placeholderPoster =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='296' viewBox='0 0 200 296'%3E%3Crect width='200' height='296' rx='10' fill='%231c1c24'/%3E%3Cpath d='M70 118h60v60H70z' fill='%232c2c3a'/%3E%3C/svg%3E";
 
-  // Yalnız edit üçün lazım olan id burada saxlanılır — cədvəldə görünmür,
-  // hər sətirdə isə yalnız görüntü üçün lazım olan yüngül sahələr var.
   let editingId = null;
 
   function updatePreview() {
     previewImg.src = coverInput.value.trim() || placeholderPoster;
   }
 
-  // category/actors seçimləri — bir dəfə yüklənir, modal hər açılanda təzədən çəkilmir
   async function loadOptions() {
     try {
       const [categories, actors] = await Promise.all([
@@ -51,16 +41,20 @@ function setupMovieModal() {
       ]);
       categoryInput.innerHTML =
         '<option value="" disabled selected>category</option>' +
-        categories.map((c) => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+        categories
+          .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`)
+          .join("");
       actorsInput.innerHTML = actors
-        .map((a) => `<option value="${a.id}">${esc(a.name)} ${esc(a.surname)}</option>`)
+        .map(
+          (a) =>
+            `<option value="${a.id}">${esc(a.name)} ${esc(a.surname)}</option>`,
+        )
         .join("");
     } catch (err) {
-      toast(err.message || "Kateqoriya/aktyor siyahısı yüklənmədi.", "error");
+      toast(err.message || "Failed to load category/actor lists.", "error");
     }
   }
 
-  // Serverdən gələn (nested) obyekti formaya doldurur
   function fillForm(data) {
     titleInput.value = data.title || "";
     overviewInput.value = data.overview || "";
@@ -86,7 +80,6 @@ function setupMovieModal() {
     modal.classList.add("active");
   }
 
-  // Edit-ə basanda tam məlumat YALNIZ bu anda serverdən çəkilir (id burada işə düşür)
   async function openEditModal(id, triggerBtn) {
     const originalIcon = triggerBtn.innerHTML;
     triggerBtn.disabled = true;
@@ -100,7 +93,7 @@ function setupMovieModal() {
       updatePreview();
       modal.classList.add("active");
     } catch (err) {
-      toast(err.message || "Film məlumatı yüklənmədi.", "error");
+      toast(err.message || "Failed to load movie data.", "error");
     } finally {
       triggerBtn.disabled = false;
       triggerBtn.innerHTML = originalIcon;
@@ -114,40 +107,6 @@ function setupMovieModal() {
     updatePreview();
   }
 
-  // --- Silme Modalı Fonksiyonları ---
-  function closeDeleteModal() {
-    deleteModal.classList.remove("active");
-    rowToDelete = null;
-  }
-
-  closeDeleteBtn.addEventListener("click", closeDeleteModal);
-  cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-
-  confirmDeleteBtn.addEventListener("click", async () => {
-    if (!rowToDelete) return;
-    const id = rowToDelete.dataset.id;
-
-    confirmDeleteBtn.disabled = true;
-    try {
-      await api.admin.removeMovie(id);
-      rowToDelete.remove();
-      toast("Film silindi.", "success");
-      closeDeleteModal();
-    } catch (err) {
-      toast(err.message || "Film silinmədi.", "error");
-    } finally {
-      confirmDeleteBtn.disabled = false;
-    }
-  });
-
-  // Silme modalını dışarı tıklayarak kapatma
-  deleteModal.addEventListener("click", (e) => {
-    if (e.target === deleteModal) closeDeleteModal();
-  });
-  // ------------------------------------
-
-  // /admin/movies (list) yalnız bu sahələri qaytarır — category/actors YOXDUR,
-  // onlar üçün Edit-ə basanda /admin/movies/:id çağırılır.
   function buildRow(id, data) {
     const row = document.createElement("tr");
     row.dataset.id = id;
@@ -169,18 +128,20 @@ function setupMovieModal() {
   }
 
   async function loadMovies() {
-    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Yüklənir…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading...</td></tr>`;
     try {
       const movies = await api.admin.movies();
       tableBody.innerHTML = "";
       if (!movies || !movies.length) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Hələ film əlavə olunmayıb.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">No movies added yet.</td></tr>`;
         return;
       }
-      movies.forEach((movie) => tableBody.appendChild(buildRow(movie.id, movie)));
+      movies.forEach((movie) =>
+        tableBody.appendChild(buildRow(movie.id, movie)),
+      );
     } catch (err) {
-      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Filmlər yüklənmədi.</td></tr>`;
-      toast(err.message || "Filmlər yüklənmədi.", "error");
+      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Failed to load movies.</td></tr>`;
+      toast(err.message || "Failed to load movies.", "error");
     }
   }
 
@@ -193,11 +154,10 @@ function setupMovieModal() {
     if (e.target === modal) closeModal();
   });
 
-  // Close on Escape (Her iki modal için de geçerli kıldım)
+  // Close on Escape
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (modal.classList.contains("active")) closeModal();
-      if (deleteModal.classList.contains("active")) closeDeleteModal();
     }
   });
 
@@ -213,16 +173,35 @@ function setupMovieModal() {
       openEditModal(row.dataset.id, editBtn);
     }
 
+    // Kategorilerdeki global confirmDialog() fonksiyonu ile aynı yapı
     if (deleteBtn) {
-      rowToDelete = row;
-      deleteModal.classList.add("active");
+      const movieTitle = row.querySelector(".cell-title").textContent;
+      confirmDialog(
+        `Are you sure you want to delete the "${movieTitle}" movie?`,
+        {
+          confirmLabel: "Delete",
+          cancelLabel: "Cancel",
+          danger: true,
+        },
+      ).then(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await api.admin.removeMovie(row.dataset.id);
+          row.remove();
+          toast("Movie deleted successfully.", "success");
+        } catch (err) {
+          toast(err.message || "Failed to delete movie.", "error");
+        }
+      });
     }
   });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const actorIds = Array.from(actorsInput.selectedOptions).map((o) => Number(o.value));
+    const actorIds = Array.from(actorsInput.selectedOptions).map((o) =>
+      Number(o.value),
+    );
 
     const data = {
       title: titleInput.value.trim(),
@@ -241,22 +220,22 @@ function setupMovieModal() {
 
     const originalLabel = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = editingId ? "Yenilənir…" : "Əlavə olunur…";
+    submitBtn.textContent = editingId ? "Updating..." : "Adding...";
 
     try {
       if (editingId) {
         await api.admin.updateMovie(editingId, data);
         const row = tableBody.querySelector(`tr[data-id="${editingId}"]`);
         if (row) row.replaceWith(buildRow(editingId, data));
-        toast("Film yeniləndi.", "success");
+        toast("Movie updated successfully.", "success");
       } else {
         const created = await api.admin.createMovie(data);
         tableBody.appendChild(buildRow(created.id, created));
-        toast("Film əlavə olundu.", "success");
+        toast("Movie added successfully.", "success");
       }
       closeModal();
     } catch (err) {
-      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+      toast(err.message || "Operation failed.", "error");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
