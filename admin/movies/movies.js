@@ -56,7 +56,7 @@ function setupMovieModal() {
         .map((a) => `<option value="${a.id}">${esc(a.name)} ${esc(a.surname)}</option>`)
         .join("");
     } catch (err) {
-      toast(err.message || "Kateqoriya/aktyor siyahısı yüklənmədi.", "error");
+      toast(err.message || "Failed to load categories/actors.", "error");
     }
   }
 
@@ -100,7 +100,7 @@ function setupMovieModal() {
       updatePreview();
       modal.classList.add("active");
     } catch (err) {
-      toast(err.message || "Film məlumatı yüklənmədi.", "error");
+      toast(err.message || "Failed to load movie details.", "error");
     } finally {
       triggerBtn.disabled = false;
       triggerBtn.innerHTML = originalIcon;
@@ -131,10 +131,10 @@ function setupMovieModal() {
     try {
       await api.admin.removeMovie(id);
       rowToDelete.remove();
-      toast("Film silindi.", "success");
+      toast("Movie deleted.", "success");
       closeDeleteModal();
     } catch (err) {
-      toast(err.message || "Film silinmədi.", "error");
+      toast(err.message || "Failed to delete movie.", "error");
     } finally {
       confirmDeleteBtn.disabled = false;
     }
@@ -169,18 +169,18 @@ function setupMovieModal() {
   }
 
   async function loadMovies() {
-    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Yüklənir…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading…</td></tr>`;
     try {
       const movies = await api.admin.movies();
       tableBody.innerHTML = "";
       if (!movies || !movies.length) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Hələ film əlavə olunmayıb.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">No movies added yet.</td></tr>`;
         return;
       }
       movies.forEach((movie) => tableBody.appendChild(buildRow(movie.id, movie)));
     } catch (err) {
-      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Filmlər yüklənmədi.</td></tr>`;
-      toast(err.message || "Filmlər yüklənmədi.", "error");
+      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Failed to load movies.</td></tr>`;
+      toast(err.message || "Failed to load movies.", "error");
     }
   }
 
@@ -241,22 +241,22 @@ function setupMovieModal() {
 
     const originalLabel = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = editingId ? "Yenilənir…" : "Əlavə olunur…";
+    submitBtn.textContent = editingId ? "Updating…" : "Adding…";
 
     try {
       if (editingId) {
         await api.admin.updateMovie(editingId, data);
         const row = tableBody.querySelector(`tr[data-id="${editingId}"]`);
         if (row) row.replaceWith(buildRow(editingId, data));
-        toast("Film yeniləndi.", "success");
+        toast("Movie updated.", "success");
       } else {
         const created = await api.admin.createMovie(data);
         tableBody.appendChild(buildRow(created.id, created));
-        toast("Film əlavə olundu.", "success");
+        toast("Movie added.", "success");
       }
       closeModal();
     } catch (err) {
-      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+      toast(err.message || "Operation failed.", "error");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;

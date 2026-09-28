@@ -114,8 +114,8 @@ function setupLogout(role, selector) {
   logoutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const confirmed = await confirmDialog(
-      "Çıxış etmək istədiyinizə əminsiniz?",
-      { confirmLabel: "Çıxış et", danger: true },
+      "Are you sure you want to log out?",
+      { confirmLabel: "Log out", danger: true },
     );
     if (confirmed) logout(role);
   });

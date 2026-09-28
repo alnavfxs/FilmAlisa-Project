@@ -26,6 +26,6 @@ async function loadDashboard() {
       const el = document.querySelector(selector);
       if (el) el.textContent = "—";
     });
-    toast(err.message || "Dashboard məlumatı yüklənmədi.", "error");
+    toast(err.message || "Failed to load dashboard data.", "error");
   }
 }

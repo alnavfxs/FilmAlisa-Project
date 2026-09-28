@@ -39,18 +39,18 @@ function setupCommentsTable() {
   }
 
   async function loadComments() {
-    tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Yüklənir…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Loading…</td></tr>`;
     try {
       const comments = await api.admin.comments();
       tableBody.innerHTML = "";
       if (!comments || !comments.length) {
-        tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Hələ şərh yoxdur.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">No comments yet.</td></tr>`;
         return;
       }
       comments.forEach((c) => tableBody.appendChild(buildRow(c)));
     } catch (err) {
-      tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Şərhlər yüklənmədi.</td></tr>`;
-      toast(err.message || "Şərhlər yüklənmədi.", "error");
+      tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Failed to load comments.</td></tr>`;
+      toast(err.message || "Failed to load comments.", "error");
     }
   }
 
@@ -77,10 +77,10 @@ function setupCommentsTable() {
     try {
       await api.admin.removeComment(movieId, id);
       rowToDelete.remove();
-      toast("Şərh silindi.", "success");
+      toast("Comment deleted.", "success");
       closeModal();
     } catch (err) {
-      toast(err.message || "Şərh silinmədi.", "error");
+      toast(err.message || "Failed to delete comment.", "error");
     } finally {
       confirmBtn.disabled = false;
     }

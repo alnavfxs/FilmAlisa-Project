@@ -23,25 +23,25 @@ loginForm.addEventListener("submit", async (e) => {
   const identifier = usernameInput.value.trim(); // sahənin adı "username"-dir, dəyər e-poçtdur
   const password = passwordInput.value;
   if (!identifier || !password) {
-    errorBox.textContent = "Zəhmət olmasa email və şifrəni daxil edin.";
+    errorBox.textContent = "Please enter your email and password.";
     return;
   }
 
   if (identifier.toLowerCase() !== ALLOWED_ADMIN_EMAIL) {
-    errorBox.textContent = "Bu panelə yalnız admin hesabı daxil ola bilər.";
+    errorBox.textContent = "Only admin accounts can access this panel.";
     return;
   }
 
   submitBtn.disabled = true;
   const originalLabel = submitBtn.textContent;
-  submitBtn.textContent = "Giriş edilir…";
+  submitBtn.textContent = "Logging in…";
 
   try {
     await api.adminLogin(identifier, password);
     location.href = pageUrl("admin/dashboard/dashboard.html");
   } catch (err) {
     errorBox.textContent = err.message;
-    toast(err.message || "Giriş uğursuz oldu.", "error");
+    toast(err.message || "Login failed.", "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = originalLabel;

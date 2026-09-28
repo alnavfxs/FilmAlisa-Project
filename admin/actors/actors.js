@@ -44,20 +44,20 @@ function setupActorsCRUD() {
   }
 
   async function loadActors() {
-    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Yüklənir…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Loading…</td></tr>`;
     try {
       const actors = await api.admin.actors();
       tableBody.innerHTML = "";
       if (!actors || !actors.length) {
-        tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Hələ aktyor yoxdur.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">No actors yet.</td></tr>`;
         return;
       }
       actors.forEach((a) =>
         tableBody.appendChild(buildRow(a.id, a.name, a.surname, a.img_url)),
       );
     } catch (err) {
-      tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Aktyorlar yüklənmədi.</td></tr>`;
-      toast(err.message || "Aktyorlar yüklənmədi.", "error");
+      tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Failed to load actors.</td></tr>`;
+      toast(err.message || "Failed to load actors.", "error");
     }
   }
 
@@ -104,17 +104,17 @@ function setupActorsCRUD() {
 
     if (e.target.closest(".table-btn--delete")) {
       const name = row.querySelector(".cell-name").textContent;
-      confirmDialog(`"${name}" adlı aktyoru silmək istədiyinizə əminsiniz?`, {
-        confirmLabel: "Sil",
+      confirmDialog(`Are you sure you want to delete the actor "${name}"?`, {
+        confirmLabel: "Delete",
         danger: true,
       }).then(async (confirmed) => {
         if (!confirmed) return;
         try {
           await api.admin.removeActor(row.dataset.id);
           row.remove();
-          toast("Aktyor silindi.", "success");
+          toast("Actor deleted.", "success");
         } catch (err) {
-          toast(err.message || "Aktyor silinmədi.", "error");
+          toast(err.message || "Failed to delete actor.", "error");
         }
       });
     }
@@ -133,7 +133,7 @@ function setupActorsCRUD() {
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = editingRow ? "Yenilənir…" : "Əlavə olunur…";
+    submitBtn.textContent = editingRow ? "Updating…" : "Adding…";
 
     try {
       if (editingRow) {
@@ -142,17 +142,17 @@ function setupActorsCRUD() {
         editingRow.querySelector(".cell-surname").textContent = body.surname;
         editingRow.querySelector("img").src = body.img_url;
         editingRow.querySelector("img").alt = `${body.name} ${body.surname}`;
-        toast("Aktyor yeniləndi.", "success");
+        toast("Actor updated.", "success");
       } else {
         const created = await api.admin.createActor(body);
         tableBody.appendChild(
           buildRow(created.id, created.name, created.surname, created.img_url),
         );
-        toast("Aktyor əlavə olundu.", "success");
+        toast("Actor added.", "success");
       }
       closeModal();
     } catch (err) {
-      toast(err.message || "Əməliyyat uğursuz oldu.", "error");
+      toast(err.message || "Operation failed.", "error");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;

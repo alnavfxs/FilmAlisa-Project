@@ -31,18 +31,18 @@ function setupContactTable() {
   }
 
   async function loadContacts() {
-    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Yüklənir…</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading…</td></tr>`;
     try {
       const contacts = await api.admin.contacts();
       tableBody.innerHTML = "";
       if (!contacts || !contacts.length) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Hələ müraciət yoxdur.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">No messages yet.</td></tr>`;
         return;
       }
       contacts.forEach((c) => tableBody.appendChild(buildRow(c)));
     } catch (err) {
-      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Müraciətlər yüklənmədi.</td></tr>`;
-      toast(err.message || "Müraciətlər yüklənmədi.", "error");
+      tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Failed to load messages.</td></tr>`;
+      toast(err.message || "Failed to load messages.", "error");
     }
   }
 
@@ -69,10 +69,10 @@ function setupContactTable() {
     try {
       await api.admin.removeContact(id);
       rowToDelete.remove();
-      toast("Müraciət silindi.", "success");
+      toast("Message deleted.", "success");
       closeModal();
     } catch (err) {
-      toast(err.message || "Müraciət silinmədi.", "error");
+      toast(err.message || "Failed to delete message.", "error");
     } finally {
       confirmBtn.disabled = false;
     }

@@ -39,8 +39,13 @@
 
     const profile = getProfile("client") || {};
     nameEl.textContent = profile.full_name || profile.email || "Account";
-    avatarEl.src = profile.img_url || defaultAvatar;
+    avatarEl.src = resolveAvatar(profile) || defaultAvatar;
   }
+
+  // Şəkil linki sınıqdırsa default ikona qayıt
+  avatarEl.addEventListener("error", () => {
+    if (avatarEl.getAttribute("src") !== defaultAvatar) avatarEl.src = defaultAvatar;
+  });
 
   trigger.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -63,17 +68,17 @@
 
     const confirmed =
       typeof confirmDialog === "function"
-        ? await confirmDialog("Çıxış etmək istədiyinizə əminsiniz?", {
-            confirmLabel: "Çıxış et",
+        ? await confirmDialog("Are you sure you want to log out?", {
+            confirmLabel: "Log out",
             danger: true,
           })
-        : window.confirm("Çıxış etmək istədiyinizə əminsiniz?");
+        : window.confirm("Are you sure you want to log out?");
     if (!confirmed) return;
 
     // Səhifəni yeniləmədən: sessiyanı sil → dərhal "Sign in" görünsün
     logout("client", false);
     renderAuthState();
-    toast("Çıxış edildi.", "success");
+    toast("Logged out successfully.", "success");
   });
 
   // Geri düyməsi ilə (bfcache) qayıdanda da düzgün vəziyyət göstərilsin
@@ -110,17 +115,17 @@
       reason: reasonInput.value.trim(),
     };
     if (!body.full_name || !body.email || !body.reason) {
-      toast("Bütün sahələri doldurun.", "error");
+      toast("Please fill in all fields.", "error");
       return;
     }
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = "Göndərilir…";
+    submitBtn.textContent = "Sending…";
 
     try {
       await api.sendContact(body);
-      toast("Müraciətiniz göndərildi. Təşəkkür edirik!", "success");
+      toast("Your message has been sent. Thank you!", "success");
       reasonInput.value = "";
       if (!profile) {
         nameInput.value = "";
@@ -129,9 +134,9 @@
     } catch (err) {
       // Backend bu endpoint üçün token tələb edir
       if (err.status === 401 || err.status === 403) {
-        toast("Müraciət göndərmək üçün əvvəlcə daxil olun.", "error");
+        toast("Please log in first to send a message.", "error");
       } else {
-        toast(err.message || "Müraciət göndərilmədi.", "error");
+        toast(err.message || "Message could not be sent.", "error");
       }
     } finally {
       submitBtn.disabled = false;

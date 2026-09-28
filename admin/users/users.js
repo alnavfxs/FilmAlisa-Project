@@ -6,13 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadUsers() {
   const tableBody = document.querySelector("#usersTableBody");
-  tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Yüklənir…</td></tr>`;
+  tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Loading…</td></tr>`;
 
   try {
     const users = await api.admin.users();
     tableBody.innerHTML = "";
     if (!users || !users.length) {
-      tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Hələ istifadəçi yoxdur.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">No users yet.</td></tr>`;
       return;
     }
     users.forEach((user) => {
@@ -27,7 +27,7 @@ async function loadUsers() {
       tableBody.appendChild(row);
     });
   } catch (err) {
-    tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">İstifadəçilər yüklənmədi.</td></tr>`;
-    toast(err.message || "İstifadəçilər yüklənmədi.", "error");
+    tableBody.innerHTML = `<tr><td colspan="4" class="table-empty">Failed to load users.</td></tr>`;
+    toast(err.message || "Failed to load users.", "error");
   }
 }

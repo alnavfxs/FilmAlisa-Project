@@ -14,13 +14,13 @@ function shuffle(arr) {
 
 async function init() {
   const content = document.getElementById("content");
-  content.innerHTML = `<p class="empty-state">Yüklənir…</p>`;
+  content.innerHTML = `<p class="empty-state">Loading…</p>`;
 
   let categories = [];
   try {
     categories = await api.categories();
   } catch (err) {
-    content.innerHTML = emptyState(err.message || "Filmlər yüklənmədi.");
+    content.innerHTML = emptyState(err.message || "Failed to load movies.");
     return;
   }
 
@@ -29,7 +29,7 @@ async function init() {
     .map((c) => Object.assign({}, c, { movies: shuffle(c.movies) }));
 
   if (!withMovies.length) {
-    content.innerHTML = emptyState("Hələ film əlavə olunmayıb.");
+    content.innerHTML = emptyState("No movies added yet.");
     document.getElementById("hero").style.display = "none";
     return;
   }
