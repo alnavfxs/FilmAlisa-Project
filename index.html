@@ -117,15 +117,33 @@
       <section class="landing-devices">
         <div class="landing-devices__media">
           <img
-            src="https://filmalisa-green.vercel.app/Assets/images/loading-tv-2.webp"
+            src="./assets/images/tabletmobile.svg"
             alt="Devices"
             class="landing-devices__image"
           />
-          <img
-            src="https://filmalisa-green.vercel.app/Assets/images/loading-tv-2.gif"
-            alt="Devices"
-            class="landing-devices__video"
-          />
+          <div class="screen screen--imac" aria-hidden="true">
+            <div class="screen__hero"></div>
+            <div class="screen__shade"></div>
+            <span class="imac-live">LIVE</span>
+            <div class="imac-play"><i></i></div>
+            <div class="imac-caption">Godzilla vs. Kong</div>
+            <div class="imac-progress"><b></b></div>
+            <!-- Kompüter ekranındakı əvvəlki animasiya (GIF). Yüklənməsə, altındakı CSS animasiya görünür -->
+            <img
+              src="https://filmalisa-green.vercel.app/Assets/images/loading-tv-2.gif"
+              alt=""
+              class="screen__gif"
+              onerror="this.remove()"
+            />
+          </div>
+          <div class="screen screen--tablet" aria-hidden="true">
+            <div class="slider"><img src="./assets/images/justice-league.svg" alt="" /><img src="./assets/images/mortal-kombat.svg" alt="" /><img src="./assets/images/the-courier.svg" alt="" /><img src="./assets/images/wonder-woman.svg" alt="" /><img src="./assets/images/lost-in-space-poster.svg" alt="" /></div>
+            <div class="dots"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="screen screen--phone" aria-hidden="true">
+            <div class="fader"><img src="./assets/images/justice-league.svg" alt="" /><img src="./assets/images/mortal-kombat.svg" alt="" /><img src="./assets/images/the-courier.svg" alt="" /><img src="./assets/images/wonder-woman.svg" alt="" /></div>
+            <div class="phone-heart">&#10084;</div>
+          </div>
         </div>
 
         <div class="landing-devices__content">
