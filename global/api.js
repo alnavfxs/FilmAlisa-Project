@@ -50,6 +50,24 @@ function getProfile(role = "client") {
   }
 }
 
+/* Profil şəkli brauzerin yaddaşında saxlanılır (email-ə görə) —
+   logout/login etsən də, server img_url saxlamasa da itmir. */
+const avatarKey = (email) => "filmalisa-avatar:" + String(email || "").toLowerCase();
+const getLocalAvatar = (email) => localStorage.getItem(avatarKey(email)) || "";
+function setLocalAvatar(email, dataUrl) {
+  try {
+    if (dataUrl) localStorage.setItem(avatarKey(email), dataUrl);
+    else localStorage.removeItem(avatarKey(email));
+  } catch (e) {
+    console.error("[avatar] yaddaşa yazıla bilmədi:", e);
+  }
+}
+/* Header/landing üçün: yerli şəkil → server img_url → boş */
+function resolveAvatar(profile) {
+  if (!profile) return "";
+  return getLocalAvatar(profile.email) || profile.img_url || "";
+}
+
 function saveSession(role, data) {
   localStorage.setItem(TOKEN_KEY[role], data.tokens.access_token);
   localStorage.setItem(PROFILE_KEY[role], JSON.stringify(data.profile));
@@ -99,7 +117,7 @@ function toast(message, type = "error") {
   el.innerHTML =
     '<span class="toast__icon" aria-hidden="true"></span>' +
     '<span class="toast__message"></span>' +
-    '<button class="toast__close" type="button" aria-label="Bağla">&times;</button>';
+    '<button class="toast__close" type="button" aria-label="Close">&times;</button>';
   el.querySelector(".toast__message").textContent = message;
 
   const remove = () => el.remove();
@@ -110,11 +128,11 @@ function toast(message, type = "error") {
 }
 
 /* Dizaynlı təsdiq pəncərəsi — window.confirm() əvəzinə.
-   confirmDialog("Silmək istədiyinizə əminsiniz?", { danger: true }).then(ok => ...) */
+   confirmDialog("Are you sure you want to delete this?", { danger: true }).then(ok => ...) */
 function confirmDialog(message, opts = {}) {
   const {
-    confirmLabel = "Təsdiqlə",
-    cancelLabel = "Ləğv et",
+    confirmLabel = "Confirm",
+    cancelLabel = "Cancel",
     danger = false,
   } = opts;
 
@@ -187,8 +205,8 @@ async function apiRequest(path, { method = "GET", body, role, auth = true } = {}
     console.error(`[Filmalisa API] ✕ ${method} ${url} — fetch failed:`, networkErr);
     const hint =
       location.protocol === "file:"
-        ? "Server-ə qoşulmadı. Faylı birbaşa (file://) yox, local server (məs. VS Code Live Server) ilə açın."
-        : "Server-ə qoşulmadı. İnternetinizi yoxlayın və yenidən cəhd edin.";
+        ? "Could not connect to the server. Open the file through a local server (e.g. VS Code Live Server), not file://."
+        : "Could not connect to the server. Check your internet connection and try again.";
     throw new ApiError(hint, 0);
   }
   console.log(`[Filmalisa API] ← ${res.status} ${method} ${url}`);
@@ -284,8 +302,8 @@ document.addEventListener("DOMContentLoaded", () => {
   btn.addEventListener("click", async (e) => {
     e.preventDefault();
     const confirmed = await confirmDialog(
-      "Çıxış etmək istədiyinizə əminsiniz?",
-      { confirmLabel: "Çıxış et", danger: true },
+      "Are you sure you want to log out?",
+      { confirmLabel: "Log out", danger: true },
     );
     if (confirmed) logout("client");
   });

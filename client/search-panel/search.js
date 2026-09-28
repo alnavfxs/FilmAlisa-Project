@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderResults(list) {
     resultsGrid.innerHTML = list.length
       ? list.map(cardHtml).join("")
-      : emptyState("Nəticə tapılmadı.");
+      : emptyState("No results found.");
     initMovieCards(resultsGrid);
   }
 
@@ -27,12 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadMovies() {
-    resultsGrid.innerHTML = `<p class="empty-state">Yüklənir…</p>`;
+    resultsGrid.innerHTML = `<p class="empty-state">Loading…</p>`;
     try {
       allMovies = await api.movies();
       renderResults(allMovies);
     } catch (err) {
-      resultsGrid.innerHTML = emptyState(err.message || "Filmlər yüklənmədi.");
+      resultsGrid.innerHTML = emptyState(err.message || "Failed to load movies.");
     }
   }
 
