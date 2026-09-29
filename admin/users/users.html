@@ -7,6 +7,7 @@
     <title>Users — Filmalisa Admin</title>
     <link rel="stylesheet" href="./users.css" />
     <link rel="stylesheet" href="../../global/admin-modal.css" />
+    <link rel="stylesheet" href="../../global/admin-pagination.css" />
   </head>
   <body>
     <div class="container">
@@ -39,12 +40,14 @@
               <!-- Məlumatlar JS ilə gələcək -->
             </tbody>
           </table>
+          <div class="table-pager d-none" id="usersPager"></div>
         </main>
       </div>
     </div>
 
     <script src="../../global/api.js?v=4"></script>
     <script src="../../global/layout.js?v=4"></script>
+    <script src="../../global/admin-pagination.js"></script>
     <script src="./users.js"></script>
   </body>
 </html>

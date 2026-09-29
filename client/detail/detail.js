@@ -94,17 +94,84 @@ async function setupFavourite() {
   });
 }
 
-/* Poster üzərinə klik → preview modal */
+/* Fragman linkini təhlükəsiz player mənbəyinə çevirir.
+   Dəstəklənir: youtube.com/watch?v=, youtu.be/, /embed/, /shorts/ və birbaşa .mp4/.webm/.ogg */
+function getTrailerSource(url) {
+  if (typeof url !== "string" || !url.trim()) return null;
+  const value = url.trim();
+
+  if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(value)) return { type: "file", src: value };
+
+  let parsed;
+  try {
+    parsed = new URL(value);
+  } catch {
+    return null; // yanlış format
+  }
+
+  const host = parsed.hostname.replace(/^(www|m)\./, "");
+  let id = null;
+
+  if (host === "youtu.be") {
+    id = parsed.pathname.slice(1);
+  } else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+    if (parsed.pathname === "/watch") id = parsed.searchParams.get("v");
+    else id = (parsed.pathname.match(/^\/(?:embed|shorts|v)\/([\w-]{11})/) || [])[1];
+  }
+
+  if (!id || !/^[\w-]{11}$/.test(id)) return null;
+  return {
+    type: "youtube",
+    src: `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&playsinline=1`,
+  };
+}
+
+/* Modalın media hissəsini doldurur: fragman varsa video, yoxdursa cover şəkli */
+function renderModalMedia(box, trailer) {
+  box.replaceChildren();
+
+  if (trailer?.type === "youtube") {
+    const frame = document.createElement("iframe");
+    frame.src = trailer.src;
+    frame.title = `${movie.title} — trailer`;
+    frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    frame.allowFullscreen = true;
+    frame.referrerPolicy = "strict-origin-when-cross-origin";
+    box.append(frame);
+  } else if (trailer?.type === "file") {
+    const video = document.createElement("video");
+    video.src = trailer.src;
+    video.poster = movie.cover_url || "";
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    box.append(video);
+  } else {
+    const img = document.createElement("img");
+    img.src = movie.cover_url || FALLBACK_IMG;
+    img.alt = movie.title;
+    box.append(img);
+  }
+}
+
+/* Poster üzərinə klik → fragman modalı */
 function setupModal() {
   const modal = $("modal");
+  const media = $("modalMedia");
+
   const open = () => {
-    $("modalCover").src = movie.cover_url || FALLBACK_IMG;
+    const trailer = getTrailerSource(movie.fragman);
+
+    renderModalMedia(media, trailer);
+    modal.classList.toggle("has-video", Boolean(trailer));
     $("modalTitle").textContent = movie.title;
     $("modalWatch").href = movie.watch_url || "#";
     modal.hidden = false;
     $("modalClose").focus();
   };
+
   const close = () => {
+    media.replaceChildren(); // iframe/video silinir → səs və video dayanır
     modal.hidden = true;
     $("posterBtn").focus();
   };

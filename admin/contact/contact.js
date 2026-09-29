@@ -6,6 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupContactTable() {
   const tableBody = document.querySelector("#contactTableBody");
+  const pagerEl = document.querySelector("#contactPager");
+  const modal = document.querySelector("#deleteModal");
+  const closeBtn = document.querySelector("#closeModalBtn");
+  const cancelBtn = document.querySelector("#cancelDeleteBtn");
+  const confirmBtn = document.querySelector("#confirmDeleteBtn");
+
+  let rowToDelete = null;
 
   function buildRow(c) {
     const row = document.createElement("tr");
@@ -14,7 +21,7 @@ function setupContactTable() {
       <td>${c.id}</td>
       <td class="cell-name">${esc(c.full_name)}</td>
       <td>${esc(c.email)}</td>
-      <td class="cell-message" title="${esc(c.reason)}">${esc(c.reason)}</td>
+      <td class="cell-message truncate-cell" title="${esc(c.reason)}">${esc(c.reason)}</td>
       <td>
         <button class="table-btn table-btn--delete" type="button" title="Delete">
           <i class="fa-solid fa-trash"></i>
@@ -24,51 +31,61 @@ function setupContactTable() {
     return row;
   }
 
+  const pager = createTablePaginator({
+    tableBody,
+    pagerEl,
+    colSpan: 5,
+    pageSize: 9,
+    emptyText: "No messages yet.",
+    renderRow: buildRow,
+  });
+
   async function loadContacts() {
-    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading…</td></tr>`;
     try {
       const contacts = await api.admin.contacts();
-      tableBody.innerHTML = "";
-      if (!contacts || !contacts.length) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">No messages yet.</td></tr>`;
-        return;
-      }
-      contacts.forEach((c) => tableBody.appendChild(buildRow(c)));
+      // Məlumatları (əgər varsa) tərsinə çevirib paginator-a ötürürük
+      pager.setItems((contacts || []).reverse());
     } catch (err) {
       tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Failed to load messages.</td></tr>`;
       toast(err.message || "Failed to load messages.", "error");
     }
   }
 
+  // Delete button click opens the modal
   tableBody.addEventListener("click", (e) => {
-    const deleteBtn = e.target.closest(".table-btn--delete");
-    const row = e.target.closest("tr");
-
-    if (!row || !row.dataset.id) return;
-
-    if (deleteBtn) {
-      const contactName = row.querySelector(".cell-name").textContent;
-      confirmDialog(
-        `Are you sure you want to delete the message from "${contactName}"?`,
-        {
-          confirmLabel: "Delete",
-          cancelLabel: "Cancel",
-          danger: true,
-        },
-      ).then(async (confirmed) => {
-        if (!confirmed) return;
-
-        const id = row.dataset.id;
-
-        try {
-          await api.admin.removeContact(id);
-          row.remove();
-          toast("Message deleted successfully.", "success");
-        } catch (err) {
-          toast(err.message || "Failed to delete message.", "error");
-        }
-      });
+    if (e.target.closest(".table-btn--delete")) {
+      rowToDelete = e.target.closest("tr");
+      modal.classList.add("active");
     }
+  });
+
+  function closeModal() {
+    modal.classList.remove("active");
+    rowToDelete = null;
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+
+  confirmBtn.addEventListener("click", async () => {
+    if (!rowToDelete) return;
+    const id = rowToDelete.dataset.id;
+    confirmBtn.disabled = true;
+    try {
+      await api.admin.removeContact(id);
+      pager.removeItem(id);
+      toast("Message deleted.", "success");
+      closeModal();
+    } catch (err) {
+      toast(err.message || "Failed to delete message.", "error");
+    } finally {
+      confirmBtn.disabled = false;
+    }
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
   });
 
   loadContacts();

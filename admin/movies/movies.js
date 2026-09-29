@@ -7,6 +7,7 @@ function setupMovieModal() {
   const modal = document.querySelector("#movieModal");
   const form = document.querySelector("#movieForm");
   const tableBody = document.querySelector("#moviesTableBody");
+  const pagerEl = document.querySelector("#moviesPager");
 
   const createBtn = document.querySelector("#createMovieBtn");
   const closeBtn = document.querySelector("#closeModalBtn");
@@ -24,15 +25,25 @@ function setupMovieModal() {
   const adultInput = document.querySelector("#movieAdult");
   const previewImg = document.querySelector("#moviePreviewImg");
 
+  // --- Silme Modalı İçin Gerekli Değişkenler ---
+  const deleteModal = document.querySelector("#deleteModal");
+  const closeDeleteBtn = document.querySelector("#closeDeleteModalBtn");
+  const cancelDeleteBtn = document.querySelector("#cancelDeleteBtn");
+  const confirmDeleteBtn = document.querySelector("#confirmDeleteBtn");
+  let rowToDelete = null;
+
   const placeholderPoster =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='296' viewBox='0 0 200 296'%3E%3Crect width='200' height='296' rx='10' fill='%231c1c24'/%3E%3Cpath d='M70 118h60v60H70z' fill='%232c2c3a'/%3E%3C/svg%3E";
 
+  // Yalnız edit üçün lazım olan id burada saxlanılır — cədvəldə görünmür,
+  // hər sətirdə isə yalnız görüntü üçün lazım olan yüngül sahələr var.
   let editingId = null;
 
   function updatePreview() {
     previewImg.src = coverInput.value.trim() || placeholderPoster;
   }
 
+  // category/actors seçimləri — bir dəfə yüklənir, modal hər açılanda təzədən çəkilmir
   async function loadOptions() {
     try {
       const [categories, actors] = await Promise.all([
@@ -51,10 +62,11 @@ function setupMovieModal() {
         )
         .join("");
     } catch (err) {
-      toast(err.message || "Failed to load category/actor lists.", "error");
+      toast(err.message || "Failed to load categories/actors.", "error");
     }
   }
 
+  // Serverdən gələn (nested) obyekti formaya doldurur
   function fillForm(data) {
     titleInput.value = data.title || "";
     overviewInput.value = data.overview || "";
@@ -80,6 +92,7 @@ function setupMovieModal() {
     modal.classList.add("active");
   }
 
+  // Edit-ə basanda tam məlumat YALNIZ bu anda serverdən çəkilir (id burada işə düşür)
   async function openEditModal(id, triggerBtn) {
     const originalIcon = triggerBtn.innerHTML;
     triggerBtn.disabled = true;
@@ -93,7 +106,7 @@ function setupMovieModal() {
       updatePreview();
       modal.classList.add("active");
     } catch (err) {
-      toast(err.message || "Failed to load movie data.", "error");
+      toast(err.message || "Failed to load movie details.", "error");
     } finally {
       triggerBtn.disabled = false;
       triggerBtn.innerHTML = originalIcon;
@@ -107,13 +120,47 @@ function setupMovieModal() {
     updatePreview();
   }
 
+  // --- Silme Modalı Fonksiyonları ---
+  function closeDeleteModal() {
+    deleteModal.classList.remove("active");
+    rowToDelete = null;
+  }
+
+  closeDeleteBtn.addEventListener("click", closeDeleteModal);
+  cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+
+  confirmDeleteBtn.addEventListener("click", async () => {
+    if (!rowToDelete) return;
+    const id = rowToDelete.dataset.id;
+
+    confirmDeleteBtn.disabled = true;
+    try {
+      await api.admin.removeMovie(id);
+      pager.removeItem(id);
+      toast("Movie deleted.", "success");
+      closeDeleteModal();
+    } catch (err) {
+      toast(err.message || "Failed to delete movie.", "error");
+    } finally {
+      confirmDeleteBtn.disabled = false;
+    }
+  });
+
+  // Silme modalını dışarı tıklayarak kapatma
+  deleteModal.addEventListener("click", (e) => {
+    if (e.target === deleteModal) closeDeleteModal();
+  });
+  // ------------------------------------
+
+  // /admin/movies (list) yalnız bu sahələri qaytarır — category/actors YOXDUR,
+  // onlar üçün Edit-ə basanda /admin/movies/:id çağırılır.
   function buildRow(id, data) {
     const row = document.createElement("tr");
     row.dataset.id = id;
     row.innerHTML = `
       <td><img class="poster-thumb" src="${data.cover_url || placeholderPoster}" alt=""></td>
       <td class="cell-title">${esc(data.title)}</td>
-      <td class="cell-overview">${esc(data.overview || "—")}</td>
+      <td class="cell-overview truncate-cell">${esc(data.overview || "—")}</td>
       <td class="cell-imdb">${esc(data.imdb)}</td>
       <td>
         <button class="table-btn table-btn--edit" type="button" title="Edit">
@@ -127,18 +174,21 @@ function setupMovieModal() {
     return row;
   }
 
+  // Cədvəl uzun olanda scroll yerinə səhifələmə (1, 2, 3… Previous/Next)
+  const pager = createTablePaginator({
+    tableBody,
+    pagerEl,
+    colSpan: 5,
+    pageSize: 7,
+    emptyText: "No movies added yet.",
+    renderRow: (movie) => buildRow(movie.id, movie),
+  });
+
   async function loadMovies() {
-    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Loading…</td></tr>`;
     try {
       const movies = await api.admin.movies();
-      tableBody.innerHTML = "";
-      if (!movies || !movies.length) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">No movies added yet.</td></tr>`;
-        return;
-      }
-      movies.forEach((movie) =>
-        tableBody.appendChild(buildRow(movie.id, movie)),
-      );
+      pager.setItems(movies || []);
     } catch (err) {
       tableBody.innerHTML = `<tr><td colspan="5" class="table-empty">Failed to load movies.</td></tr>`;
       toast(err.message || "Failed to load movies.", "error");
@@ -154,10 +204,11 @@ function setupMovieModal() {
     if (e.target === modal) closeModal();
   });
 
-  // Close on Escape
+  // Close on Escape (Her iki modal için de geçerli kıldım)
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (modal.classList.contains("active")) closeModal();
+      if (deleteModal.classList.contains("active")) closeDeleteModal();
     }
   });
 
@@ -173,26 +224,9 @@ function setupMovieModal() {
       openEditModal(row.dataset.id, editBtn);
     }
 
-    // Kategorilerdeki global confirmDialog() fonksiyonu ile aynı yapı
     if (deleteBtn) {
-      const movieTitle = row.querySelector(".cell-title").textContent;
-      confirmDialog(
-        `Are you sure you want to delete the "${movieTitle}" movie?`,
-        {
-          confirmLabel: "Delete",
-          cancelLabel: "Cancel",
-          danger: true,
-        },
-      ).then(async (confirmed) => {
-        if (!confirmed) return;
-        try {
-          await api.admin.removeMovie(row.dataset.id);
-          row.remove();
-          toast("Movie deleted successfully.", "success");
-        } catch (err) {
-          toast(err.message || "Failed to delete movie.", "error");
-        }
-      });
+      rowToDelete = row;
+      deleteModal.classList.add("active");
     }
   });
 
@@ -220,18 +254,17 @@ function setupMovieModal() {
 
     const originalLabel = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = editingId ? "Updating..." : "Adding...";
+    submitBtn.textContent = editingId ? "Updating…" : "Adding…";
 
     try {
       if (editingId) {
         await api.admin.updateMovie(editingId, data);
-        const row = tableBody.querySelector(`tr[data-id="${editingId}"]`);
-        if (row) row.replaceWith(buildRow(editingId, data));
-        toast("Movie updated successfully.", "success");
+        pager.updateItem(editingId, { ...data, id: editingId });
+        toast("Movie updated.", "success");
       } else {
         const created = await api.admin.createMovie(data);
-        tableBody.appendChild(buildRow(created.id, created));
-        toast("Movie added successfully.", "success");
+        pager.addItem(created);
+        toast("Movie added.", "success");
       }
       closeModal();
     } catch (err) {

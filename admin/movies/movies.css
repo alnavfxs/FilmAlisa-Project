@@ -68,7 +68,7 @@
    MOVIES TABLE
    =========================================== */
 .table_content {
-  width: 100%;
+  width: 95%;
   margin-top: 10px;
   margin-right: 77px;
   border-collapse: separate;
@@ -206,13 +206,11 @@
   color: var(--db-text-muted);
   cursor: pointer;
   transition: color 0.2s ease;
-  z-index: 10; 
 }
 
 .close:hover {
   color: var(--db-text-primary);
 }
-
 
 /* Silme Modalı Metin ve Butonları */
 .modal-title {
@@ -265,7 +263,6 @@
   display: flex;
   gap: 40px;
   align-items: flex-start;
-  margin-top: 16px; 
 }
 
 .movie-form__fields {

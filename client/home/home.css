@@ -286,3 +286,212 @@ body {
   cursor: pointer;
   font: inherit;
 }
+
+
+/* ===========================================
+   MOVIE SLIDER (scrollbar əvəzinə ox düymələri + drag/swipe)
+   =========================================== */
+
+.movie-slider {
+  position: relative;
+}
+
+.movie-slider .movie-scroll {
+  padding-bottom: 0;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.movie-slider .movie-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.movie-slider .movie-scroll.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.slider-btn[hidden] {
+  display: none;
+}
+
+.slider-btn--prev {
+  left: 0;
+  border-radius: 16px 0 0 16px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.slider-btn--next {
+  right: 0;
+  border-radius: 0 16px 16px 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.movie-slider:hover .slider-btn,
+.slider-btn:focus-visible {
+  opacity: 1;
+}
+
+.slider-btn:hover i {
+  transform: scale(1.25);
+}
+
+.slider-btn i {
+  transition: transform 0.15s ease;
+}
+
+/* Touch cihazlarda ox lazım deyil — swipe işləyir */
+@media (hover: none) {
+  .slider-btn {
+    display: none;
+  }
+}
+
+
+/* ===========================================
+   HERO SLIDESHOW (3-4 film avtomatik dəyişir)
+   =========================================== */
+
+.hero-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.hero-slide.is-active {
+  opacity: 1;
+}
+
+/* Yavaş yaxınlaşma (Ken Burns) effekti */
+.hero-slide .hero-bg {
+  transform: scale(1.1);
+  transition: transform 2.6s ease-out;
+}
+
+.hero-slide.is-active .hero-bg {
+  transform: scale(1);
+}
+
+/* Mətn dəyişəndə solub yuxarı çıxır */
+.hero-overlay {
+  z-index: 2;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.hero-overlay.is-changing {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+/* Progress zolaqları: eyni zamanda hem slayd sayğacı, hem naviqasiya */
+.hero-dots {
+  position: absolute;
+  left: 236px;
+  bottom: 40px;
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+}
+
+.hero-dot {
+  position: relative;
+  width: 56px;
+  height: 16px; /* klik sahəsi böyük olsun */
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.hero-dot::before,
+.hero-dot span {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.hero-dot::before {
+  content: "";
+  right: 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hero-dot span {
+  width: 0;
+  background: #0feffd;
+}
+
+.hero-dot.is-done span {
+  width: 100%;
+}
+
+.hero-dot.is-active span {
+  animation: heroProgress var(--hero-interval, 2s) linear forwards;
+}
+
+@keyframes heroProgress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Mouse hero-nun üstündədirsə slayd dayanır */
+@media (hover: hover) {
+  .hero:hover .hero-dot.is-active span {
+    animation-play-state: paused;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-dots {
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    justify-content: center;
+  }
+
+  .hero-dot {
+    width: 44px;
+  }
+
+  .hero .hero-overlay {
+    bottom: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-slide .hero-bg,
+  .hero-overlay {
+    transition: none;
+  }
+}

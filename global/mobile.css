@@ -1,0 +1,136 @@
+/* =========================================================
+   MOBİL / PLANŞET RESPONSİVLİYİ (Figma: Netflix mobile şablonu)
+   Client səhifələri: home, search, favourite, detail, account
+   Səhifənin öz CSS-indən SONRA qoşulmalıdır.
+   ≤900px : sidebar → aşağı tab bar, kontent tam en
+   ≤600px : telefon ölçüləri (hero, posterlər, form)
+   ========================================================= */
+
+@media only screen and (max-width: 900px) {
+  html, body { overflow-x: hidden; }
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+
+  /* --- Sidebar → aşağı tab bar --- */
+  .sidebar {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 0 8px env(safe-area-inset-bottom, 0px);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    border-right: 0;
+    border-top: 1px solid var(--border-color);
+    background-color: rgba(18, 18, 18, 0.96);
+    backdrop-filter: blur(10px);
+  }
+  .sidebar-logo { display: none; }
+  .sidebar-nav {
+    flex: 1;
+    width: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+  }
+  .sidebar-link { width: 52px; height: 52px; }
+  .sidebar-logout { margin: 0; }
+
+  /* --- Kontent tam en --- */
+  .content,
+  .detail-content { margin-left: 0; padding: 20px 16px 24px; max-width: 100%; }
+  .content { padding-top: 24px; }
+
+  /* --- Search / Favourite --- */
+  .search-header { height: auto; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .search-bar { order: 3; width: 100%; }
+  .movie-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; justify-content: stretch; }
+  .movie-grid .movie-card { width: 100%; height: auto; }
+  .movie-grid .poster-wrap { width: 100%; height: auto; aspect-ratio: 2 / 3; }
+
+  /* --- Home --- */
+  .hero { height: 520px; }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 55%;
+    background: linear-gradient(0deg, var(--background-color) 5%, transparent 100%);
+    pointer-events: none;
+  }
+  .hero-overlay {
+    z-index: 2;
+    top: auto;
+    bottom: 28px;
+    left: 20px;
+    right: 20px;
+    width: auto;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+  .hero-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .watch-now-btn { width: 100%; max-width: 340px; height: 52px; }
+
+  /* --- Account --- */
+  .app-layout { border-radius: 0; min-height: 100vh; max-width: 100%; }
+  .main-content { margin-left: 0; width: 100%; padding: 32px 20px 24px; }
+  .account-form { width: 100%; max-width: 460px; }
+
+  /* --- Detail --- */
+  .detail-hero { height: 260px; }
+  .detail-hero-title { left: 16px; right: 16px; bottom: 16px; }
+  .detail-poster { width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 10; }
+  .detail-poster img { object-fit: cover; }
+}
+
+@media only screen and (max-width: 600px) {
+  .content, .detail-content { padding-left: 14px; padding-right: 14px; }
+
+  /* Search / Favourite: 3 sütun (Netflix search kimi) */
+  .movie-grid { grid-template-columns: repeat(auto-fill, minmax(102px, 1fr)); gap: 10px; }
+  .movie-grid .category-tag { display: none; }
+  .movie-grid .poster-overlay { font-size: 11px; padding: 6px; }
+  .movie-grid .movie-title { font-size: 12px; }
+
+  /* Home */
+  .hero { height: 470px; }
+  .hero-title { font-size: 28px; line-height: 1.15; }
+  .hero-desc { font-size: 14px; line-height: 22px; }
+  .row-title { font-size: 16px; }
+  .movie-row { margin-bottom: 28px; }
+  .movie-scroll {
+    gap: 10px;
+    margin-right: -14px;
+    padding-right: 14px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .movie-scroll::-webkit-scrollbar { display: none; }
+  .movie-scroll .movie-card,
+  .movie-scroll .poster-wrap { width: 132px; height: 198px; scroll-snap-align: start; }
+
+  /* Account */
+  .avatar-container { width: 160px; height: 160px; margin-bottom: 24px; }
+  .input-wrapper, .save-btn { height: 52px; }
+
+  /* Detail */
+  .detail-hero { height: 220px; }
+  .detail-hero-title h1 { font-size: 18px; }
+  .detail-headline h2 { font-size: 22px; }
+  .detail-meta { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .detail-cast { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 8px; scrollbar-width: none; }
+  .cast-item { flex: 0 0 auto; }
+  .comment-form input { font-size: 16px; } /* iOS zoom olmasın */
+
+  /* iOS input zoom-un qarşısı */
+  .search-input, .input-wrapper input { font-size: 16px; }
+}

@@ -32,6 +32,7 @@
   function renderAuthState() {
     const loggedIn = !!getToken("client");
     signInLink.hidden = loggedIn;
+    renderHeroAuth(loggedIn);
     profileBox.hidden = !loggedIn;
     closeMenu();
 
@@ -86,6 +87,35 @@
 
   renderAuthState();
 })();
+
+/* ===========================================
+   HERO FORMU: daxil olmayana "Get Started" (register),
+   daxil olana "Go to Home" (email sahəsi gizlənir)
+   =========================================== */
+function renderHeroAuth(loggedIn) {
+  const form = document.getElementById("heroForm");
+  const email = document.getElementById("heroEmail");
+  const label = document.getElementById("heroSubmitLabel");
+  const text = document.getElementById("heroText");
+  if (!form || !email || !label || !text) return;
+
+  // İlk çağırışda orijinal mətni yadda saxla (logout-dan sonra qaytarmaq üçün)
+  if (!text.dataset.guestText) text.dataset.guestText = text.textContent.trim();
+
+  const profile = loggedIn ? getProfile("client") || {} : {};
+  const name = profile.full_name ? `, ${profile.full_name}` : "";
+
+  form.action = loggedIn
+    ? "./client/home/home.html"
+    : "./client/register/register.html";
+  form.classList.toggle("is-signed-in", loggedIn);
+  email.hidden = loggedIn;
+  email.disabled = loggedIn; // gizli sahə nə yoxlanılsın, nə də URL-ə ?email= əlavə olunsun
+  label.textContent = loggedIn ? "Go to Home" : "Get Started";
+  text.textContent = loggedIn
+    ? `Welcome back${name}! Pick up where you left off.`
+    : text.dataset.guestText;
+}
 
 /* ===========================================
    2. CONTACT US → POST /contact

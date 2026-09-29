@@ -100,8 +100,7 @@ body {
 
 .admin-form__input {
   flex: 1;
-  min-width: 0;
-  height: 100%; /* field-in daxili hündürlüyünə uyğun — border-in üstünə çıxmasın */
+  height: 100%;
   background: transparent;
   color: var(--white-color);
   font-size: var(--fs-s16);
@@ -187,5 +186,5 @@ body {
   margin: -8px 0 4px;
   color: var(--error-color);
   font-size: var(--fs-s14);
-  text-align: left;
+  text-align: center;
 }

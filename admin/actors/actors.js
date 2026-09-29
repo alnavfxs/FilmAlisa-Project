@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupActorsCRUD() {
   const tableBody = document.querySelector("#actorsTableBody");
+  const pagerEl = document.querySelector("#actorsPager");
   const modal = document.querySelector("#actorModal");
   const form = document.querySelector("#actorForm");
   const modalTitle = document.querySelector("#modalTitle");
@@ -43,18 +44,21 @@ function setupActorsCRUD() {
     return row;
   }
 
+  const pager = createTablePaginator({
+    tableBody,
+    pagerEl,
+    colSpan: 3,
+    pageSize: 7,
+    emptyText: "No actors yet.",
+    renderRow: (a) => buildRow(a.id, a.name, a.surname, a.img_url),
+  });
+
   async function loadActors() {
-    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Loading...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Loading…</td></tr>`;
     try {
       const actors = await api.admin.actors();
-      tableBody.innerHTML = "";
-      if (!actors || !actors.length) {
-        tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">No actors yet.</td></tr>`;
-        return;
-      }
-      actors.forEach((a) =>
-        tableBody.appendChild(buildRow(a.id, a.name, a.surname, a.img_url)),
-      );
+      // 1. Gələn məlumatları tərsinə çeviririk ki, yenilər başda olsun
+      pager.setItems((actors || []).reverse());
     } catch (err) {
       tableBody.innerHTML = `<tr><td colspan="3" class="table-empty">Failed to load actors.</td></tr>`;
       toast(err.message || "Failed to load actors.", "error");
@@ -106,14 +110,13 @@ function setupActorsCRUD() {
       const name = row.querySelector(".cell-name").textContent;
       confirmDialog(`Are you sure you want to delete the actor "${name}"?`, {
         confirmLabel: "Delete",
-        cancelLabel: "Cancel",
         danger: true,
       }).then(async (confirmed) => {
         if (!confirmed) return;
         try {
           await api.admin.removeActor(row.dataset.id);
-          row.remove();
-          toast("Actor deleted successfully.", "success");
+          pager.removeItem(row.dataset.id);
+          toast("Actor deleted.", "success");
         } catch (err) {
           toast(err.message || "Failed to delete actor.", "error");
         }
@@ -134,22 +137,19 @@ function setupActorsCRUD() {
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = editingRow ? "Updating..." : "Adding...";
+    submitBtn.textContent = editingRow ? "Updating…" : "Adding…";
 
     try {
       if (editingRow) {
-        await api.admin.updateActor(editingRow.dataset.id, body);
-        editingRow.querySelector(".cell-name").textContent = body.name;
-        editingRow.querySelector(".cell-surname").textContent = body.surname;
-        editingRow.querySelector("img").src = body.img_url;
-        editingRow.querySelector("img").alt = `${body.name} ${body.surname}`;
-        toast("Actor updated successfully.", "success");
+        const id = editingRow.dataset.id;
+        await api.admin.updateActor(id, body);
+        pager.updateItem(id, body);
+        toast("Actor updated.", "success");
       } else {
-        const created = await api.admin.createActor(body);
-        tableBody.appendChild(
-          buildRow(created.id, created.name, created.surname, created.img_url),
-        );
-        toast("Actor added successfully.", "success");
+        await api.admin.createActor(body);
+        // 2. pager.addItem() əvəzinə datanı yenidən yükləyirik ki, yeni aktyor ən başa gəlsin
+        await loadActors();
+        toast("Actor added.", "success");
       }
       closeModal();
     } catch (err) {
