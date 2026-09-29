@@ -24,20 +24,70 @@
 const BASE = new URL("../", document.currentScript.src).href;
 
 const ADMIN_NAV = [
-  { key: "dashboard",  href: "admin/dashboard/dashboard.html",   icon: "Dashboard.svg",  label: "Dashboard" },
-  { key: "movies",     href: "admin/movies/movies.html",         icon: "Movies.svg",     label: "Movies" },
-  { key: "categories", href: "admin/categories/categories.html", icon: "Categories.svg", label: "Categories" },
-  { key: "users",      href: "admin/users/users.html",           icon: "Users.svg",      label: "Users" },
-  { key: "comments",   href: "admin/comments/comments.html",     icon: "Comments.svg",   label: "Comments" },
-  { key: "contact",    href: "admin/contact/contact.html",       icon: "Contact us.svg", label: "Contact us" },
-  { key: "actors",     href: "admin/actors/actors.html",         icon: "Users.svg",      label: "Actors" },
+  {
+    key: "dashboard",
+    href: "admin/dashboard/dashboard.html",
+    icon: "Dashboard.svg",
+    label: "Dashboard",
+  },
+  {
+    key: "movies",
+    href: "admin/movies/movies.html",
+    icon: "Movies.svg",
+    label: "Movies",
+  },
+  {
+    key: "categories",
+    href: "admin/categories/categories.html",
+    icon: "Categories.svg",
+    label: "Categories",
+  },
+  {
+    key: "users",
+    href: "admin/users/users.html",
+    icon: "Users.svg",
+    label: "Users",
+  },
+  {
+    key: "comments",
+    href: "admin/comments/comments.html",
+    icon: "Comments.svg",
+    label: "Comments",
+  },
+  {
+    key: "contact",
+    href: "admin/contact/contact.html",
+    icon: "Contact us.svg",
+    label: "Contact us",
+  },
+  {
+    key: "actors",
+    href: "admin/actors/actors.html",
+    icon: "Users.svg",
+    label: "Actors",
+  },
 ];
 
 const APP_NAV = [
-  { key: "home",      href: "client/home/home.html",               icon: "home",      title: "Home" },
-  { key: "search",    href: "client/search-panel/search.html", icon: "search",    title: "Movies/Series" },
-  { key: "account",   href: "client/account/account.html",     icon: "account",   title: "Account" },
-  { key: "favourite", href: "client/favourite/favourite.html", icon: "favourite", title: "Favorites" },
+  { key: "home", href: "client/home/home.html", icon: "home", title: "Home" },
+  {
+    key: "search",
+    href: "client/search-panel/search.html",
+    icon: "search",
+    title: "Movies/Series",
+  },
+  {
+    key: "account",
+    href: "client/account/account.html",
+    icon: "account",
+    title: "Account",
+  },
+  {
+    key: "favourite",
+    href: "client/favourite/favourite.html",
+    icon: "favourite",
+    title: "Favorites",
+  },
 ];
 
 function renderAdminSidebar(active) {
@@ -48,7 +98,7 @@ function renderAdminSidebar(active) {
           <img src="${BASE}assets/icons/${item.icon}" alt="" />
           <span>${item.label}</span>
         </a>
-      </li>`
+      </li>`,
   ).join("");
 
   return `
@@ -79,9 +129,9 @@ function renderAppSidebar(active) {
 
   return `
     <aside class="sidebar">
-      <div class="sidebar-logo">
+      <a href="${BASE}index.html" class="sidebar-logo" title="Back to Landing Page">
         <img src="${BASE}assets/images/filmalisa.svg" alt="Filmalisa Logo" class="svg-logo" />
-      </div>
+      </a>
       <nav class="sidebar-nav">${links}</nav>
       <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
         <img src="${BASE}assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
@@ -113,10 +163,10 @@ function setupLogout(role, selector) {
 
   logoutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const confirmed = await confirmDialog(
-      "Are you sure you want to log out?",
-      { confirmLabel: "Log out", danger: true },
-    );
+    const confirmed = await confirmDialog("Are you sure you want to log out?", {
+      confirmLabel: "Log out",
+      danger: true,
+    });
     if (confirmed) logout(role);
   });
 }

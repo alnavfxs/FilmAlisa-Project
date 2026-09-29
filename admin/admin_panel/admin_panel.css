@@ -87,15 +87,7 @@ body {
   width: 24px;
   height: 24px;
   margin-right: 12px;
-  border: 1.6px solid var(--input-color);
   opacity: 0.8;
-}
-
-.admin-form__icon--user {
-  border-radius: 16px;
-}
-
-.admin-form__icon--lock {
 }
 
 .admin-form__input {

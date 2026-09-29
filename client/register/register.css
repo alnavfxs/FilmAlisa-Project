@@ -96,17 +96,7 @@ body {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  border: 1.6px solid var(--input-color);
   opacity: 0.8;
-}
-
-.login-form__icon--mail {
-  border-radius: 16px;
-}
-
-.login-form__icon--lock {
-  /* border-radius: 8px; */
-  /* padding: 8 16px; */
 }
 
 .login-form__input {
