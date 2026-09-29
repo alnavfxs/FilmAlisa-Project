@@ -210,7 +210,12 @@ body {
   display: flex;
   gap: 16px;
   overflow-x: auto;
-  padding-bottom: 8px;
+  /* Hover-də qalxan kart və parıltı overflow tərəfindən kəsilməsin;
+     mənfi margin düzülüşü əvvəlki kimi saxlayır */
+  padding-top: 14px;
+  padding-bottom: 22px;
+  margin-top: -14px;
+  margin-bottom: -22px;
 }
 
 .movie-scroll .movie-card {
@@ -297,7 +302,6 @@ body {
 }
 
 .movie-slider .movie-scroll {
-  padding-bottom: 0;
   scrollbar-width: none;
   cursor: grab;
 }

@@ -1,7 +1,9 @@
 requireClientAuth();
 
 const $ = (id) => document.getElementById(id);
-const movieId = new URLSearchParams(location.search).get("id");
+/* id yalnız hərf/rəqəm/-/_ ola bilər ("../admin/users" kimi dəyərlər rədd edilir) */
+const rawId = new URLSearchParams(location.search).get("id");
+const movieId = rawId && /^[\w-]+$/.test(rawId) ? rawId : null;
 
 let movie = null;
 
@@ -159,6 +161,14 @@ function setupModal() {
   const modal = $("modal");
   const media = $("modalMedia");
 
+  /* Modal açıqkən arxa səhifə fokuslanmasın (Tab modaldan çıxmasın) */
+  const setPageInert = (on) => {
+    [...document.body.children].forEach((el) => {
+      if (el === modal || el.tagName === "SCRIPT" || el.classList.contains("toast-container")) return;
+      el.inert = on;
+    });
+  };
+
   const open = () => {
     const trailer = getTrailerSource(movie.fragman);
 
@@ -167,12 +177,14 @@ function setupModal() {
     $("modalTitle").textContent = movie.title;
     $("modalWatch").href = movie.watch_url || "#";
     modal.hidden = false;
+    setPageInert(true);
     $("modalClose").focus();
   };
 
   const close = () => {
     media.replaceChildren(); // iframe/video silinir → səs və video dayanır
     modal.hidden = true;
+    setPageInert(false);
     $("posterBtn").focus();
   };
 

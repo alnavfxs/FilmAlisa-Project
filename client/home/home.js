@@ -21,6 +21,7 @@ async function init() {
     categories = await api.categories();
   } catch (err) {
     content.innerHTML = emptyState(err.message || "Failed to load movies.");
+    document.getElementById("hero").style.display = "none"; // boş 700px hero qalmasın
     return;
   }
 
@@ -78,7 +79,10 @@ function renderHero(categories) {
 
   const setText = (m) => {
     document.getElementById("heroTag").textContent = m.categoryName;
-    document.getElementById("heroRating").innerHTML = starsHtml(m.imdb);
+    const rating = document.getElementById("heroRating");
+    rating.innerHTML = starsHtml(m.imdb);
+    rating.setAttribute("role", "img");
+    rating.setAttribute("aria-label", ratingLabel(m.imdb));
     document.getElementById("heroTitle").textContent = m.title;
     document.getElementById("heroDesc").textContent = m.overview || "";
   };

@@ -12,29 +12,36 @@ const FALLBACK_IMG =
 const detailUrl = (id) => pageUrl("client/detail/detail.html?id=" + encodeURIComponent(id));
 
 /* imdb (0–10) → 0–5 ulduz */
+const starCount = (imdb) => Math.max(0, Math.min(5, Math.round(Number(imdb) / 2) || 0));
+
+/* Ulduzlar bəzəkdir (alt=""); məna ekran oxuyucuya konteynerin aria-label-ı ilə verilir */
 function starsHtml(imdb) {
-  const n = Math.max(0, Math.min(5, Math.round(Number(imdb) / 2) || 0));
-  const star = `<img src="${pageUrl("assets/icons/star.svg")}" alt="star" class="star-icon" />`;
-  return star.repeat(n);
+  const star = `<img src="${pageUrl("assets/icons/star.svg")}" alt="" class="star-icon" />`;
+  return star.repeat(starCount(imdb));
 }
+
+const ratingLabel = (imdb) => `Rating: ${starCount(imdb)} out of 5`;
 
 function cardHtml(m) {
   const category = m.category?.name ? `<span class="category-tag">${esc(m.category.name)}</span>` : "";
   return `
-    <div class="movie-card" data-id="${m.id}">
+    <div class="movie-card" data-id="${esc(m.id)}">
       <div class="poster-wrap">
         <img src="${esc(m.cover_url)}" alt="${esc(m.title)}" class="poster" loading="lazy"
              onerror="this.onerror=null;this.src=FALLBACK_IMG" />
         <div class="poster-overlay">
           ${category}
-          <div class="rating">${starsHtml(m.imdb)}</div>
+          <div class="rating" role="img" aria-label="${ratingLabel(m.imdb)}">${starsHtml(m.imdb)}</div>
           <h3 class="movie-title">${esc(m.title)}</h3>
         </div>
       </div>
     </div>`;
 }
 
-/* Hover → play ikonu, klik / Enter → detail səhifəsi */
+const canTilt = window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Hover → tilt + play ikonu, klik / Enter / Space → detail səhifəsi */
 function initMovieCards(scope = document) {
   scope.querySelectorAll(".movie-card[data-id]").forEach((card) => {
     if (card.dataset.ready) return;
@@ -48,12 +55,35 @@ function initMovieCards(scope = document) {
       wrap.insertAdjacentHTML("beforeend", '<div class="play-hover"><i class="bi bi-play-fill"></i></div>');
     }
 
+    /* Kursoru izləyən 3D tilt + spotlight (yalnız mouse, animasiya azaldılmayıbsa) */
+    if (wrap && canTilt) {
+      const setTilt = (rx, ry, mx, my) => {
+        wrap.style.setProperty("--rx", rx);
+        wrap.style.setProperty("--ry", ry);
+        wrap.style.setProperty("--mx", mx);
+        wrap.style.setProperty("--my", my);
+      };
+      card.addEventListener("pointermove", (e) => {
+        const r = card.getBoundingClientRect(); // card özü fırlanmır → sabit ölçü
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        setTilt(`${((0.5 - y) * 9).toFixed(2)}deg`, `${((x - 0.5) * 11).toFixed(2)}deg`, `${(x * 100).toFixed(1)}%`, `${(y * 100).toFixed(1)}%`);
+      });
+      card.addEventListener("pointerleave", () => setTilt("0deg", "0deg", "50%", "50%"));
+    }
+
     const go = () => (location.href = detailUrl(card.dataset.id));
     card.addEventListener("click", go);
-    card.addEventListener("keydown", (e) => e.key === "Enter" && go());
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault(); // Space səhifəni sürüşdürməsin
+        go();
+      }
+    });
   });
 }
 
+/* text server xətası da ola bilər → həmişə escape edilir */
 function emptyState(text) {
-  return `<p class="empty-state">${text}</p>`;
+  return `<p class="empty-state">${esc(text)}</p>`;
 }

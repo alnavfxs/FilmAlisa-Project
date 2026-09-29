@@ -27,7 +27,7 @@ function setupActorsCRUD() {
       <td>${id}</td>
       <td>
         <div class="cell-profile">
-          <img src="${image}" alt="${esc(name)} ${esc(surname)}">
+          <img src="${esc(image)}" alt="${esc(name)} ${esc(surname)}">
           <span class="cell-name">${esc(name)}</span>
           <span class="cell-surname">${esc(surname)}</span>
         </div>

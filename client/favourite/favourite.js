@@ -27,5 +27,8 @@ async function renderFavourites() {
 }
 
 renderFavourites();
-// Detail-dən geri qayıdanda (bfcache) siyahı yenilənsin
-window.addEventListener("pageshow", renderFavourites);
+// Detail-dən geri qayıdanda (bfcache) siyahı yenilənsin.
+// pageshow ilk yükləmədə də işləyir → yalnız bfcache-dən bərpada təkrar yüklə (persisted)
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) renderFavourites();
+});
