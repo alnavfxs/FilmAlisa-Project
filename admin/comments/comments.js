@@ -25,7 +25,7 @@ function setupCommentsTable() {
       <td>${c.id}</td>
       <td>
         <div class="cell-movie">
-          <img src="${(c.movie && c.movie.cover_url) || placeholderPoster}" alt="">
+          <img src="${esc(c.movie && c.movie.cover_url) || placeholderPoster}" alt="">
           <span>${esc(c.movie ? c.movie.title : "—")}</span>
         </div>
       </td>

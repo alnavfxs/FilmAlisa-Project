@@ -89,7 +89,7 @@ function createTablePaginator({ tableBody, pagerEl, colSpan, pageSize = 8, empty
     tableBody.innerHTML = "";
 
     if (!items.length) {
-      tableBody.innerHTML = `<tr><td colspan="${colSpan}" class="table-empty">${emptyText}</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="${colSpan}" class="table-empty">${esc(emptyText)}</td></tr>`;
       renderPager();
       return;
     }

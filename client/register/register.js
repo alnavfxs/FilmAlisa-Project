@@ -1,3 +1,6 @@
+// Artıq daxil olubsa qeydiyyat səhifəsi lazım deyil
+if (getToken("client")) location.replace(pageUrl("client/home/home.html"));
+
 const toggleBtn = document.querySelector("#togglePassword");
 const passwordInput = document.querySelector("#passwordInput");
 toggleBtn.addEventListener("click", () => {
@@ -28,8 +31,8 @@ registerForm.addEventListener("submit", async (e) => {
 
   try {
     await api.signup(full_name, email, password);
-    toast("Account created. Please log in.", "success");
-    location.href = pageUrl("client/login/login.html");
+    // toast burada görünməz (səhifə dəyişir) → login səhifəsi bayrağa görə göstərir
+    location.href = pageUrl("client/login/login.html?registered=1");
   } catch (err) {
     toast(err.message || "Registration failed. Try again.", "error");
   } finally {

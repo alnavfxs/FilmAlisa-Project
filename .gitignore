@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Dependencies / build (gələcəkdə lazım olsa)
+node_modules/
+dist/
+
+# Logs və lokal fayllar
+*.log
+.env
+.env.*

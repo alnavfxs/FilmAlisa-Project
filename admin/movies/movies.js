@@ -1,8 +1,10 @@
+requireAuth("admin");
+
 document.addEventListener("DOMContentLoaded", () => {
   setupMovieModal();
 });
 
-// Handles opening/closing the modal and creating, editing and deleting movies
+// Modalın açılıb-bağlanması, film əlavə etmə, redaktə və silmə
 function setupMovieModal() {
   const modal = document.querySelector("#movieModal");
   const form = document.querySelector("#movieForm");
@@ -25,7 +27,7 @@ function setupMovieModal() {
   const adultInput = document.querySelector("#movieAdult");
   const previewImg = document.querySelector("#moviePreviewImg");
 
-  // --- Silme Modalı İçin Gerekli Değişkenler ---
+  // --- Silmə modalı üçün dəyişənlər ---
   const deleteModal = document.querySelector("#deleteModal");
   const closeDeleteBtn = document.querySelector("#closeDeleteModalBtn");
   const cancelDeleteBtn = document.querySelector("#cancelDeleteBtn");
@@ -120,7 +122,7 @@ function setupMovieModal() {
     updatePreview();
   }
 
-  // --- Silme Modalı Fonksiyonları ---
+  // --- Silmə modalı funksiyaları ---
   function closeDeleteModal() {
     deleteModal.classList.remove("active");
     rowToDelete = null;
@@ -146,7 +148,7 @@ function setupMovieModal() {
     }
   });
 
-  // Silme modalını dışarı tıklayarak kapatma
+  // Silmə modalını kənara klikləyəndə bağla
   deleteModal.addEventListener("click", (e) => {
     if (e.target === deleteModal) closeDeleteModal();
   });
@@ -158,7 +160,7 @@ function setupMovieModal() {
     const row = document.createElement("tr");
     row.dataset.id = id;
     row.innerHTML = `
-      <td><img class="poster-thumb" src="${data.cover_url || placeholderPoster}" alt=""></td>
+      <td><img class="poster-thumb" src="${esc(data.cover_url) || placeholderPoster}" alt=""></td>
       <td class="cell-title">${esc(data.title)}</td>
       <td class="cell-overview truncate-cell">${esc(data.overview || "—")}</td>
       <td class="cell-imdb">${esc(data.imdb)}</td>
@@ -199,12 +201,12 @@ function setupMovieModal() {
   closeBtn.addEventListener("click", closeModal);
   coverInput.addEventListener("input", updatePreview);
 
-  // Düzenleme/Ekleme modalını dışarı tıklayarak kapatma
+  // Əlavə/redaktə modalını kənara klikləyəndə bağla
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
   });
 
-  // Close on Escape (Her iki modal için de geçerli kıldım)
+  // Escape → hər iki modalı bağlayır
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (modal.classList.contains("active")) closeModal();
@@ -212,7 +214,7 @@ function setupMovieModal() {
     }
   });
 
-  // Edit / Delete — delegated so it also works for rows added later
+  // Edit / Delete — event delegation (sonradan əlavə olunan sətirlər üçün də işləyir)
   tableBody.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".table-btn--edit");
     const deleteBtn = e.target.closest(".table-btn--delete");

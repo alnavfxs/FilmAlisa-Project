@@ -14,6 +14,8 @@ const usernameInput = document.querySelector("#usernameInput");
 const errorBox = document.querySelector("#formError");
 const submitBtn = loginForm.querySelector(".admin-form__submit");
 
+// DİQQƏT: bu yalnız UX yoxlamasıdır (səhv hesabla cəhdi tez bildirir).
+// Həqiqi icazə nəzarəti serverdədir — /auth/admin/login və /admin/* endpoint-ləri.
 const ALLOWED_ADMIN_EMAIL = "admin@admin.com";
 
 loginForm.addEventListener("submit", async (e) => {

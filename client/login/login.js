@@ -1,3 +1,13 @@
+// Artıq daxil olubsa login səhifəsi lazım deyil
+if (getToken("client")) location.replace(pageUrl("client/home/home.html"));
+
+// Qeydiyyatdan sonra yönləndirilibsə təsdiq mesajı göstər (və URL-i təmizlə)
+const loginParams = new URLSearchParams(location.search);
+if (loginParams.get("registered") === "1") {
+  toast("Account created. Please log in.", "success");
+  history.replaceState(null, "", location.pathname);
+}
+
 const toggleBtn = document.querySelector("#togglePassword");
 const passwordInput = document.querySelector("#passwordInput");
 toggleBtn.addEventListener("click", () => {
