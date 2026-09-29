@@ -9,9 +9,9 @@ body {
    =========================================== */
 .login-page {
   width: 100%;
-  /* min-height: 100vh; */
   max-width: 1440px;
   margin: 0 auto;
+  padding: 0 16px 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,14 +19,13 @@ body {
 
 .login-page__container {
   width: 100%;
-  max-width: 400px;
+  max-width: 618px; /* formun maksimum eni */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* padding: 40px 20px; */
 }
 
-/* brand / loqo */
+/* brand / logo */
 .login-page__brand {
   display: flex;
   flex-direction: column;
@@ -36,24 +35,27 @@ body {
 .login-page__logo {
   margin-bottom: 10px;
   margin-top: 10px;
-  width: 200px;
-  height: 200px;
+  width: clamp(120px, 30vw, 200px);
+  height: auto;
+  aspect-ratio: 1 / 1;
 }
 
 .login-page__title {
-  font-size: var(--fs-s70);
+  font-size: clamp(32px, 6vw, var(--fs-s70));
   font-weight: var(--fw-bold);
   line-height: var(--lh-h80);
-  letter-spacing: 10%;
+  letter-spacing: 0.1em;
+  text-align: center;
 }
 
 .login-page__subtitle {
-  font-size: var(--fs-s40);
+  font-size: clamp(22px, 4vw, var(--fs-s40));
   font-weight: var(--fw-bold);
   line-height: var(--lh-h80);
   margin-bottom: 20px;
   margin-top: 10px;
-  letter-spacing: 10%;
+  letter-spacing: 0.1em;
+  text-align: center;
 }
 
 /* ===========================================
@@ -69,11 +71,12 @@ body {
 
 .login-form__field {
   position: relative;
-  width: 618px;
+  width: 100%;
+  max-width: 618px;
   height: 64px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  box-sizing: border-box;
   background-color: var(--background-color);
   border: 1px solid var(--input-color);
   border-radius: 16px;
@@ -96,16 +99,23 @@ body {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
+  margin-right: 12px;
+  border: 1.6px solid var(--input-color);
   opacity: 0.8;
+}
+
+.login-form__icon--mail {
+  border-radius: 16px;
 }
 
 .login-form__input {
   flex: 1;
+  min-width: 0; /* flex içində inputun daşmasının qarşısını alır */
   height: 100%;
   background: transparent;
   color: var(--white-color);
   font-size: var(--fs-s16);
-  letter-spacing: 10%;
+  letter-spacing: 0.1em;
   border: none;
   outline: none;
 }
@@ -119,10 +129,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 4px;
-  margin-left: 4px;
   background: none;
   border: none;
   color: var(--input-color);
@@ -137,10 +143,10 @@ body {
 
 .login-form__register-wrap {
   width: 100%;
+  max-width: 618px;
   display: flex;
   justify-content: flex-start;
-  margin-right: 210px;
-  margin-bottom: 20px; /* bunu register-wrap-a köçür, linkin özündən sil */
+  margin-bottom: 20px;
 }
 
 .login-form__register {
@@ -154,20 +160,20 @@ body {
 }
 
 .login-form__submit {
-  width: 618px;
+  width: 100%;
+  max-width: 618px;
   height: 56px;
   background-color: var(--button-color);
   color: var(--white-color);
   font-size: var(--fs-s16);
   font-weight: var(--fw-regular);
-  letter-spacing: 10%;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
     transform 0.15s ease;
-  letter-spacing: 20%;
+  letter-spacing: 0.2em;
 }
 
 .login-form__submit:hover {
@@ -181,16 +187,81 @@ body {
 /* ===========================================
    RESPONSIVE
    =========================================== */
+
+/* Tablet */
+@media only screen and (max-width: 1024px) {
+  .login-page {
+    padding: 0 24px 40px;
+  }
+}
+
+/* Mobil */
 @media only screen and (max-width: 640px) {
+  /* Ekranı tam doldur, buton altta dursun (mobil app görünümü) */
+  .login-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 16px;
+    align-items: stretch;
+  }
+
   .login-page__container {
-    padding: 24px 16px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: 24px;
   }
 
-  .login-page__title {
-    font-size: 32px;
+  .login-page__logo {
+    width: 96px;
+    margin-top: 32px;
   }
 
-  .login-page__subtitle {
-    font-size: 22px;
+  .login-form {
+    flex: 1;
+  }
+
+  .login-form__submit {
+    margin-top: auto; /* butonu ekranın altına iter */
+  }
+
+  .login-form__field {
+    height: 56px;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    padding: 6px 14px;
+  }
+
+  .login-form__icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+
+  .login-form__input {
+    letter-spacing: 0.05em;
+  }
+
+  .login-form__register-wrap {
+    margin-bottom: 12px;
+  }
+
+  .login-form__submit {
+    height: 52px;
+    letter-spacing: 0.15em;
+  }
+}
+
+/* Kiçik telefonlar */
+@media only screen and (max-width: 380px) {
+  .login-page {
+    padding: 0 12px 24px;
+  }
+
+  .login-form__field {
+    padding: 6px 12px;
+  }
+
+  .login-form__register {
+    font-size: 14px;
   }
 }
