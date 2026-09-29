@@ -66,22 +66,23 @@
           <p class="landing-hero__subtitle">
             Filmalisa is a movie search platform
           </p>
-          <p class="landing-hero__text">
+          <p class="landing-hero__text" id="heroText">
             Ready to watch? Enter your email to create or restart your
             membership.
           </p>
 
-          <!-- Action register səhifəsinə yönləndirir -->
-          <form class="landing-hero__form" action="./client/register/register.html">
+          <!-- Daxil olmayanda register-ə, daxil olanda home-a yönləndirir (landing.js) -->
+          <form class="landing-hero__form" id="heroForm" action="./client/register/register.html">
             <input
               class="landing-hero__input"
+              id="heroEmail"
               type="email"
               name="email"
               placeholder="Email address"
               required
             />
             <button class="landing-hero__submit" type="submit">
-              Get Started
+              <span id="heroSubmitLabel">Get Started</span>
               <img src="./assets/icons/arrow.svg" alt="" />
             </button>
           </form>

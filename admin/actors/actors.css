@@ -161,7 +161,6 @@
   opacity: 0.8;
 }
 
-
 /* ===========================================
    MODAL
    =========================================== */
@@ -169,8 +168,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7); /* Arka planı biraz daha koyulttuk */
-  backdrop-filter: blur(4px); /* Arka plana hafif bulanıklık (isteğe bağlı) */
+  background: rgba(0, 0, 0, 0.6);
   justify-content: center;
   align-items: center;
   z-index: 100;
@@ -182,27 +180,15 @@
 }
 
 .modalContent {
-  background: #121216;
+  background: #232028;
   padding: 32px;
   border-radius: 16px;
   position: relative;
-  width: 384px;
+  width: 420px;
   max-width: 100%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
-/* Modaldaki Başlık (Eğer HTML'de id="modalTitle" veya h2/h3 varsa) */
-.modalContent h2,
-.modalContent h3,
-#modalTitle {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--db-text-primary, #ffffff);
-  margin-top: 0;
-  margin-bottom: 24px;
-}
-
-/* Çarpı (X) Butonu */
 .close {
   position: absolute;
   right: 18px;
@@ -210,37 +196,37 @@
   border: none;
   background: none;
   font-size: 26px;
-  line-height: 1;
-  color: #6f7390;
+  color: var(--db-text-muted);
   cursor: pointer;
-  transition: color 0.2s ease;
-  z-index: 10;
 }
 
 .close:hover {
-  color: #ffffff;
+  color: var(--db-text-primary);
 }
 
-/* Form İçeriği */
+.modal-title {
+  color: var(--db-text-primary);
+  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
 .category-form {
   display: flex;
   flex-direction: column;
-  gap: 16px; 
-  text-align: left;
+  gap: 20px;
 }
 
-/* İnput Kutuları */
 .category-form__input {
   width: 100%;
-  padding: 14px 16px;
-  background: #1e1e24;
-  border: 1px solid #3a3a55; 
-  border-radius: 8px; 
+  padding: 14px 18px;
+  background: #17171d;
+  border: 1px solid #3a3a55;
+  border-radius: 10px;
   font-family: var(--db-font);
   font-size: 14px;
-  color: #ffffff;
+  color: var(--db-text-primary);
   outline: none;
-  transition: all 0.2s ease;
 }
 
 .category-form__input::placeholder {
@@ -248,25 +234,25 @@
 }
 
 .category-form__input:focus {
-  border-color: #4a9eff;
-  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15);
+  border-color: #8b7bf0;
+  box-shadow: 0 0 0 3px rgba(139, 123, 240, 0.15);
 }
 
-/* Submit (Gönder) Butonu */
 .category-form__submit {
   width: 100%;
   padding: 14px;
-  border-radius: 8px;
+  margin-top: 10px;
+  border-radius: 10px;
   border: none;
-  background-color: var(--db-button, #4285f4);
+  background-color: var(--db-button);
   color: #ffffff;
-  font-weight: 500;
-  font-size: 15px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 12px;
+  font-family: var(--db-font);
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .category-form__submit:hover {
-  background-color: var(--db-accent, #3367d6);
+  background-color: var(--db-accent);
 }

@@ -111,8 +111,7 @@ body {
 
 .login-form__input {
   flex: 1;
-  min-width: 0;
-  height: 100%; /* field-in daxili hündürlüyünə uyğun — border-in üstünə çıxmasın */
+  height: 100%;
   background: transparent;
   color: var(--white-color);
   font-size: var(--fs-s16);

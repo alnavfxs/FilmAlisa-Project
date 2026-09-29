@@ -138,6 +138,18 @@ body {
 
 .landing-header__menu:not([hidden]) {
   display: flex;
+  animation: menuIn 0.18s ease-out;
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .landing-header__menu-item {
@@ -161,8 +173,65 @@ body {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* İkonlar: rəngli kvadrat içində; hover-də dolur, hərəkət edir */
 .landing-header__menu-item i {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 14px;
   color: var(--button-color);
+  background-color: rgba(155, 81, 224, 0.16);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.landing-header__menu-item i::before {
+  display: inline-block;
+  transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.landing-header__menu-item:hover i {
+  color: #fff;
+  background-color: var(--button-color);
+  box-shadow: 0 0 14px rgba(155, 81, 224, 0.55);
+}
+
+/* Settings: dişli çevrilir */
+.landing-header__menu-item:hover .fa-gear::before {
+  transform: rotate(180deg);
+}
+
+/* Logout: ox çıxışa doğru sürüşür, rəng qırmızıya keçir */
+.landing-header__menu-item:hover .fa-right-from-bracket::before {
+  transform: translateX(3px);
+}
+
+#headerLogoutBtn:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+#headerLogoutBtn i {
+  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.16);
+}
+
+#headerLogoutBtn:hover i {
+  background-color: #ef4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-header__menu:not([hidden]) {
+    animation: none;
+  }
+
+  .landing-header__menu-item i::before {
+    transition: none;
+  }
 }
 
 .landing-hero {
@@ -245,6 +314,15 @@ body {
 
 .landing-hero__submit:hover {
   background-color: #9333ea;
+}
+
+/* Daxil olmuş istifadəçi: email sahəsi yoxdur, düymə mərkəzdə */
+.landing-hero__input[hidden] {
+  display: none;
+}
+
+.landing-hero__form.is-signed-in {
+  justify-content: center;
 }
 
 /* --- TV BÖLMƏSİ --- */

@@ -10,6 +10,7 @@ function setupCategoryModal() {
   const form = document.querySelector("#categoryForm");
   const nameInput = document.querySelector("#categoryName");
   const tableBody = document.querySelector("#categoriesTableBody");
+  const pagerEl = document.querySelector("#categoriesPager");
   const submitBtn = form.querySelector('[type="submit"]');
 
   const createBtn = document.querySelector("#createCategoryBtn");
@@ -52,16 +53,23 @@ function setupCategoryModal() {
     return row;
   }
 
+  const pager = createTablePaginator({
+    tableBody,
+    pagerEl,
+    colSpan: 2,
+    pageSize: 9,
+    emptyText: "No categories yet.",
+    renderRow: (c) => buildRow(c.id, c.name),
+  });
   async function loadCategories() {
-    tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Loading...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Loading…</td></tr>`;
     try {
       const categories = await api.admin.categories();
-      tableBody.innerHTML = "";
-      if (!categories || !categories.length) {
-        tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">No categories yet.</td></tr>`;
-        return;
-      }
-      categories.forEach((c) => tableBody.appendChild(buildRow(c.id, c.name)));
+
+      // Məlumatları ID-yə görə tərsinə (ən yenilər başda) sıralayırıq
+      const sortedCategories = (categories || []).sort((a, b) => b.id - a.id);
+
+      pager.setItems(sortedCategories);
     } catch (err) {
       tableBody.innerHTML = `<tr><td colspan="2" class="table-empty">Failed to load categories.</td></tr>`;
       toast(err.message || "Failed to load categories.", "error");
@@ -92,16 +100,15 @@ function setupCategoryModal() {
 
     if (e.target.closest(".table-btn--delete")) {
       const name = row.querySelector(".cell-name").textContent;
-      confirmDialog(`Are you sure you want to delete the "${name}" category?`, {
+      confirmDialog(`Are you sure you want to delete the category "${name}"?`, {
         confirmLabel: "Delete",
-        cancelLabel: "Cancel" ,
         danger: true,
       }).then(async (confirmed) => {
         if (!confirmed) return;
         try {
           await api.admin.removeCategory(row.dataset.id);
-          row.remove();
-          toast("Category deleted successfully.", "success");
+          pager.removeItem(row.dataset.id);
+          toast("Category deleted.", "success");
         } catch (err) {
           toast(err.message || "Failed to delete category.", "error");
         }
@@ -117,17 +124,18 @@ function setupCategoryModal() {
 
     submitBtn.disabled = true;
     const originalLabel = submitBtn.textContent;
-    submitBtn.textContent = editingRow ? "Updating..." : "Adding...";
+    submitBtn.textContent = editingRow ? "Updating…" : "Adding…";
 
     try {
       if (editingRow) {
-        await api.admin.updateCategory(editingRow.dataset.id, name);
-        editingRow.querySelector(".cell-name").textContent = name;
-        toast("Category updated successfully.", "success");
+        const id = editingRow.dataset.id;
+        await api.admin.updateCategory(id, name);
+        pager.updateItem(id, { name });
+        toast("Category updated.", "success");
       } else {
         const created = await api.admin.createCategory(name);
-        tableBody.appendChild(buildRow(created.id, created.name));
-        toast("Category added successfully.", "success");
+        pager.addItem(created);
+        toast("Category added.", "success");
       }
       closeModal();
     } catch (err) {
