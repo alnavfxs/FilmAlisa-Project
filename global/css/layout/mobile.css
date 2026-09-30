@@ -1,67 +1,116 @@
 /* =========================================================
-   MOBİL / PLANŞET RESPONSİVLİYİ (Figma: Netflix mobile şablonu)
-   Client səhifələri: home, search, favourite, detail, account
+   FILMALISA — MOBİL DİZAYN (Figma: mobile şablonu)
+   Client səhifələri: home, search, favourite, detail, account, 404
    Səhifənin öz CSS-indən SONRA qoşulmalıdır.
-   ≤900px : sidebar → aşağı tab bar, kontent tam en
-   ≤600px : telefon ölçüləri (hero, posterlər, form)
+
+   ≤900px : sidebar → aşağı tab bar (ikon + yazı), kontent tam en
+   ≤600px : telefon dizaynı
+            · Home   → üst bar + tam ekran hero + kiçik poster sıraları
+            · Search → "Movies & TV" siyahısı / 3 sütunlu nəticə şəbəkəsi
+            · Detail → yuxarıda fragman, altında Play / My List, məlumat
+   Mobil-only elementlər (.m-topbar, .m-cancel) desktop-da gizlidir.
    ========================================================= */
 
+:root {
+  --m-bar-h: 60px;
+  --m-radius: 6px;
+  --m-muted: rgba(255, 255, 255, 0.62);
+}
+
+/* Desktop-da görünməyən mobil elementlər */
+.m-topbar,
+.m-cancel,
+.hero-dots { display: none; }
+
+/* ---------------------------------------------------------
+   ≤900px — tab bar + tam en kontent
+   --------------------------------------------------------- */
 @media only screen and (max-width: 900px) {
   html, body { overflow-x: hidden; }
-  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  body { padding-bottom: calc(var(--m-bar-h) + env(safe-area-inset-bottom, 0px)); }
 
-  /* --- Sidebar → aşağı tab bar --- */
+  /* Sidebar → aşağı tab bar */
   .sidebar {
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
-    height: calc(64px + env(safe-area-inset-bottom, 0px));
-    padding: 0 8px env(safe-area-inset-bottom, 0px);
+    height: calc(var(--m-bar-h) + env(safe-area-inset-bottom, 0px));
+    padding: 0 4px env(safe-area-inset-bottom, 0px);
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-around;
     border-right: 0;
     border-top: 1px solid var(--border-color);
-    background-color: rgba(18, 18, 18, 0.96);
-    backdrop-filter: blur(10px);
+    background-color: rgba(10, 10, 10, 0.96);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
   .sidebar-logo { display: none; }
   .sidebar-nav {
-    flex: 1;
+    flex: 4;
     width: auto;
     flex-direction: row;
     justify-content: space-around;
     gap: 0;
   }
-  .sidebar-link { width: 52px; height: 52px; }
-  .sidebar-logout { margin: 0; }
+  .sidebar-logout { margin: 0; flex: 1; }
 
-  /* --- Kontent tam en --- */
+  /* Hər tab: ikon + kiçik yazı (yazı title atributundan gəlir) */
+  .sidebar-link {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: 100%;
+    flex-direction: column;
+    gap: 4px;
+    border-radius: 0;
+    background: transparent !important;
+    color: var(--m-muted);
+  }
+  .sidebar-link::after {
+    content: attr(title);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .sidebar-link .svg-icon,
+  .sidebar-link:hover .svg-icon,
+  .sidebar-link.active .svg-icon {
+    width: 24px;
+    height: 24px;
+    transform: none;
+    filter: none;
+  }
+  .sidebar-link .svg-icon { opacity: 0.6; }
+  .sidebar-link.active { color: var(--white-color); }
+  .sidebar-link.active .svg-icon { opacity: 1; filter: drop-shadow(0 0 6px var(--success-transparent-50)); }
+  .sidebar-link.sidebar-logout .svg-icon,
+  .sidebar-link.sidebar-logout:hover .svg-icon { opacity: 0.6; filter: none; transform: none; }
+
+  /* Kontent tam en */
   .content,
   .detail-content { margin-left: 0; padding: 20px 16px 24px; max-width: 100%; }
   .content { padding-top: 24px; }
 
-  /* --- Search / Favourite --- */
+  /* Search / Favourite */
   .search-header { height: auto; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
   .search-bar { order: 3; width: 100%; }
   .movie-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; justify-content: stretch; }
   .movie-grid .movie-card { width: 100%; height: auto; }
   .movie-grid .poster-wrap { width: 100%; height: auto; aspect-ratio: 2 / 3; }
 
-  /* --- Home --- */
-  .hero { height: 520px; }
+  /* Home hero */
+  .hero { height: 560px; }
   .hero::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 55%;
-    background: linear-gradient(0deg, var(--background-color) 5%, transparent 100%);
-    pointer-events: none;
+    background:
+      linear-gradient(0deg, var(--background-color) 4%, rgba(0, 0, 0, 0.55) 38%, transparent 70%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 22%);
   }
   .hero-overlay {
-    z-index: 2;
     top: auto;
     bottom: 28px;
     left: 20px;
@@ -71,66 +120,394 @@
     text-align: center;
     gap: 12px;
   }
+  .hero-tag { align-self: center; background: none; padding: 0; }
+  .hero-overlay .rating { justify-content: center; }
   .hero-desc {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .watch-now-btn { width: 100%; max-width: 340px; height: 52px; }
 
-  /* --- Account --- */
+  /* Account */
   .app-layout { border-radius: 0; min-height: 100vh; max-width: 100%; }
   .main-content { margin-left: 0; width: 100%; padding: 32px 20px 24px; }
   .account-form { width: 100%; max-width: 460px; }
 
-  /* --- Detail --- */
+  /* Detail */
   .detail-hero { height: 260px; }
   .detail-hero-title { left: 16px; right: 16px; bottom: 16px; }
   .detail-poster { width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 10; }
   .detail-poster img { object-fit: cover; }
 }
 
+/* ---------------------------------------------------------
+   ≤600px — telefon dizaynı (Figma)
+   --------------------------------------------------------- */
 @media only screen and (max-width: 600px) {
+  body { background: #000; }
+  .hero::after {
+    background:
+      linear-gradient(0deg, #000 3%, rgba(0, 0, 0, 0.55) 38%, transparent 70%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 22%);
+  }
   .content, .detail-content { padding-left: 14px; padding-right: 14px; }
+  input, textarea, select { font-size: 16px; } /* iOS zoom olmasın */
 
-  /* Search / Favourite: 3 sütun (Netflix search kimi) */
-  .movie-grid { grid-template-columns: repeat(auto-fill, minmax(102px, 1fr)); gap: 10px; }
-  .movie-grid .category-tag { display: none; }
-  .movie-grid .poster-overlay { font-size: 11px; padding: 6px; }
-  .movie-grid .movie-title { font-size: 12px; }
+  /* ===== HOME ===== */
+  .m-topbar {
+    position: absolute; /* hero ilə birlikdə sürüşüb gedir, kontentin üstünə düşmür */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 28px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .m-topbar > * { pointer-events: auto; }
+  .m-topbar__logo { width: 34px; height: 34px; object-fit: contain; }
+  .m-topbar__nav { display: flex; align-items: center; gap: 18px; }
+  .m-topbar__nav a {
+    color: var(--white-color);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  }
+  .m-topbar__nav .bi { font-size: 10px; margin-left: 3px; }
 
-  /* Home */
-  .hero { height: 470px; }
-  .hero-title { font-size: 28px; line-height: 1.15; }
-  .hero-desc { font-size: 14px; line-height: 22px; }
-  .row-title { font-size: 16px; }
-  .movie-row { margin-bottom: 28px; }
+  .hero { height: min(78vh, 600px); }
+  .hero-bg { object-position: center 20%; }
+  .hero-overlay { bottom: 20px; gap: 10px; }
+  .hero-title { font-size: 30px; line-height: 1.15; font-weight: 600; }
+  .hero-desc { font-size: 13px; line-height: 20px; -webkit-line-clamp: 2; color: var(--m-muted); }
+
+  /* "Watch now" → ağ Play düyməsi (Figma) */
+  .watch-now-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 280px;
+    height: 44px;
+    margin-top: 4px;
+    border: 0;
+    border-radius: var(--m-radius);
+    background: #fff !important;
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: none;
+  }
+  .watch-now-btn::before {
+    content: "";
+    border-style: solid;
+    border-width: 7px 0 7px 12px;
+    border-color: transparent transparent transparent #000;
+  }
+  .watch-now-btn:hover { background: #e6e6e6 !important; box-shadow: none; transform: none; }
+  .watch-now-btn:active { transform: scale(0.98); }
+
+  /* Hero slide: üfüqi swipe işləsin, şaquli sürüşmə səhifəyə getsin */
+  .hero { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .hero-bg { -webkit-user-drag: none; }
+  .hero-overlay { bottom: 38px; }
+  .hero-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .hero-dot {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.4);
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+  .hero-dot::after { content: ""; position: absolute; inset: -12px -4px; } /* toxunma sahəsi */
+  .hero-dot.is-active { width: 20px; background: #fff; }
+
+  .content { padding-top: 8px; }
+  .movie-row { margin-bottom: 22px; }
+  .row-header { margin-bottom: 10px; }
+  .row-title { font-size: 16px; font-weight: 700; }
+  .title-arrow { width: 12px; height: 12px; }
+
+  /* Poster sıraları: yalnız kiçik posterlər (Netflix kimi) */
   .movie-scroll {
-    gap: 10px;
+    gap: 8px;
     margin-right: -14px;
     padding-right: 14px;
+    padding-top: 0;
+    margin-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
   .movie-scroll::-webkit-scrollbar { display: none; }
   .movie-scroll .movie-card,
-  .movie-scroll .poster-wrap { width: 132px; height: 198px; scroll-snap-align: start; }
+  .movie-scroll .poster-wrap,
+  .movie-scroll-large .movie-card,
+  .movie-scroll-large .poster-wrap { width: 112px; height: 168px; scroll-snap-align: start; }
+  .movie-scroll .poster-wrap,
+  .movie-scroll-large .poster-wrap { border-radius: var(--m-radius); }
+  .movie-scroll .poster-overlay { display: none; }
+  .movie-scroll .movie-card:hover .poster { transform: none; }
 
-  /* Account */
+  /* Slide hissi: kartlar yerinə oturur (snap), sonrakı kart "boylanır" */
+  .movie-scroll {
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 14px;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+  .movie-scroll > .movie-card { scroll-snap-align: start; scroll-snap-stop: normal; }
+
+  /* Similar movies: bir az iri kartlar, ekranda ~2.5 kart görünür */
+  .detail-content .movie-scroll-large .movie-card,
+  .detail-content .movie-scroll-large .poster-wrap { width: 132px; height: 198px; }
+  .detail-content .movie-row .row-title { font-size: 18px; }
+
+  /* ===== SEARCH / FAVOURITE ===== */
+  .search-header { position: sticky; top: 0; z-index: 50; margin: -8px -14px 14px; padding: 12px 14px; background: #000; gap: 0; }
+  /* Başlıq yalnız axtarış sahəsi olan səhifədə gizlənir (favourite-də qalır) */
+  .search-header:has(.search-bar) .page-title { display: none; }
+  .search-header .page-title { font-size: 20px; font-weight: 700; }
+  .search-bar {
+    position: relative;
+    flex: 1;
+    width: auto;
+    padding: 0 12px 0 38px;
+    height: 40px;
+    border: 0;
+    border-radius: 10px;
+    background: #262628;
+  }
+  .search-input { height: 100%; font-size: 16px; }
+  .search-input::placeholder { color: var(--placeholder-color); }
+  /* Böyüdücü şüşə: + düyməsi ikon kimi sola keçir, klik yenə axtarır */
+  .search-add-btn {
+    position: absolute;
+    left: 6px;
+    top: 4px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    color: var(--placeholder-color);
+  }
+  .search-add-btn i { display: none; }
+  .search-add-btn::before {
+    content: "\f002";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
+  }
+  .m-cancel {
+    display: block;
+    order: 4; /* .search-bar order:3-dən sonra → sağda */
+    flex: none;
+    margin-left: 12px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--white-color);
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .m-cancel[hidden] { display: none; }
+  .search-header { display: flex; flex-wrap: nowrap; align-items: center; }
+
+  .suggested-title { margin: 4px 0 10px; font-size: 18px; font-weight: 700; color: var(--white-color); }
+
+  /* Nəticə şəbəkəsi: 3 sütun, yalnız poster */
+  .movie-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .movie-grid .poster-wrap { border-radius: 4px; }
+  .movie-grid .poster-overlay { display: none; }
+  .movie-grid .movie-card:hover .poster { transform: none; }
+
+  /* Təklif siyahısı (sorğu yoxdur): miniatür + ad + play dairəsi */
+  .movie-grid.is-list { grid-template-columns: 1fr; gap: 8px; }
+  .movie-grid.is-list .movie-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: auto;
+    padding: 2px 0;
+  }
+  .movie-grid.is-list .poster-wrap { display: contents; }
+  .movie-grid.is-list .poster {
+    flex: none;
+    width: 108px;
+    height: 62px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+  .movie-grid.is-list .play-hover { display: none; }
+  .movie-grid.is-list .poster-overlay {
+    display: flex;
+    position: static;
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: none;
+  }
+  .movie-grid.is-list .category-tag,
+  .movie-grid.is-list .rating { display: none; }
+  .movie-grid.is-list .movie-title {
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Play dairəsi (::after) + içindəki üçbucaq (::before) */
+  .movie-grid.is-list .movie-card { position: relative; }
+  .movie-grid.is-list .movie-card::after {
+    content: "";
+    flex: none;
+    width: 34px;
+    height: 34px;
+    margin-right: 4px;
+    border: 1.5px solid #fff;
+    border-radius: 50%;
+  }
+  .movie-grid.is-list .movie-card::before {
+    content: "";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+    border-style: solid;
+    border-width: 7px 0 7px 11px;
+    border-color: transparent transparent transparent #fff;
+    pointer-events: none;
+  }
+  .empty-state { padding: 40px 0; text-align: center; color: var(--m-muted); }
+
+  /* ===== DETAIL ===== */
+  .detail-hero { display: none; }
+  .detail-content { padding-top: 0; padding-bottom: 16px; }
+  .detail-info { display: block; }
+
+  /* Fragman sahəsi: tam en 16:9, mərkəzdə qırmızı halqalı play */
+  .detail-poster {
+    display: block;
+    margin: 0 -14px;
+    width: calc(100% + 28px);
+    max-width: none;
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+    background: #000;
+  }
+  .detail-poster img { opacity: 0.85; object-fit: cover; }
+  .detail-poster .play-hover { opacity: 1; background: linear-gradient(0deg, rgba(0,0,0,.55), transparent 60%); }
+  /* Play ikonu CSS ilə çəkilir (ikon şrifti yüklənməsə də görünsün) */
+  .detail-poster .play-hover i {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    font-size: 0;
+    background: rgba(0, 0, 0, 0.55);
+    border: 2px solid #e50914;
+  }
+  .detail-poster .play-hover i::before { content: none; }
+  .detail-poster .play-hover i::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-35%, -50%);
+    border-style: solid;
+    border-width: 9px 0 9px 15px;
+    border-color: transparent transparent transparent #fff;
+  }
+
+  .detail-text { padding-top: 14px; }
+  .detail-headline {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 12px;
+    row-gap: 10px;
+    align-items: center;
+  }
+  .detail-headline h2 { grid-column: 1 / -1; font-size: 22px; font-weight: 700; line-height: 1.2; }
+
+  /* "Watch link" → tam enli ağ Play düyməsi */
+  .watch-badge {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    border-radius: var(--m-radius);
+    background: #fff;
+    color: #000;
+    font-size: 0;
+  }
+  .watch-badge::before {
+    content: "";
+    border-style: solid;
+    border-width: 7px 0 7px 12px;
+    border-color: transparent transparent transparent #000;
+  }
+  .watch-badge::after { content: "Play"; font-size: 16px; font-weight: 700; }
+
+  /* My List düyməsi: ikon + yazı, Play-in altında */
+  .fav-btn {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: auto;
+    height: auto;
+    margin: 2px 0 0;
+    padding: 6px 0 0;
+    flex-direction: column;
+    gap: 4px;
+    border: 0;
+    border-radius: 0;
+    background: none !important;
+    color: var(--white-color);
+    font-size: 11px;
+    justify-self: start;
+  }
+  .fav-btn i { font-size: 22px; }
+  .fav-btn::after { content: "My List"; color: var(--m-muted); }
+  .fav-btn.active i { color: #0feffd; }
+
+  .detail-desc { margin: 16px 0 10px; font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, 0.85); }
+  .detail-rating { background: none; padding: 0; color: #46d369; font-weight: 700; }
+  .detail-meta { grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 18px 0; }
+  .detail-sub { font-size: 16px; }
+  .detail-cast { flex-wrap: nowrap; scrollbar-width: none; }
+  .detail-cast::-webkit-scrollbar { display: none; }
+  .cast-item { flex: 0 0 auto; }
+  .detail-comments { margin: 28px 0; }
+  .comment { border-radius: var(--m-radius); }
+
+  /* Fragman modalı: tam ekran */
+  .detail-modal { padding: 0; align-items: center; }
+  .detail-modal-box { width: 100%; border-radius: 0; }
+
+  /* ===== ACCOUNT ===== */
   .avatar-container { width: 160px; height: 160px; margin-bottom: 24px; }
   .input-wrapper, .save-btn { height: 52px; }
-
-  /* Detail */
-  .detail-hero { height: 220px; }
-  .detail-hero-title h1 { font-size: 18px; }
-  .detail-headline h2 { font-size: 22px; }
-  .detail-meta { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .detail-cast { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 8px; scrollbar-width: none; }
-  .cast-item { flex: 0 0 auto; }
-  .comment-form input { font-size: 16px; } /* iOS zoom olmasın */
-
-  /* iOS input zoom-un qarşısı */
-  .search-input, .input-wrapper input { font-size: 16px; }
 }

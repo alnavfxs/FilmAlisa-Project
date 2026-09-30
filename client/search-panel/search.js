@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let loaded = false; // filmlər gəlməmiş "tapılmadı" səhifəsinə yönləndirməyək
   let searchRequested = false; // sorğu göndərilib, amma filmlər hələ yüklənməyib
   let loadError = ""; // yükləmə uğursuz olubsa, axtarışda bu mesaj göstərilir
+  const cancelBtn = document.getElementById("searchCancel");
+  const phone = window.matchMedia("(max-width: 600px)");
+  const PHONE_LIST_SIZE = 12; // telefonda "Movies & TV" siyahısının uzunluğu
 
   // Grid-in həmin an neçə sütunu var (ekran enindən asılıdır) → dəqiq 1 sıra
   function columnCount() {
@@ -21,19 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderSuggested() {
     if (!loaded || !allMovies.length) {
       suggestedTitle.hidden = true;
+      resultsGrid.classList.remove("is-list");
       resultsGrid.innerHTML = "";
       return;
     }
+    /* Telefon: Figma-dakı kimi "Movies & TV" siyahısı; desktop/planşet: 1 sıra */
+    const isPhone = phone.matches;
     const top = [...allMovies]
       .sort((a, b) => (Number(b.imdb) || 0) - (Number(a.imdb) || 0))
-      .slice(0, columnCount());
+      .slice(0, isPhone ? PHONE_LIST_SIZE : columnCount());
+    suggestedTitle.textContent = isPhone ? "Movies & TV" : "Suggested for you";
     suggestedTitle.hidden = false;
+    resultsGrid.classList.toggle("is-list", isPhone);
     resultsGrid.innerHTML = top.map(cardHtml).join("");
     initMovieCards(resultsGrid);
   }
 
   function renderResults(list) {
     suggestedTitle.hidden = true;
+    resultsGrid.classList.remove("is-list");
     resultsGrid.innerHTML = list.length
       ? list.map(cardHtml).join("")
       : emptyState("No results found.");
@@ -105,8 +114,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") handleSearch();
   });
 
+  // Mobil "Cancel": yazı olanda görünür, basanda sahəni təmizləyir
+  const syncCancel = () => {
+    if (cancelBtn) cancelBtn.hidden = !searchInput.value;
+  };
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      searchRequested = false;
+      syncCancel();
+      clearResults();
+      searchInput.focus();
+    });
+  }
+
   // İnput tam silinəndə nəticə sahəsi yenidən boşalır
   searchInput.addEventListener("input", () => {
+    syncCancel();
     if (!searchInput.value.trim()) {
       searchRequested = false;
       clearResults();

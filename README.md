@@ -15,6 +15,14 @@ Film axtarış platforması: istifadəçi tərəfi (client) və admin panel. Saf
 - Filmlər, kateqoriyalar, aktyorlar üzərində CRUD
 - İstifadəçilər, şərhlər və əlaqə mesajlarının idarəsi
 
+## Mobil dizayn
+
+Client səhifələri (home, search, favourite, detail, account, 404) `global/css/layout/mobile.css` ilə Figma mobil şablonuna uyğundur:
+
+- `≤900px` — sidebar aşağı tab bara çevrilir (ikon + yazı)
+- `≤600px` — telefon dizaynı: home (üst bar, tam ekran hero, ağ Play düyməsi, kiçik poster sıraları), search ("Movies & TV" siyahısı, `Cancel`, 3 sütunlu nəticə), detail (yuxarıda fragman, tam enli Play, My List)
+
+
 ## Quraşdırma
 
 Build tələb olunmur. Layihəni **lokal server** ilə aç (`file://` ilə API sorğuları işləməyə bilər):

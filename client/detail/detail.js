@@ -21,6 +21,7 @@ async function init() {
   renderInfo();
   setupFavourite();
   setupModal();
+  setupHoverPreview();
   renderSimilar();
   setupComments();
 }
@@ -194,6 +195,80 @@ function setupModal() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !modal.hidden) close();
   });
+}
+
+/* Hover önizləmə: mouse posterin üstünə gələndə fragman klik etmədən səssiz başlayır,
+   çıxanda dayanır. Toxunma cihazlarında poster ekranda görünən kimi səssiz oynayır.
+   Klik isə əvvəlki kimi tam modalı açır. */
+function setupHoverPreview() {
+  const btn = $("posterBtn");
+  const trailer = getTrailerSource(movie.fragman);
+  if (!trailer) return; // fragman yoxdursa önizləmə də yoxdur
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion) return;
+
+  const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  let layer = null;
+  let timer = null;
+
+  const start = () => {
+    if (layer || !modal_isClosed()) return;
+    layer = document.createElement("span");
+    layer.className = "detail-preview";
+    layer.setAttribute("aria-hidden", "true");
+
+    if (trailer.type === "youtube") {
+      const id = new URL(trailer.src).pathname.split("/").pop();
+      const frame = document.createElement("iframe");
+      frame.src =
+        `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1` +
+        `&playlist=${id}&rel=0&playsinline=1&modestbranding=1&disablekb=1`;
+      frame.title = "";
+      frame.tabIndex = -1;
+      frame.allow = "autoplay; encrypted-media";
+      layer.append(frame);
+    } else {
+      const video = document.createElement("video");
+      video.src = trailer.src;
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.tabIndex = -1;
+      layer.append(video);
+    }
+    btn.append(layer);
+    btn.classList.add("is-previewing");
+  };
+
+  const stop = () => {
+    clearTimeout(timer);
+    if (!layer) return;
+    layer.remove(); // iframe/video silinir → oynatma dayanır
+    layer = null;
+    btn.classList.remove("is-previewing");
+  };
+
+  const modal_isClosed = () => $("modal").hidden;
+
+  if (canHover) {
+    btn.addEventListener("pointerenter", () => {
+      clearTimeout(timer);
+      timer = setTimeout(start, 250); // təsadüfi keçişdə yüklənməsin
+    });
+    btn.addEventListener("pointerleave", stop);
+    btn.addEventListener("focus", () => (timer = setTimeout(start, 250)));
+    btn.addEventListener("blur", stop);
+  } else if ("IntersectionObserver" in window) {
+    new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? start() : stop()),
+      { threshold: 0.6 },
+    ).observe(btn);
+  }
+
+  btn.addEventListener("click", stop); // modal açılanda səs iki dəfə gəlməsin
+  document.addEventListener("visibilitychange", () => document.hidden && stop());
 }
 
 /* Eyni kateqoriyadan digər filmlər — home-dakı kimi slider (scrollbar yox, ox düymələri + drag/swipe) */
