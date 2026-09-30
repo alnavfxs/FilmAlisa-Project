@@ -36,14 +36,21 @@ async function init() {
   }
 
   renderHero(withMovies);
-  renderRows(content, shuffle(withMovies));
+  /* Kateqoriyalar film sayına görə çoxdan aza doğru sıralanır (bərabər olanda ada görə) */
+  const sorted = withMovies
+    .slice()
+    .sort(
+      (a, b) =>
+        b.movies.length - a.movies.length ||
+        String(a.name).localeCompare(String(b.name)),
+    );
+  renderRows(content, sorted);
 }
 
 /* Hero: təsadüfi 4 film avtomatik slayd kimi dəyişir.
-   Vaxtı progress zolağının CSS animasiyası idarə edir (animationend → növbəti slayd),
-   ona görə hover-də dayandırmaq və dot-a klikləmək sinxron qalır. */
+   Vaxtı sadə taymer idarə edir; mouse üstünə gələndə də dayanmır. */
 const HERO_SLIDE_COUNT = 4;
-const HERO_INTERVAL_MS = 5000;
+const HERO_INTERVAL_MS = 3000;
 
 function renderHero(categories) {
   const byId = new Map();
@@ -93,7 +100,7 @@ function renderHero(categories) {
     location.href = detailUrl(picks[current].id);
   };
 
-  /* Tək film varsa slayd / dot lazım deyil */
+  /* Tək film varsa slayd lazım deyil */
   if (picks.length === 1) {
     current = 0;
     slideEls[0].classList.add("is-active");
@@ -101,27 +108,11 @@ function renderHero(categories) {
     return;
   }
 
-  const dots = document.createElement("div");
-  dots.className = "hero-dots";
-  dots.innerHTML = picks
-    .map(
-      (m) =>
-        `<button type="button" class="hero-dot" aria-label="Show ${esc(m.title)}"><span></span></button>`,
-    )
-    .join("");
-  hero.append(dots);
-  const dotEls = [...dots.children];
-
   function show(i) {
     const isFirst = current === -1;
     current = i;
 
     slideEls.forEach((el, k) => el.classList.toggle("is-active", k === i));
-    dotEls.forEach((el, k) => {
-      el.classList.toggle("is-active", k === i);
-      el.classList.toggle("is-done", k < i);
-      el.setAttribute("aria-current", k === i ? "true" : "false");
-    });
 
     clearTimeout(textTimer);
     if (isFirst) {
@@ -135,14 +126,31 @@ function renderHero(categories) {
     }
   }
 
-  dotEls.forEach((dot, k) => {
-    dot.addEventListener("click", () => k !== current && show(k));
-    dot.firstElementChild.addEventListener("animationend", () => {
-      if (k === current) show((current + 1) % picks.length);
-    });
+  /* Avtomatik keçid: hər 3 saniyədən bir növbəti slayd */
+  let autoTimer = null;
+  const stopAuto = () => clearTimeout(autoTimer);
+  const startAuto = () => {
+    stopAuto();
+    autoTimer = setTimeout(() => {
+      show((current + 1) % picks.length);
+      startAuto();
+    }, HERO_INTERVAL_MS);
+  };
+
+  /* Tab gizlidirsə dayansın ki, qayıdanda sürətli keçidlər olmasın */
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAuto();
+    else startAuto();
   });
 
   show(0);
+
+  /* Bütün şəkillər tam yüklənib dekod olunandan sonra keçid başlasın:
+     yarımçıq yüklənmiş (bulanıq/kəsik) şəkil görünməsin */
+  const imgs = [...slides.querySelectorAll("img")];
+  Promise.allSettled(
+    imgs.map((img) => (img.decode ? img.decode() : Promise.resolve())),
+  ).then(startAuto);
 }
 
 function renderRows(content, categories) {

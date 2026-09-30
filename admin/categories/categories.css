@@ -114,6 +114,12 @@
   font-weight: 600;
 }
 
+/* Pagination cədvəlin eni qədər olsun → düz cədvəlin altında ortalanır */
+.table-pager {
+  width: 100%;
+  max-width: 450px;
+}
+
 .table-btn {
   width: 32px;
   height: 32px;
@@ -257,5 +263,11 @@
   .table_content {
     margin: 0 16px;
     max-width: none;
+  }
+
+  .table-pager {
+    width: auto;
+    max-width: none;
+    margin: 0 16px;
   }
 }
