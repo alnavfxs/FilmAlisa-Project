@@ -1,0 +1,164 @@
+/* ===========================================
+   TOAST / ALERT — bütün səhifələr üçün ortaq
+   yaradılır: global/js/core/api.js → toast(message, type)
+   =========================================== */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 360px;
+  pointer-events: none;
+}
+
+.toast {
+  position: relative;
+  pointer-events: auto;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 14px 34px 16px 16px;
+  border-radius: 12px;
+  background-color: var(--surface-elevated-color);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--toast-accent, var(--input-color));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  color: var(--white-color);
+  font-family: var(--font-primary);
+  font-size: var(--fs-s14);
+  line-height: var(--lh-h24);
+
+  overflow: hidden;
+  animation:
+    toast-in 0.25s ease forwards,
+    toast-out 0.25s ease forwards 3.75s;
+}
+
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--toast-accent, var(--input-color));
+  opacity: 0.55;
+  animation: toast-progress 4s linear forwards;
+}
+
+.toast__icon {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: var(--fw-bold);
+  background: var(--toast-tint, rgba(255, 255, 255, 0.08));
+  color: var(--toast-accent, var(--white-color));
+}
+
+.toast__message {
+  flex: 1;
+  padding-top: 2px;
+  word-break: break-word;
+}
+
+.toast__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--placeholder-color);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.toast__close:hover {
+  color: var(--white-color);
+}
+
+/* Uğur */
+.toast--success {
+  --toast-accent: var(--success-color);
+  --toast-tint: var(--success-transparent-20);
+}
+.toast--success .toast__icon::before {
+  content: "✓";
+}
+
+/* Xəta */
+.toast--error {
+  --toast-accent: var(--error-color);
+  --toast-tint: var(--error-transparent-20);
+}
+.toast--error .toast__icon::before {
+  content: "✕";
+}
+
+/* Məlumat (əgər gələcəkdə istifadə olunsa) */
+.toast--info {
+  --toast-accent: var(--info-color);
+  --toast-tint: rgba(6, 182, 212, 0.18);
+}
+.toast--info .toast__icon::before {
+  content: "i";
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  .toast-container {
+    left: 16px;
+    right: 16px;
+    top: 16px;
+    max-width: none;
+  }
+}

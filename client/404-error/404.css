@@ -1,5 +1,5 @@
-@import url(../../global/global.css);
-@import url(../../global/app-sidebar.css);
+@import url(../../global/css/global.css);
+@import url(../../global/css/layout/app-sidebar.css);
 
 body {
   background-color: var(--background-color);
@@ -11,26 +11,13 @@ body {
    404 PAGE — LAYOUT
    =========================================== */
 
-.app-layout {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  min-height: 800px;
-  background-color: var(--background-color);
-  border-radius: var(--fs-s16);
-  overflow: hidden;
-}
-
-/* ===========================================
-   404 CONTENT
-   =========================================== */
-
 .content {
-  margin-left: 92px;
+  margin-left: 72px; /* sidebar eni */
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 48px 24px;
 }
 
 .not-found {
@@ -38,32 +25,169 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 520px;
+  width: 100%;
+  max-width: 560px;
 }
 
 .not-found-img {
-  width: 320px;
-  margin-bottom: 40px;
-}
-
-.not-found-title {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.not-found-text {
-  color: var(--white-transparent-60);
-  font-size: 16px;
+  width: min(320px, 70%);
+  height: auto;
   margin-bottom: 32px;
 }
 
-.go-home-btn {
+/* ===========================================
+   404 TEXT
+   =========================================== */
+
+.not-found-badge {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 6px 14px;
+  border: 1px solid rgba(15, 239, 253, 0.35);
+  border-radius: 999px;
+  background: rgba(15, 239, 253, 0.08);
+  color: #0feffd;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.not-found-title {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.not-found-text {
+  max-width: 44ch;
+  margin: 0 0 20px;
+  color: var(--white-transparent-60);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Axtarılan söz */
+.not-found-query {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  margin: 0 0 32px;
+  padding: 10px 16px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 10px;
+  background: var(--surface-color);
+  color: var(--white-transparent-90);
+  font-size: 14px;
+}
+
+.not-found-query[hidden] {
+  display: none;
+}
+
+.not-found-query i {
+  flex-shrink: 0;
+  color: var(--placeholder-color);
+}
+
+.not-found-query span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ===========================================
+   404 ACTIONS
+   =========================================== */
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.nf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 160px;
+  height: 48px;
+  padding: 0 28px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.nf-btn[hidden] {
+  display: none;
+}
+
+.nf-btn:hover {
+  transform: translateY(-1px);
+}
+
+.nf-btn:focus-visible {
+  outline: 2px solid #0feffd;
+  outline-offset: 3px;
+}
+
+.nf-btn--primary {
   background-color: var(--button-color);
   color: var(--white-color);
-  text-decoration: none;
-  padding: 14px 40px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+}
+
+.nf-btn--primary:hover {
+  background-color: var(--hover-color);
+  color: var(--white-color);
+}
+
+/* Go Home — sidebar-dakı aktiv ikonla eyni neon rəng (#0feffd) və parıltı */
+.nf-btn--ghost {
+  border-color: #0feffd;
+  background: transparent;
+  color: #0feffd;
+  box-shadow: 0 0 10px rgba(15, 239, 253, 0.3);
+}
+
+.nf-btn--ghost:hover {
+  background: rgba(15, 239, 253, 0.15);
+  color: #0feffd;
+  box-shadow: 0 0 16px rgba(15, 239, 253, 0.6);
+}
+
+/* ===========================================
+   RESPONSIVE (sidebar ≤900px-də aşağı tab bar olur — mobile.css)
+   =========================================== */
+
+@media (max-width: 900px) {
+  .content {
+    min-height: calc(100vh - 76px);
+    padding: 32px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .not-found-img {
+    width: min(240px, 70%);
+    margin-bottom: 24px;
+  }
+
+  .not-found-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nf-btn {
+    width: 100%;
+  }
 }

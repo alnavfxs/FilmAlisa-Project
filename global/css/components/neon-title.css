@@ -1,0 +1,26 @@
+/* ===========================================
+   NEON TITLE — səhifə və bölmə başlıqları
+   Sidebar-dakı aktiv ikonlarla eyni rəng: --neon-color + yaşıl parıltı.
+   - .page-title : "Search result", "Favorite movies"  (güclü parıltı)
+   - .row-title  : home / detail sıra başlıqları       (daha zərif parıltı)
+   =========================================== */
+
+.page-title {
+  color: var(--neon-color, #0feffd);
+  text-shadow:
+    0 0 6px rgba(15, 239, 253, 0.55),
+    0 0 16px var(--success-transparent-50);
+}
+
+.row-title {
+  color: var(--neon-color, #0feffd);
+  text-shadow:
+    0 0 5px rgba(15, 239, 253, 0.4),
+    0 0 12px var(--success-transparent-30);
+}
+
+.page-title .title-arrow,
+.row-title .title-arrow {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px var(--success-transparent-50));
+}

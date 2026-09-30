@@ -37,17 +37,22 @@ index.html              Landing səhifəsi (style/style.css)
 client/                 İstifadəçi səhifələri (home, detail, search-panel, favourite, account, login, register)
 admin/                  Admin səhifələri (dashboard, movies, categories, actors, users, comments, contact)
 global/
-  api.js                API qatı: sorğu, token/sessiya, xəta idarəsi, toast, confirmDialog
-  layout.js             Ortaq sidebar (admin + client)
-  movie-ui.js           Film kartı, ulduzlar, boş vəziyyət köməkçiləri
-  admin-pagination.js   Admin cədvəlləri üçün səhifələmə
-  landing.js            Landing header (Sign in / profil menyusu), Contact formu
+  css/
+    global.css            Giriş nöqtəsi: bütün səhifələr yalnız bunu import edir
+    base/                 reset, variables (dizayn tokenləri), body, autofill
+    components/           movie-card, toast, confirm-dialog, neon-title, admin-modal, admin-pagination, admin-ui, text-popover
+    layout/               admin-layout, app-sidebar, mobile (responsiv)
+  js/
+    core/api.js           API qatı: sorğu, token/sessiya, xəta idarəsi, toast, confirmDialog
+    components/           layout (ortaq sidebar), movie-ui (film kartı, ulduzlar), admin-pagination, text-popover
+    pages/landing.js      Landing header (Sign in / profil menyusu), Contact formu
+    data/movies-data.js   Köhnə statik film datası (hazırda heç bir səhifə istifadə etmir)
 assets/                 Şəkillər və ikonlar
 ```
 
 ## Arxitektura qeydləri
 
-- Bütün şəbəkə sorğuları `global/api.js` üzərindən keçir (`api.*` / `api.admin.*`). Rol (client/admin) sorğu yoluna görə seçilir, `401` cavabında sessiya təmizlənib login səhifəsinə yönləndirilir.
+- Bütün şəbəkə sorğuları `global/js/core/api.js` üzərindən keçir (`api.*` / `api.admin.*`). Rol (client/admin) sorğu yoluna görə seçilir, `401` cavabında sessiya təmizlənib login səhifəsinə yönləndirilir.
 - Səhifələr skriptləri bu ardıcıllıqla yükləyir: `api.js` → `layout.js` → `movie-ui.js` / `admin-pagination.js` → səhifənin öz JS-i.
 - İstifadəçidən və ya API-dən gələn mətn HTML-ə yazılanda **həmişə** `esc()` ilə escape olunur.
 - Qoruma: client səhifələri `requireClientAuth()`, admin səhifələri `requireAuth("admin")` ilə açılır. Bu yalnız UX qoruması; real icazə nəzarəti serverdədir.

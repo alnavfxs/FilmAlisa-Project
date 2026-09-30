@@ -86,3 +86,13 @@
   cursor: pointer;
   font: inherit;
 }
+/* Logout: aktiv ikonlar kimi yaşıl neon (#0FEFFD kontur + yaşıl parıltı) */
+.sidebar-link.sidebar-logout .svg-icon {
+  opacity: 1;
+  filter: drop-shadow(0 0 10px var(--success-transparent-50));
+}
+
+.sidebar-link.sidebar-logout:hover .svg-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px var(--success-color));
+}

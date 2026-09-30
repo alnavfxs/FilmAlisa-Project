@@ -1,0 +1,114 @@
+/* ===========================================
+   CONFIRM DIALOG — window.confirm() əvəzinə
+   yaradılır: global/js/core/api.js → confirmDialog(message, opts)
+   =========================================== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  background: rgba(6, 6, 10, 0.6);
+  backdrop-filter: blur(2px);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.confirm-overlay--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.confirm-box {
+  width: min(340px, 100%);
+  background-color: var(--surface-elevated-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+
+  transform: translateY(14px) scale(0.97);
+  transition: transform 0.18s ease;
+}
+
+.confirm-overlay--active .confirm-box {
+  transform: translateY(0) scale(1);
+}
+
+.confirm-box__icon {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white-color);
+  font-size: 18px;
+  font-weight: var(--fw-bold);
+}
+.confirm-box__icon::before {
+  content: "?";
+}
+.confirm-box__icon--danger {
+  background: var(--error-transparent-20);
+  color: var(--error-color);
+}
+.confirm-box__icon--danger::before {
+  content: "!";
+}
+
+.confirm-box__message {
+  color: var(--white-color);
+  font-family: var(--font-primary);
+  font-size: var(--fs-s16);
+  line-height: var(--lh-h24);
+  margin-bottom: 22px;
+}
+
+.confirm-box__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-box__btn {
+  flex: 1;
+  padding: 11px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--white-color);
+  font-family: var(--font-primary);
+  font-size: var(--fs-s14);
+  font-weight: var(--fw-semreg);
+  cursor: pointer;
+  transition: background-color 0.2s ease, filter 0.2s ease;
+}
+
+.confirm-box__btn--cancel:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.confirm-box__btn--ok {
+  border-color: var(--accent-color);
+  background-color: var(--accent-color);
+  color: #06060a;
+  font-weight: var(--fw-bold);
+}
+.confirm-box__btn--ok:hover {
+  filter: brightness(1.08);
+}
+
+.confirm-box__btn--danger {
+  border-color: var(--error-color);
+  background-color: var(--error-color);
+  color: var(--white-color);
+}

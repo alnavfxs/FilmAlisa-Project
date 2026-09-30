@@ -1,0 +1,20 @@
+/* ===========================================
+   GLOBAL STİL GİRİŞ NÖQTƏSİ
+   Bütün səhifələr yalnız bunu import edir. Sıra vacibdir.
+   =========================================== */
+
+/* Şrift */
+@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* Base */
+@import url("./base/reset.css");
+@import url("./base/variables.css");
+@import url("./base/body.css");
+
+/* Ortaq komponentlər */
+@import url("./components/movie-card.css");
+@import url("./components/toast.css");
+@import url("./components/confirm-dialog.css");
+
+/* Brauzer düzəlişləri */
+@import url("./base/autofill.css");
