@@ -12,16 +12,16 @@
       <!-- app səhifələri üçün: data-type="app" data-active="search" -->
 
    2) Səhifənin öz JS-indən ƏVVƏL bunu əlavə et:
-      <script src="../../global/layout.js"></script>
+      <script src="../../global/js/components/layout.js"></script>
 
    Qeyd: admin sidebar-dakı Logout düyməsinin təsdiq dialoqu da
    bu fayl tərəfindən avtomatik qoşulur — səhifənin öz JS-ində
    ayrıca setupLogout() yazmağa ehtiyac yoxdur.
    ========================================================= */
 
-// layout.js global/ içindədir → BASE layihənin kökünə (../) işarə edir.
+// layout.js global/js/components/ içindədir → BASE layihənin kökünə (../../../) işarə edir.
 // Beləliklə saytı GitHub Pages alt-qovluğunda (/repo-adi/) da yerləşdirsən yollar pozulmur.
-const BASE = new URL("../", document.currentScript.src).href;
+const BASE = new URL("../../../", document.currentScript.src).href;
 
 const ADMIN_NAV = [
   {
@@ -129,12 +129,14 @@ function renderAppSidebar(active) {
 
   return `
     <aside class="sidebar">
-      <a href="${BASE}index.html" class="sidebar-logo" title="Back to Landing Page">
-        <img src="${BASE}assets/images/filmalisa.svg" alt="Filmalisa Logo" class="svg-logo" />
-      </a>
+      <div class="sidebar-logo">
+        <a href="${BASE}index.html" class="sidebar-link" title="Back to Landing Page">
+          <img src="${BASE}assets/images/filmalisa.svg" alt="Filmalisa Logo" class="svg-logo" />
+        </a>
+      </div>
       <nav class="sidebar-nav">${links}</nav>
       <button type="button" class="sidebar-link sidebar-logout" id="appLogoutBtn" title="Logout">
-        <img src="${BASE}assets/icons/Logout.svg" alt="Logout" class="svg-icon" />
+        <img src="${BASE}assets/icons/logout-sidebar.svg" alt="Logout" class="svg-icon" />
       </button>
     </aside>`;
 }

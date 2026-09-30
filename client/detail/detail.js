@@ -196,7 +196,7 @@ function setupModal() {
   });
 }
 
-/* Eyni kateqoriyadan digər filmlər */
+/* Eyni kateqoriyadan digər filmlər — home-dakı kimi slider (scrollbar yox, ox düymələri + drag/swipe) */
 async function renderSimilar() {
   const list = $("similarList");
   if (!movie.category) {
@@ -207,10 +207,13 @@ async function renderSimilar() {
     const categories = await api.categories();
     const cat = categories.find((c) => c.id === movie.category.id);
     const similar = (cat?.movies || []).filter((m) => String(m.id) !== String(movieId));
-    list.innerHTML = similar.length
-      ? similar.map(cardHtml).join("")
-      : emptyState("No similar movies.");
+    if (!similar.length) {
+      list.innerHTML = emptyState("No similar movies.");
+      return;
+    }
+    list.innerHTML = sliderHtml(similar.map(cardHtml).join(""), "movie-scroll-large");
     initMovieCards(list);
+    initSlider(list.querySelector(".movie-slider"));
   } catch {
     list.innerHTML = emptyState("Could not load similar movies.");
   }

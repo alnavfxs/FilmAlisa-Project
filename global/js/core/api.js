@@ -3,7 +3,7 @@
    Bütün səhifələr fetch-i birbaşa yox, bu fayldan istifadə edir:
    base URL, token, xəta idarəsi, login/logout, qoruma (requireAuth).
    Səhifədən ƏVVƏL yüklənməlidir:
-   <script src="../../global/api.js"></script>
+   <script src="../../global/js/core/api.js"></script>
 
    Məzmun:
    1. Konfiqurasiya (API_BASE, SITE_ROOT, TOKEN_KEY...)
@@ -18,8 +18,8 @@
    =========================================== */
 const API_BASE = "https://api.sarkhanrahimli.dev/api/filmalisa";
 
-// global/ içindədir → kök = "../" (alt-qovluqda deploy olunsa da işləyir)
-const SITE_ROOT = new URL("../", document.currentScript.src).href;
+// global/js/core/ içindədir → kök = "../../../" (alt-qovluqda deploy olunsa da işləyir)
+const SITE_ROOT = new URL("../../../", document.currentScript.src).href;
 const pageUrl = (path) => SITE_ROOT + path;
 
 const LOGIN_PAGE = {

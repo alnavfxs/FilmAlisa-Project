@@ -30,6 +30,7 @@
   --placeholder-color: #71717a;
   --placeholder-hover-color: #a1a1aa;
   --success-color: #22c55e;
+  --neon-color: #0feffd; /* neon cyan: sidebar aktiv ikonları, başlıqlar, kateqoriya etiketi */
   --error-color: #ef4444;
   --success-transparent-20: rgba(34, 197, 94, 0.18);
   --error-transparent-20: rgba(239, 68, 68, 0.18);

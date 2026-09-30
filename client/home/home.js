@@ -43,7 +43,7 @@ async function init() {
    Vaxtı progress zolağının CSS animasiyası idarə edir (animationend → növbəti slayd),
    ona görə hover-də dayandırmaq və dot-a klikləmək sinxron qalır. */
 const HERO_SLIDE_COUNT = 4;
-const HERO_INTERVAL_MS = 2000;
+const HERO_INTERVAL_MS = 5000;
 
 function renderHero(categories) {
   const byId = new Map();
@@ -65,9 +65,11 @@ function renderHero(categories) {
   slides.className = "hero-slides";
   slides.innerHTML = picks
     .map(
-      (m) => `
+      (m, i) => `
       <div class="hero-slide">
-        <img class="hero-bg" src="${esc(m.cover_url || FALLBACK_IMG)}" alt="" />
+        <img class="hero-bg" src="${esc(m.cover_url || FALLBACK_IMG)}" alt=""
+             decoding="async"${i === 0 ? ' fetchpriority="high"' : ""}
+             onerror="this.onerror=null;this.src=FALLBACK_IMG" />
       </div>`,
     )
     .join("");
@@ -151,93 +153,14 @@ function renderRows(content, categories) {
         <div class="row-header">
           <h2 class="row-title">
             ${esc(c.name)}
-            <img src="${pageUrl("assets/icons/arrow.svg")}" alt="arrow" class="title-arrow" />
+            <img src="${pageUrl("assets/icons/arrow-neon.svg")}" alt="arrow" class="title-arrow" />
           </h2>
         </div>
-        <div class="movie-slider">
-          <button type="button" class="slider-btn slider-btn--prev" aria-label="Previous movies" hidden>
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <div class="movie-scroll">
-            ${c.movies.map(cardHtml).join("")}
-          </div>
-          <button type="button" class="slider-btn slider-btn--next" aria-label="Next movies" hidden>
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
+        ${sliderHtml(c.movies.map(cardHtml).join(""))}
       </section>`,
     )
     .join("");
 
   initMovieCards(content);
   content.querySelectorAll(".movie-slider").forEach(initSlider);
-}
-
-
-/* Sətir slider-i: ox düymələri (desktop), mouse ilə dartma, mobildə swipe */
-function initSlider(slider) {
-  const track = slider.querySelector(".movie-scroll");
-  const prev = slider.querySelector(".slider-btn--prev");
-  const next = slider.querySelector(".slider-btn--next");
-
-  /* Başa/sona çatanda uyğun ox gizlənir; bütün filmlər sığırsa hər iki ox gizli qalır */
-  const update = () => {
-    const max = track.scrollWidth - track.clientWidth;
-    prev.hidden = track.scrollLeft <= 4;
-    next.hidden = track.scrollLeft >= max - 4;
-  };
-
-  /* Bir klik = görünən sahənin ~90%-i qədər sürüşmə */
-  const page = (dir) =>
-    track.scrollBy({ left: dir * track.clientWidth * 0.9, behavior: "smooth" });
-
-  prev.addEventListener("click", () => page(-1));
-  next.addEventListener("click", () => page(1));
-  track.addEventListener("scroll", update, { passive: true });
-  window.addEventListener("resize", update);
-
-  /* Mouse ilə dartma (touch cihazlarda brauzerin öz swipe-ı işləyir) */
-  let dragging = false;
-  let moved = false;
-  let startX = 0;
-  let startScroll = 0;
-
-  track.addEventListener("mousedown", (e) => {
-    if (e.button !== 0) return;
-    dragging = true;
-    moved = false;
-    startX = e.clientX;
-    startScroll = track.scrollLeft;
-  });
-
-  window.addEventListener("mousemove", (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - startX;
-    if (!moved && Math.abs(dx) > 5) {
-      moved = true;
-      track.classList.add("is-dragging");
-    }
-    if (moved) track.scrollLeft = startScroll - dx;
-  });
-
-  window.addEventListener("mouseup", () => {
-    dragging = false;
-    track.classList.remove("is-dragging");
-  });
-
-  /* Dartmadan sonra kartın klikini (detail səhifəsinə keçid) dayandır */
-  track.addEventListener(
-    "click",
-    (e) => {
-      if (!moved) return;
-      e.preventDefault();
-      e.stopPropagation();
-      moved = false;
-    },
-    true,
-  );
-
-  track.addEventListener("dragstart", (e) => e.preventDefault());
-
-  update();
 }

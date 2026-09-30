@@ -1,5 +1,6 @@
-@import url(../../global/global.css);
-@import url(../../global/app-sidebar.css);
+@import url(../../global/css/global.css);
+@import url(../../global/css/layout/app-sidebar.css);
+@import url(../../global/css/components/neon-title.css);
 
 body {
   background-color: var(--background-color);
@@ -102,7 +103,7 @@ body {
 }
 
 .category-tag {
-  color: var(--main-blue, #4a9eff);
+  color: var(--neon-color, #0feffd);
   font-size: 12px;
 }
 
