@@ -77,6 +77,11 @@
   overflow: hidden;
 }
 
+/* Pagination cədvəlin eni qədər olsun → düz cədvəlin altında ortalanır */
+.table-pager {
+  width: 95%;
+}
+
 .table_content thead tr {
   font-family: var(--db-font);
   font-weight: 400;
@@ -422,6 +427,10 @@
     margin: 0 16px;
     display: block;
     overflow-x: auto;
+  }
+
+  .table-pager {
+    margin: 0 16px;
   }
 
   .cell-overview {
