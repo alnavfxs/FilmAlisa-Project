@@ -283,7 +283,7 @@ async function renderSimilar() {
       return;
     }
     list.innerHTML = sliderHtml(similar.map(cardHtml).join(""), "movie-scroll-large");
-    initMovieCards(list);
+    initMovieCards(list, { preview: false }); // detail-də hover-də trailer açılmasın
     initSlider(list.querySelector(".movie-slider"));
   } catch {
     list.innerHTML = emptyState("Could not load similar movies.");

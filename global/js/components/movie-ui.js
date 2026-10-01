@@ -256,8 +256,9 @@ function cardHtml(m) {
 const canTilt = window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
   !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* Hover → tilt + trailer önizləmə, klik / Enter / Space → detail səhifəsi */
-function initMovieCards(scope = document) {
+/* Hover → tilt + trailer önizləmə, klik / Enter / Space → detail səhifəsi.
+   { preview: false } → hover-də trailer önizləməsi olmasın (detail səhifəsindəki oxşar filmlər) */
+function initMovieCards(scope = document, { preview = true } = {}) {
   scope.querySelectorAll(".movie-card[data-id]").forEach((card) => {
     if (card.dataset.ready) return;
     card.dataset.ready = "1";
@@ -287,8 +288,10 @@ function initMovieCards(scope = document) {
       card.addEventListener("pointerleave", () => setTilt("0deg", "0deg", "50%", "50%"));
     }
 
-    initCardPreview(card, wrap);
-    if (canPreview && !card.dataset.trailer) prefetchObserver?.observe(card);
+    if (preview) {
+      initCardPreview(card, wrap);
+      if (canPreview && !card.dataset.trailer) prefetchObserver?.observe(card);
+    }
 
     const go = () => (location.href = detailUrl(card.dataset.id));
     card.addEventListener("click", go);
