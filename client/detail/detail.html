@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="../../global/js/components/page-loader.js?v=1"></script>
     <title>filmalisa - detail</title>
     <!-- BOOTSTRAP -->
     <link
@@ -172,19 +173,15 @@
         <div class="detail-modal-media" id="modalMedia"></div>
         <div class="detail-modal-info">
           <h3 id="modalTitle"></h3>
-          <a
-            id="modalWatch"
-            class="play-btn"
-            target="_blank"
-            rel="noopener noreferrer"
-            ><i class="bi bi-play-fill"></i> Play</a
-          >
+          <button type="button" id="modalPlay" class="play-btn">
+            <i class="bi bi-play-fill"></i> Play
+          </button>
         </div>
       </div>
     </div>
 
     <script src="../../global/js/core/api.js?v=4"></script>
-    <script src="../../global/js/components/movie-ui.js"></script>
+    <script src="../../global/js/components/movie-ui.js?v=2"></script>
     <script src="./detail.js"></script>
   </body>
 </html>

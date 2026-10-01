@@ -97,51 +97,39 @@ async function setupFavourite() {
   });
 }
 
-/* Fragman linkini təhlükəsiz player mənbəyinə çevirir.
-   Dəstəklənir: youtube.com/watch?v=, youtu.be/, /embed/, /shorts/ və birbaşa .mp4/.webm/.ogg */
-function getTrailerSource(url) {
-  if (typeof url !== "string" || !url.trim()) return null;
-  const value = url.trim();
-
-  if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(value)) return { type: "file", src: value };
-
-  let parsed;
-  try {
-    parsed = new URL(value);
-  } catch {
-    return null; // yanlış format
-  }
-
-  const host = parsed.hostname.replace(/^(www|m)\./, "");
-  let id = null;
-
-  if (host === "youtu.be") {
-    id = parsed.pathname.slice(1);
-  } else if (host === "youtube.com" || host === "youtube-nocookie.com") {
-    if (parsed.pathname === "/watch") id = parsed.searchParams.get("v");
-    else id = (parsed.pathname.match(/^\/(?:embed|shorts|v)\/([\w-]{11})/) || [])[1];
-  }
-
-  if (!id || !/^[\w-]{11}$/.test(id)) return null;
-  return {
-    type: "youtube",
-    src: `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&playsinline=1`,
-  };
-}
-
-/* Modalın media hissəsini doldurur: fragman varsa video, yoxdursa cover şəkli */
-function renderModalMedia(box, trailer) {
+/* Modal açılanda yalnız cover şəkli + böyük Play düyməsi görünür (fragman hələ yüklənmir) */
+function renderModalCover(box, canPlay, onPlay) {
   box.replaceChildren();
 
-  if (trailer?.type === "youtube") {
+  const img = document.createElement("img");
+  img.src = movie.cover_url || FALLBACK_IMG;
+  img.alt = movie.title;
+  box.append(img);
+
+  if (canPlay) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "modal-play-overlay";
+    btn.setAttribute("aria-label", `Play ${movie.title} trailer`);
+    btn.innerHTML = '<i class="bi bi-play-fill"></i>';
+    btn.addEventListener("click", onPlay);
+    box.append(btn);
+  }
+}
+
+/* Fragmanı yalnız Play basılandan sonra yükləyir və oynadır */
+function renderModalTrailer(box, trailer) {
+  box.replaceChildren();
+
+  if (trailer.type === "youtube") {
     const frame = document.createElement("iframe");
-    frame.src = trailer.src;
+    frame.src = trailer.src; // autoplay=1 → istifadəçi klikindən sonra səslə başlayır
     frame.title = `${movie.title} — trailer`;
     frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
     frame.allowFullscreen = true;
     frame.referrerPolicy = "strict-origin-when-cross-origin";
     box.append(frame);
-  } else if (trailer?.type === "file") {
+  } else {
     const video = document.createElement("video");
     video.src = trailer.src;
     video.poster = movie.cover_url || "";
@@ -149,18 +137,16 @@ function renderModalMedia(box, trailer) {
     video.autoplay = true;
     video.playsInline = true;
     box.append(video);
-  } else {
-    const img = document.createElement("img");
-    img.src = movie.cover_url || FALLBACK_IMG;
-    img.alt = movie.title;
-    box.append(img);
+    video.play?.().catch(() => {});
   }
 }
 
-/* Poster üzərinə klik → fragman modalı */
+/* Poster üzərinə klik → modal açılır, fragman isə yalnız Play-dən sonra oynayır */
 function setupModal() {
   const modal = $("modal");
   const media = $("modalMedia");
+  const playBtn = $("modalPlay");
+  let trailer = null;
 
   /* Modal açıqkən arxa səhifə fokuslanmasın (Tab modaldan çıxmasın) */
   const setPageInert = (on) => {
@@ -170,13 +156,22 @@ function setupModal() {
     });
   };
 
-  const open = () => {
-    const trailer = getTrailerSource(movie.fragman);
+  /* Play: fragman varsa oynat; yoxdursa film linkini yeni tabda aç */
+  const play = () => {
+    if (trailer) {
+      if (!media.querySelector("iframe, video")) renderModalTrailer(media, trailer);
+      return;
+    }
+    if (movie.watch_url) window.open(movie.watch_url, "_blank", "noopener,noreferrer");
+    else toast("No trailer or watch link for this movie.", "error");
+  };
 
-    renderModalMedia(media, trailer);
+  const open = () => {
+    trailer = getTrailerSource(movie.fragman);
+
+    renderModalCover(media, Boolean(trailer), play);
     modal.classList.toggle("has-video", Boolean(trailer));
     $("modalTitle").textContent = movie.title;
-    $("modalWatch").href = movie.watch_url || "#";
     modal.hidden = false;
     setPageInert(true);
     $("modalClose").focus();
@@ -189,6 +184,7 @@ function setupModal() {
     $("posterBtn").focus();
   };
 
+  playBtn.addEventListener("click", play);
   $("posterBtn").addEventListener("click", open);
   $("modalClose").addEventListener("click", close);
   modal.addEventListener("click", (e) => e.target === modal && close());
