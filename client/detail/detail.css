@@ -80,10 +80,15 @@
     padding-left: 4px;
     font-size: 44px;
     color: #fff;
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    border: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #9b51e0, #0feffd, #9b51e0);
+    background-size: 200% 200%;
+    box-shadow: 0 0 22px rgba(155, 81, 224, 0.6);
+    animation:
+      playGradient 3s ease-in-out infinite,
+      playRing 1.8s ease-out infinite,
+      playBeat 1.8s ease-in-out infinite;
   }
 }
 
@@ -345,11 +350,14 @@
   padding-left: 4px;
   font-size: 44px;
   color: #fff;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 50%;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: linear-gradient(135deg, #9b51e0, #0feffd, #9b51e0);
+  background-size: 200% 200%;
+  box-shadow: 0 0 22px rgba(155, 81, 224, 0.6);
+  animation:
+    playGradient 3s ease-in-out infinite,
+    playRing 1.8s ease-out infinite,
+    playBeat 1.8s ease-in-out infinite;
 }
 
 .modal-play-overlay:focus-visible {
@@ -453,5 +461,29 @@
 
   .detail-meta {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Rəngli animasiyalı Play: gradient axır, halqa yayılır, ikon nəbz kimi döyünür */
+@keyframes playGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes playRing {
+  0% { box-shadow: 0 0 22px rgba(155, 81, 224, 0.6), 0 0 0 0 rgba(15, 239, 253, 0.55); }
+  70% { box-shadow: 0 0 22px rgba(155, 81, 224, 0.6), 0 0 0 22px rgba(15, 239, 253, 0); }
+  100% { box-shadow: 0 0 22px rgba(155, 81, 224, 0.6), 0 0 0 0 rgba(15, 239, 253, 0); }
+}
+
+@keyframes playBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-poster .play-hover i,
+  .modal-play-overlay i {
+    animation: none;
   }
 }
