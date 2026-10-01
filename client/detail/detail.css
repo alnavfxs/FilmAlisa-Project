@@ -67,9 +67,24 @@
   display: block;
 }
 
-.detail-poster:hover .play-hover,
-.detail-poster:focus-visible .play-hover {
-  opacity: 1;
+/* Poster üzərində həmişə görünən Play ikonu (hover effekti yoxdur — yalnız klikdə modal açılır) */
+@media (min-width: 601px) {
+  .detail-poster .play-hover {
+    opacity: 1;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent 50%);
+  }
+
+  .detail-poster .play-hover i {
+    width: 72px;
+    height: 72px;
+    padding-left: 4px;
+    font-size: 44px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 /* Hover önizləmə qatı (fragman posterin üstündə oynayır, klik düyməyə keçir) */
