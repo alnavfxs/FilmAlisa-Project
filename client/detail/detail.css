@@ -298,8 +298,48 @@
 }
 
 .detail-modal-media {
+  position: relative;
   aspect-ratio: 16 / 9;
   background: #000;
+}
+
+/* Cover üzərində böyük Play — fragman yalnız bunun (və ya aşağıdakı Play-in) klikindən sonra başlayır */
+.modal-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-play-overlay:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-play-overlay i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 72px;
+  height: 72px;
+  padding-left: 4px;
+  font-size: 44px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-play-overlay:focus-visible {
+  outline: 2px solid #0feffd;
+  outline-offset: -4px;
 }
 
 .detail-modal-media img,
@@ -346,9 +386,11 @@
   border-radius: 6px;
   background: #fff;
   color: #000;
+  border: 0;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .play-btn:hover {

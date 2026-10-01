@@ -188,7 +188,16 @@ const formatDate = (iso) =>
 /* ===========================================
    4. ƏSAS SORĞU FUNKSİYASI
    =========================================== */
-async function apiRequest(path, { method = "GET", body, role, auth = true } = {}) {
+async function apiRequest(path, opts) {
+  window.PageLoader?.begin(); // yüklənmə ekranı sorğular bitənə qədər qalır
+  try {
+    return await apiRequestRaw(path, opts);
+  } finally {
+    window.PageLoader?.end();
+  }
+}
+
+async function apiRequestRaw(path, { method = "GET", body, role, auth = true } = {}) {
   role = role || (path.startsWith("/admin") ? "admin" : "client");
 
   const headers = { Accept: "application/json", "Accept-Language": "en" };

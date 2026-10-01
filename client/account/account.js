@@ -93,11 +93,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===========================================
   // PASSWORD SHOW/HIDE TOGGLE
   // ===========================================
-  const passwordWrapper = passwordInput.closest(".input-wrapper");
-  const passwordToggleIcon = passwordWrapper.querySelector(".action-icon");
+  const passwordToggle = document.querySelector("#passwordToggle");
+  const passwordToggleIcon = passwordToggle.querySelector(".action-icon");
 
-  passwordToggleIcon.addEventListener("click", () => {
-    passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+  passwordToggle.addEventListener("click", () => {
+    const show = passwordInput.type === "password";
+    passwordInput.type = show ? "text" : "password";
+    // açıq göz = gizlidir (klik edəndə göstərər), üstündən xətt çəkilmiş göz = göstərilir
+    passwordToggleIcon.src = `../../assets/icons/${show ? "eye-off" : "passwordtog"}.svg`;
+    passwordToggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
   });
 
   // ===========================================

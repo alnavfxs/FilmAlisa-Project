@@ -149,9 +149,27 @@ body {
 
 .input-icon,
 .action-icon {
-  width: 20px;
-  height: 20px;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
+}
+
+/* Şifrə göstər/gizlət düyməsi (klaviatura ilə də işləyir) */
+.password-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid var(--button-color);
 }
 
 .input-wrapper input {

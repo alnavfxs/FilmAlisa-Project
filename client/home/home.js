@@ -74,7 +74,7 @@ function renderHero(categories) {
     .map(
       (m, i) => `
       <div class="hero-slide">
-        <img class="hero-bg" src="${esc(m.cover_url || FALLBACK_IMG)}" alt=""
+        <img class="hero-bg" src="${esc(m.cover_url || FALLBACK_IMG)}" alt="" draggable="false"
              decoding="async"${i === 0 ? ' fetchpriority="high"' : ""}
              onerror="this.onerror=null;this.src=FALLBACK_IMG" />
       </div>`,
@@ -108,11 +108,25 @@ function renderHero(categories) {
     return;
   }
 
+  /* Nöqtə göstəriciləri (yalnız telefonda görünür, CSS idarə edir) */
+  const dots = document.createElement("div");
+  dots.className = "hero-dots";
+  dots.setAttribute("role", "tablist");
+  dots.innerHTML = picks
+    .map((_, k) => `<button type="button" class="hero-dot" role="tab" aria-label="Slide ${k + 1}"></button>`)
+    .join("");
+  hero.append(dots);
+  const dotEls = [...dots.children];
+
   function show(i) {
     const isFirst = current === -1;
     current = i;
 
     slideEls.forEach((el, k) => el.classList.toggle("is-active", k === i));
+    dotEls.forEach((el, k) => {
+      el.classList.toggle("is-active", k === i);
+      el.setAttribute("aria-selected", k === i);
+    });
 
     clearTimeout(textTimer);
     if (isFirst) {
@@ -144,6 +158,30 @@ function renderHero(categories) {
   });
 
   show(0);
+
+  /* Əllə çevirmə: barmaqla sola/sağa sürüşdür və ya nöqtəyə toxun.
+     Əllə keçiddən sonra avtomatik sayğac sıfırdan başlayır. */
+  const go = (i) => {
+    show((i + picks.length) % picks.length);
+    startAuto();
+  };
+  dotEls.forEach((el, k) => el.addEventListener("click", () => go(k)));
+
+  let swipeX = null;
+  let swipeY = 0;
+  hero.addEventListener("pointerdown", (e) => {
+    if (e.target.closest("button")) return;
+    swipeX = e.clientX;
+    swipeY = e.clientY;
+  });
+  hero.addEventListener("pointerup", (e) => {
+    if (swipeX === null) return;
+    const dx = e.clientX - swipeX;
+    const dy = e.clientY - swipeY;
+    swipeX = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) go(current + (dx < 0 ? 1 : -1));
+  });
+  hero.addEventListener("pointercancel", () => (swipeX = null));
 
   /* Bütün şəkillər tam yüklənib dekod olunandan sonra keçid başlasın:
      yarımçıq yüklənmiş (bulanıq/kəsik) şəkil görünməsin */
