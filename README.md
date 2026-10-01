@@ -5,14 +5,12 @@ Film axtarış platforması: istifadəçi tərəfi (client) və admin panel. Saf
 ## Xüsusiyyətlər
 
 **İstifadəçi**
-
 - Qeydiyyat / giriş, profil (ad, şəkil, parol)
 - Ana səhifə: avtomatik dəyişən hero slaydı və kateqoriyalara görə film sıraları (ox düymələri, drag / swipe)
 - Film detalı: məlumat, aktyorlar, fragman modalı (YouTube / birbaşa video), şərhlər, oxşar filmlər
-- Axtarış və sevimlilər siyahısı.
+- Axtarış və sevimlilər siyahısı
 
 **Admin panel**
-
 - Dashboard statistikası
 - Filmlər, kateqoriyalar, aktyorlar üzərində CRUD
 - İstifadəçilər, şərhlər və əlaqə mesajlarının idarəsi
@@ -24,20 +22,21 @@ Client səhifələri (home, search, favourite, detail, account, 404) `global/css
 - `≤900px` — sidebar aşağı tab bara çevrilir (ikon + yazı)
 - `≤600px` — telefon dizaynı: home (üst bar, tam ekran hero, ağ Play düyməsi, kiçik poster sıraları), search ("Movies & TV" siyahısı, `Cancel`, 3 sütunlu nəticə), detail (yuxarıda fragman, tam enli Play, My List)
 
+
 ## Quraşdırma
 
 Build tələb olunmur. Layihəni **lokal server** ilə aç (`file://` ilə API sorğuları işləməyə bilər):
 
-- VS Code → _Live Server_ → `index.html`, və ya
+- VS Code → *Live Server* → `index.html`, və ya
 - `npx serve .` / `python3 -m http.server 8000`
 
 Giriş nöqtələri:
 
-| Səhifə            | Yol                                  |
-| ----------------- | ------------------------------------ |
-| Landing           | `index.html`                         |
-| İstifadəçi girişi | `client/login/login.html`            |
-| Admin girişi      | `admin/admin_panel/admin_panel.html` |
+| Səhifə | Yol |
+| --- | --- |
+| Landing | `index.html` |
+| İstifadəçi girişi | `client/login/login.html` |
+| Admin girişi | `admin/admin_panel/admin_panel.html` |
 
 ## Struktur
 
