@@ -74,7 +74,7 @@ const APP_NAV = [
     key: "search",
     href: "client/search-panel/search.html",
     icon: "search",
-    title: "Movies/Series",
+    title: "Movies Search",
   },
   {
     key: "account",

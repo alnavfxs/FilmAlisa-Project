@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let loadError = ""; // yükləmə uğursuz olubsa, axtarışda bu mesaj göstərilir
   const cancelBtn = document.getElementById("searchCancel");
   const phone = window.matchMedia("(max-width: 600px)");
-  const PHONE_LIST_SIZE = 12; // telefonda "Movies & TV" siyahısının uzunluğu
+  const PHONE_LIST_SIZE = 12; // telefonda "Search result" siyahısının uzunluğu
 
   // Grid-in həmin an neçə sütunu var (ekran enindən asılıdır) → dəqiq 1 sıra
   function columnCount() {
@@ -28,12 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsGrid.innerHTML = "";
       return;
     }
-    /* Telefon: Figma-dakı kimi "Movies & TV" siyahısı; desktop/planşet: 1 sıra */
+    /* Telefon: Figma-dakı kimi "Search result" siyahısı; desktop/planşet: 1 sıra */
     const isPhone = phone.matches;
     const top = [...allMovies]
       .sort((a, b) => (Number(b.imdb) || 0) - (Number(a.imdb) || 0))
       .slice(0, isPhone ? PHONE_LIST_SIZE : columnCount());
-    suggestedTitle.textContent = isPhone ? "Movies & TV" : "Suggested for you";
+    suggestedTitle.textContent = isPhone ? "Search result" : "Suggested for you";
     suggestedTitle.hidden = false;
     resultsGrid.classList.toggle("is-list", isPhone);
     resultsGrid.innerHTML = top.map(cardHtml).join("");

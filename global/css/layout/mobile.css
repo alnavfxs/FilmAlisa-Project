@@ -6,7 +6,7 @@
    ≤900px : sidebar → aşağı tab bar (ikon + yazı), kontent tam en
    ≤600px : telefon dizaynı
             · Home   → üst bar + tam ekran hero + kiçik poster sıraları
-            · Search → "Movies & TV" siyahısı / 3 sütunlu nəticə şəbəkəsi
+            · Search → "Search result" siyahısı / 3 sütunlu nəticə şəbəkəsi
             · Detail → yuxarıda fragman, altında Play / My List, məlumat
    Mobil-only elementlər (.m-topbar, .m-cancel) desktop-da gizlidir.
    ========================================================= */
@@ -317,7 +317,13 @@
   .m-cancel[hidden] { display: none; }
   .search-header { display: flex; flex-wrap: nowrap; align-items: center; }
 
-  .suggested-title { margin: 4px 0 10px; font-size: 18px; font-weight: 700; color: var(--white-color); }
+  .suggested-title {
+    margin: 4px 0 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--neon-color, #0feffd);
+    text-shadow: 0 0 5px rgba(15, 239, 253, 0.4), 0 0 12px var(--success-transparent-30);
+  }
 
   /* Nəticə şəbəkəsi: 3 sütun, yalnız poster */
   .movie-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -390,7 +396,7 @@
   .detail-content { padding-top: 0; padding-bottom: 16px; }
   .detail-info { display: block; }
 
-  /* Fragman sahəsi: tam en 16:9, mərkəzdə qırmızı halqalı play */
+  /* Fragman sahəsi: tam en 16:9, mərkəzdə neon halqalı play */
   .detail-poster {
     display: block;
     margin: 0 -14px;
@@ -409,8 +415,12 @@
     height: 52px;
     padding: 0;
     font-size: 0;
-    background: rgba(0, 0, 0, 0.55);
-    border: 2px solid #e50914;
+    background:
+      linear-gradient(rgba(8, 8, 16, 0.55), rgba(8, 8, 16, 0.55)) padding-box,
+      linear-gradient(100deg, #0feffd 0%, #8484fc 35%, #cc3cfc 68%, #fc0cfc 100%) border-box;
+    border: 2px solid transparent;
+    box-shadow: 0 0 18px -2px rgba(15, 239, 253, 0.5), 0 0 24px -6px rgba(252, 12, 252, 0.6);
+    animation: none;
   }
   .detail-poster .play-hover i::before { content: none; }
   .detail-poster .play-hover i::after {
@@ -434,27 +444,45 @@
   }
   .detail-headline h2 { grid-column: 1 / -1; font-size: 22px; font-weight: 700; line-height: 1.2; }
 
-  /* "Watch link" → tam enli ağ Play düyməsi */
+  /* "Watch link" → tam enli Play düyməsi (Watch now ilə eyni neon qradiyent rəng) */
   .watch-badge {
+    --wn-gradient: linear-gradient(100deg, #0feffd 0%, #8484fc 35%, #cc3cfc 68%, #fc0cfc 100%);
     grid-column: 1 / -1;
     grid-row: 2;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    height: 44px;
-    border-radius: var(--m-radius);
-    background: #fff;
-    color: #000;
+    gap: 10px;
+    height: 48px;
+    border: 2px solid transparent;
+    border-radius: 40px;
+    background:
+      linear-gradient(#0b0b14, #0b0b14) padding-box,
+      var(--wn-gradient) border-box;
+    box-shadow:
+      0 0 20px -4px rgba(15, 239, 253, 0.45),
+      0 0 28px -8px rgba(252, 12, 252, 0.55);
+    color: #fff;
     font-size: 0;
   }
+  .watch-badge:hover { color: #fff; filter: none; }
+  .watch-badge:active { transform: scale(0.98); }
   .watch-badge::before {
     content: "";
-    border-style: solid;
-    border-width: 7px 0 7px 12px;
-    border-color: transparent transparent transparent #000;
+    flex: none;
+    width: 11px;
+    height: 14px;
+    background: var(--wn-gradient);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    filter: drop-shadow(0 0 4px rgba(15, 239, 253, 0.6));
   }
-  .watch-badge::after { content: "Play"; font-size: 16px; font-weight: 700; }
+  .watch-badge::after {
+    content: "Play";
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  }
 
   /* My List düyməsi: ikon + yazı, Play-in altında */
   .fav-btn {
