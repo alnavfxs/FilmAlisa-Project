@@ -22,7 +22,7 @@
   $("nfSearchBtn").hidden = false;
 
   /* Sidebar-da axtarış ikonu aktiv görünsün */
-  const searchLink = document.querySelector('.sidebar-link[title="Movies/Series"]');
+  const searchLink = document.querySelector('.sidebar-link[title="Movies Search"]');
   if (searchLink) {
     searchLink.classList.add("active");
     searchLink.querySelector("img").src = pageUrl("assets/icons/search-active.svg");
