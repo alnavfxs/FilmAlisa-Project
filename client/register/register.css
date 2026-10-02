@@ -1,4 +1,3 @@
-@import url(../../global/css/global.css);
 body {
   background-color: var(--background-color);
   color: var(--title-color);
@@ -46,6 +45,18 @@ body {
   line-height: var(--lh-h80);
   letter-spacing: 0.1em;
   text-align: center;
+  /* loqonun neon qradiyenti: firuzəyi → bənövşəyi → maqenta */
+  color: #cc3cfc; /* ehtiyat rəng */
+  background-image: linear-gradient(
+    100deg,
+    #0feffd 0%,
+    #8484fc 35%,
+    #cc3cfc 68%,
+    #fc0cfc 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .login-page__subtitle {

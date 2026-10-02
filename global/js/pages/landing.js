@@ -6,6 +6,57 @@
    ========================================================= */
 
 /* ===========================================
+   0. HERO BAŞLIĞI — typewriter: səhifə açılanda 1 dəfə yazılır
+   =========================================== */
+(function typeHeroTitle() {
+  const title = document.querySelector(".landing-hero__title");
+  if (!title || title.dataset.typed === "true") return;
+
+  const text = title.textContent.trim().replace(/\s+/g, " ");
+  if (!text) return;
+
+  // Hərəkəti azaltmaq istəyənlər üçün animasiyasız, adi başlıq
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const START_MS = 400;     // səhifə açılandan sonra başlama gecikməsi
+  const TYPE_MS = 55;       // 1 hərf yazma sürəti
+  const CARET_HIDE_MS = 1200; // yazı bitəndən sonra kursor nə qədər qalsın
+
+  // Screen reader bütöv cümləni oxusun
+  title.setAttribute("aria-label", text);
+  title.dataset.typed = "true";
+  title.textContent = "";
+
+  // Görünməz tam mətn: başlığın hündürlüyü sabit qalsın
+  const ghost = document.createElement("span");
+  ghost.className = "hero-ghost";
+  ghost.setAttribute("aria-hidden", "true");
+  ghost.textContent = text;
+
+  const live = document.createElement("span");
+  live.className = "hero-live";
+  live.setAttribute("aria-hidden", "true");
+
+  title.append(ghost, live);
+
+  let count = 0;
+
+  function tick() {
+    count++;
+    live.textContent = text.slice(0, count);
+
+    if (count < text.length) {
+      setTimeout(tick, TYPE_MS);
+    } else {
+      // Bitdi: kursoru bir az sonra gizlət, təkrar yoxdur
+      setTimeout(() => live.classList.add("is-done"), CARET_HIDE_MS);
+    }
+  }
+
+  setTimeout(tick, START_MS);
+})();
+
+/* ===========================================
    1. HEADER (Sign in ↔ profil menyusu)
    =========================================== */
 (function setupHeaderAuth() {

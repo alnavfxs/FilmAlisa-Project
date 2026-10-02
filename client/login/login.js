@@ -8,13 +8,8 @@ if (loginParams.get("registered") === "1") {
   history.replaceState(null, "", location.pathname);
 }
 
-const toggleBtn = document.querySelector("#togglePassword");
 const passwordInput = document.querySelector("#passwordInput");
-toggleBtn.addEventListener("click", () => {
-  const isHidden = passwordInput.type === "password";
-  passwordInput.type = isHidden ? "text" : "password";
-  toggleBtn.classList.toggle("login-form__toggle--active", isHidden);
-});
+setupPasswordToggle(document.querySelector("#togglePassword"), passwordInput, "login-form__toggle--active");
 
 const loginForm = document.querySelector("#loginForm");
 const emailInput = document.querySelector("#emailInput");

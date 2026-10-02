@@ -10,6 +10,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <title>Filmalisa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+    />
+    <link rel="stylesheet" href="./global/css/global.css" />
     <link rel="stylesheet" href="./style/style.css" />
   </head>
   <body>
@@ -25,7 +32,11 @@
             <span class="landing-header__name">Filmalisa</span>
           </div>
           <a href="./client/login/login.html" id="headerAuthLink">
-            <button class="landing-header__signin" type="button" id="headerAuthBtn">
+            <button
+              class="landing-header__signin"
+              type="button"
+              id="headerAuthBtn"
+            >
               Sign in
             </button>
           </a>
@@ -39,7 +50,7 @@
               aria-expanded="false"
             >
               <img
-                src="./assets/icons/avatar-default.svg"
+                src="./assets/icons/avatar-logo.svg"
                 alt=""
                 class="landing-header__avatar"
                 id="headerAvatar"
@@ -48,11 +59,18 @@
             </button>
 
             <div class="landing-header__menu" id="headerMenu" hidden>
-              <a href="./client/account/account.html" class="landing-header__menu-item">
+              <a
+                href="./client/account/account.html"
+                class="landing-header__menu-item"
+              >
                 <span>Settings</span>
                 <i class="fa-solid fa-gear"></i>
               </a>
-              <button type="button" class="landing-header__menu-item" id="headerLogoutBtn">
+              <button
+                type="button"
+                class="landing-header__menu-item"
+                id="headerLogoutBtn"
+              >
                 <span>Logout</span>
                 <i class="fa-solid fa-right-from-bracket"></i>
               </button>
@@ -62,7 +80,7 @@
 
         <section class="landing-hero">
           <h1 class="landing-hero__title">
-            Unlimited movies, TV shows, and more
+            Unlimited movies, TV shows, and more...
           </h1>
           <p class="landing-hero__subtitle">
             Filmalisa is a movie search platform
@@ -73,7 +91,11 @@
           </p>
 
           <!-- Daxil olmayanda register-ə, daxil olanda home-a yönləndirir (landing.js) -->
-          <form class="landing-hero__form" id="heroForm" action="./client/register/register.html">
+          <form
+            class="landing-hero__form"
+            id="heroForm"
+            action="./client/register/register.html"
+          >
             <input
               class="landing-hero__input"
               id="heroEmail"
@@ -103,12 +125,16 @@
         <div class="landing-tv__media">
           <img
             src="https://filmalisa-green.vercel.app/Assets/images/loading-tv.png"
+            loading="lazy"
+            decoding="async"
             alt="TV"
             class="landing-tv__image"
           />
 
           <img
             src="https://filmalisa-green.vercel.app/Assets/images/loading-tv.gif"
+            loading="lazy"
+            decoding="async"
             alt="TV Animation"
             class="landing-tv__video"
           />
@@ -120,6 +146,8 @@
         <div class="landing-devices__media">
           <img
             src="./assets/images/tabletmobile.svg"
+            loading="lazy"
+            decoding="async"
             alt="Devices"
             class="landing-devices__image"
           />
@@ -133,17 +161,35 @@
             <!-- Kompüter ekranındakı əvvəlki animasiya (GIF). Yüklənməsə, altındakı CSS animasiya görünür -->
             <img
               src="https://filmalisa-green.vercel.app/Assets/images/loading-tv-2.gif"
+              loading="lazy"
+              decoding="async"
               alt=""
               class="screen__gif"
               onerror="this.remove()"
             />
           </div>
           <div class="screen screen--tablet" aria-hidden="true">
-            <div class="slider"><img src="./assets/images/justice-league.svg" alt="" /><img src="./assets/images/mortal-kombat.svg" alt="" /><img src="./assets/images/the-courier.svg" alt="" /><img src="./assets/images/wonder-woman.svg" alt="" /><img src="./assets/images/lost-in-space-poster.svg" alt="" /></div>
+            <div class="slider">
+              <img src="./assets/images/justice-league.svg" alt="" /><img
+                src="./assets/images/mortal-kombat.svg"
+                alt=""
+              /><img src="./assets/images/the-courier.svg" alt="" /><img
+                src="./assets/images/wonder-woman.svg"
+                alt=""
+              /><img src="./assets/images/lost-in-space-poster.svg" alt="" />
+            </div>
             <div class="dots"><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="screen screen--phone" aria-hidden="true">
-            <div class="fader"><img src="./assets/images/justice-league.svg" alt="" /><img src="./assets/images/mortal-kombat.svg" alt="" /><img src="./assets/images/the-courier.svg" alt="" /><img src="./assets/images/wonder-woman.svg" alt="" /></div>
+            <div class="fader">
+              <img src="./assets/images/justice-league.svg" alt="" /><img
+                src="./assets/images/mortal-kombat.svg"
+                alt=""
+              /><img src="./assets/images/the-courier.svg" alt="" /><img
+                src="./assets/images/wonder-woman.svg"
+                alt=""
+              />
+            </div>
             <div class="phone-heart">&#10084;</div>
           </div>
         </div>
@@ -170,6 +216,8 @@
         <div class="landing-kids__media">
           <img
             src="./assets/images/kids.svg"
+            loading="lazy"
+            decoding="async"
             alt="Kids profiles"
             class="landing-kids__image"
           />
@@ -286,7 +334,7 @@
           </details>
         </div>
       </section>
-      
+
       <!-- Footer Bölməsi -->
       <footer class="landing-footer">
         <div class="landing-footer__container">
@@ -367,7 +415,7 @@
       </footer>
     </main>
 
-    <script src="./global/js/core/api.js?v=4"></script>
-    <script src="./global/js/pages/landing.js?v=4"></script>
+    <script src="./global/js/core/api.js?v=5"></script>
+    <script src="./global/js/pages/landing.js?v=5"></script>
   </body>
 </html>

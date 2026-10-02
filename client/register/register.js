@@ -1,13 +1,8 @@
 // Artıq daxil olubsa qeydiyyat səhifəsi lazım deyil
 if (getToken("client")) location.replace(pageUrl("client/home/home.html"));
 
-const toggleBtn = document.querySelector("#togglePassword");
 const passwordInput = document.querySelector("#passwordInput");
-toggleBtn.addEventListener("click", () => {
-  const isHidden = passwordInput.type === "password";
-  passwordInput.type = isHidden ? "text" : "password";
-  toggleBtn.classList.toggle("login-form__toggle--active", isHidden);
-});
+setupPasswordToggle(document.querySelector("#togglePassword"), passwordInput, "login-form__toggle--active");
 
 /* Landing səhifəsindən (index.html) ?email=... ilə gələn dəyəri doldurur */
 const emailInput = document.querySelector("#emailInput");
