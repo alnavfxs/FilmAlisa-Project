@@ -133,6 +133,16 @@ function toast(message, type = "error") {
   setTimeout(remove, 4000);
 }
 
+/* Parol göstər/gizlət düyməsi — login, register və admin login üçün ortaq */
+function setupPasswordToggle(btn, input, activeClass) {
+  if (!btn || !input) return;
+  btn.addEventListener("click", () => {
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    btn.classList.toggle(activeClass, isHidden);
+  });
+}
+
 /* Dizaynlı təsdiq pəncərəsi — window.confirm() əvəzinə.
    confirmDialog("Are you sure you want to delete this?", { danger: true }).then(ok => ...) */
 function confirmDialog(message, opts = {}) {

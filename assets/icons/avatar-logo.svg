@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#1d1b2e"/>
+      <stop offset="1" stop-color="#0a0a12"/>
+    </radialGradient>
+    <linearGradient id="gA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0feffd"/>
+      <stop offset="0.5" stop-color="#8484fc"/>
+      <stop offset="1" stop-color="#cc3cfc"/>
+    </linearGradient>
+    <linearGradient id="gB" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8484fc"/>
+      <stop offset="1" stop-color="#fc0cfc"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.2"/>
+    </filter>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="url(#bg)"/>
+  <!-- loqo: bir-birinin üstünə düşən iki yumru "play" üçbucağı -->
+  <g stroke-linejoin="round" stroke-linecap="round" fill="none" stroke-width="5.5">
+    <g transform="rotate(16 64 64)">
+      <path d="M48 36 L48 92 L96 64 Z" stroke="url(#gB)" opacity=".85"/>
+    </g>
+    <g transform="rotate(-14 64 64)" filter="url(#glow)" opacity=".7">
+      <path d="M44 36 L44 92 L92 64 Z" stroke="url(#gA)"/>
+    </g>
+    <g transform="rotate(-14 64 64)">
+      <path d="M44 36 L44 92 L92 64 Z" stroke="url(#gA)"/>
+    </g>
+  </g>
+</svg>

@@ -46,15 +46,13 @@ client/                 İstifadəçi səhifələri (home, detail, search-panel,
 admin/                  Admin səhifələri (dashboard, movies, categories, actors, users, comments, contact)
 global/
   css/
-    global.css            Giriş nöqtəsi: bütün səhifələr yalnız bunu import edir
-    base/                 reset, variables (dizayn tokenləri), body, autofill
-    components/           movie-card, toast, confirm-dialog, neon-title, admin-modal, admin-pagination, admin-ui, text-popover
+    global.css            Giriş nöqtəsi: tək fayl: reset + dizayn tokenləri + body + movie-card + toast + confirm-dialog + autofill (HTML-də <link> ilə qoşulur, @import yoxdur)
+    components/           neon-title, admin-modal, admin-pagination, admin-ui, text-popover
     layout/               admin-layout, app-sidebar, mobile (responsiv)
   js/
     core/api.js           API qatı: sorğu, token/sessiya, xəta idarəsi, toast, confirmDialog
     components/           layout (ortaq sidebar), movie-ui (film kartı, ulduzlar), admin-pagination, text-popover
     pages/landing.js      Landing header (Sign in / profil menyusu), Contact formu
-    data/movies-data.js   Köhnə statik film datası (hazırda heç bir səhifə istifadə etmir)
 assets/                 Şəkillər və ikonlar
 ```
 

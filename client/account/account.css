@@ -1,6 +1,3 @@
-@import url(../../global/css/global.css);
-@import url(../../global/css/layout/app-sidebar.css);
-
 body {
   background-color: var(--background-color);
   color: var(--white-color);
@@ -38,28 +35,86 @@ body {
   width: calc(100% - 92px);
 }
 
+/* Avatar: loqonun neon qradiyentindən fırlanan halqa + orbit effekti */
+@property --ring-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes ringSpin {
+  to { --ring-angle: 360deg; }
+}
+
+@keyframes orbitSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ringGlow {
+  from { box-shadow: 0 0 18px -2px rgba(204, 60, 252, 0.45), 0 0 34px -8px rgba(15, 239, 253, 0.35); }
+  to   { box-shadow: 0 0 26px 0 rgba(252, 12, 252, 0.5), 0 0 44px -6px rgba(15, 239, 253, 0.45); }
+}
+
 .avatar-container {
+  position: relative;
   width: 232px;
   height: 232px;
-  margin-bottom: 32px;
+  margin-top: 14px;
+  margin-bottom: 44px;
   cursor: pointer;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    var(--success-color) 0%,
-    var(--accent-color) 50%,
-    var(--info-color) 100%
+  background: conic-gradient(
+    from var(--ring-angle),
+    #0feffd,
+    #8484fc,
+    #cc3cfc,
+    #fc0cfc,
+    #cc3cfc,
+    #8484fc,
+    #0feffd
   );
-  padding: 4px;
-  box-shadow: 0 0 20px var(--success-transparent-30);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  padding: 5px;
+  animation:
+    ringSpin 7s linear infinite,
+    ringGlow 3s ease-in-out infinite alternate;
+  transition: transform 0.25s ease;
+}
+
+/* nazik nöqtəli orbit halqası */
+.avatar-container::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1px dashed rgba(132, 132, 252, 0.4);
+  pointer-events: none;
+}
+
+/* orbitdə dövr edən parlaq "peyk" nöqtəsi */
+.avatar-container::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 0,
+    #0feffd 0 3px,
+    rgba(15, 239, 253, 0.35) 4px,
+    transparent 8px
+  );
+  animation: orbitSpin 9s linear infinite;
+  pointer-events: none;
 }
 
 .avatar-container:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 25px var(--success-transparent-50);
+  transform: scale(1.025);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-container,
+  .avatar-container::after {
+    animation: none;
+  }
 }
 
 .avatar-placeholder {
@@ -95,7 +150,7 @@ body {
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, #0a9fd6 0%, #8484fc 50%, #e11bd0 100%);
   color: var(--white-color);
   width: 36px;
   height: 36px;

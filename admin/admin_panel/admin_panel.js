@@ -1,10 +1,5 @@
-const toggleBtn = document.querySelector("#togglePassword");
 const passwordInput = document.querySelector("#passwordInput");
-toggleBtn.addEventListener("click", () => {
-  const isHidden = passwordInput.type === "password";
-  passwordInput.type = isHidden ? "text" : "password";
-  toggleBtn.classList.toggle("admin-form__toggle--active", isHidden);
-});
+setupPasswordToggle(document.querySelector("#togglePassword"), passwordInput, "admin-form__toggle--active");
 
 // Artıq daxil olubsa → dashboard
 if (getToken("admin")) location.replace(pageUrl("admin/dashboard/dashboard.html"));

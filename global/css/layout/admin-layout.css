@@ -116,11 +116,42 @@ body {
   min-width: 0;
 }
 
+/* ===== ORTAQ CƏDVƏL ÖLÇÜSÜ =====
+   Bütün admin cədvəlləri (movies, categories, actors, users, comments, contact)
+   eyni ölçüdə: movies cədvəli etalondur. Pagination cədvəllə eyni enlikdədir,
+   ona görə düymələr cədvəlin tam ortasında durur (.table-pager → justify-content: center). */
+.table_content {
+  width: 95%;
+  margin-top: 10px;
+  margin-right: 77px;
+}
+
+.table-pager {
+  width: 95%;
+}
+
+@media only screen and (max-width: 1200px) {
+  .table_content {
+    margin-right: 24px;
+  }
+}
+
 /* ===== RESPONSIVE SHELL ===== */
 @media only screen and (max-width: 900px) {
   .dashboard {
     flex-direction: column;
     gap: 0;
+  }
+
+  /* .dashboard_content → səhifə CSS-indəki overflow:hidden-i üstələmək üçün */
+  .dashboard_content .table_content {
+    margin: 0 16px;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .table-pager {
+    margin: 0 16px;
   }
 
   .sidebar_menu {

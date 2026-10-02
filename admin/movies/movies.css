@@ -1,6 +1,3 @@
-@import url("../../global/css/global.css");
-@import url("../../global/css/layout/admin-layout.css");
-
 /* ===========================================
    MAIN CONTENT — bu səhifəyə xas hissə
    =========================================== */
@@ -68,9 +65,6 @@
    MOVIES TABLE
    =========================================== */
 .table_content {
-  width: 95%;
-  margin-top: 10px;
-  margin-right: 77px;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 8px;
@@ -78,10 +72,6 @@
 }
 
 /* Pagination cədvəlin eni qədər olsun → düz cədvəlin altında ortalanır */
-.table-pager {
-  width: 95%;
-}
-
 .table_content thead tr {
   font-family: var(--db-font);
   font-weight: 400;
@@ -411,9 +401,6 @@
     padding-right: 24px;
   }
 
-  .table_content {
-    margin-right: 24px;
-  }
 }
 
 @media only screen and (max-width: 900px) {
@@ -421,16 +408,6 @@
     padding: 24px 16px;
     flex-wrap: wrap;
     gap: 16px;
-  }
-
-  .table_content {
-    margin: 0 16px;
-    display: block;
-    overflow-x: auto;
-  }
-
-  .table-pager {
-    margin: 0 16px;
   }
 
   .cell-overview {
