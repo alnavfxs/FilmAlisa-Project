@@ -166,27 +166,112 @@ body {
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
 }
 
+/* ===========================================
+   WATCH NOW — şüşə effektli, neon qradiyent kənarlı düymə
+   (həm masaüstü, həm mobil üçün eyni)
+   =========================================== */
 .watch-now-btn {
+  --wn-gradient: linear-gradient(
+    100deg,
+    #0feffd 0%,
+    #8484fc 35%,
+    #cc3cfc 68%,
+    #fc0cfc 100%
+  );
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 200px;
   height: 56px;
+  border: none;
   border-radius: 40px;
   color: #ffffff;
   font-size: 16px;
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
   cursor: pointer;
-  background: none !important;
-  border: 1.5px solid #0feffd;
-  box-shadow: 0 0 10px rgba(15, 239, 253, 0.3);
+  /* yüngül şüşə effekti: hero şəkli görünür, amma yazı aydın oxunur */
+  background: rgba(8, 8, 16, 0.38) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+  backdrop-filter: blur(8px) saturate(1.2);
+  box-shadow:
+    0 0 20px -4px rgba(15, 239, 253, 0.45),
+    0 0 28px -8px rgba(252, 12, 252, 0.55),
+    0 10px 24px -12px rgba(0, 0, 0, 0.8);
   transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+/* neon qradiyent kənar */
+.watch-now-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 2px;
+  border-radius: inherit;
+  background: var(--wn-gradient);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+/* qradiyent Play ikonu */
+.watch-now-btn::before {
+  content: "";
+  flex: none;
+  width: 11px;
+  height: 14px;
+  background: var(--wn-gradient);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(0 0 4px rgba(15, 239, 253, 0.6));
+  transition: transform 0.25s ease;
 }
 
 .watch-now-btn:hover {
-  background-color: rgba(15, 239, 253, 0.15) !important;
-  box-shadow: 0 0 16px rgba(15, 239, 253, 0.6);
-  transform: scale(1.03);
+  background: rgba(132, 132, 252, 0.22) !important;
+  box-shadow:
+    0 0 26px -2px rgba(15, 239, 253, 0.6),
+    0 0 36px -4px rgba(252, 12, 252, 0.65),
+    0 12px 28px -12px rgba(0, 0, 0, 0.8);
+  transform: translateY(-2px);
+}
+
+.watch-now-btn:hover::before {
+  transform: translateX(2px) scale(1.1);
+}
+
+.watch-now-btn:active {
+  transform: translateY(0) scale(0.98);
+  filter: brightness(0.92);
+}
+
+.watch-now-btn:focus-visible {
+  outline: 2px solid #0feffd;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .watch-now-btn,
+  .watch-now-btn::before {
+    transition: none;
+  }
+  .watch-now-btn:hover,
+  .watch-now-btn:hover::before {
+    transform: none;
+  }
 }
 
 /* ===========================================

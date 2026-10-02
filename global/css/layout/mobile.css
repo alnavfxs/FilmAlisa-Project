@@ -187,31 +187,15 @@
   .hero-title { font-size: 30px; line-height: 1.15; font-weight: 600; }
   .hero-desc { font-size: 13px; line-height: 20px; -webkit-line-clamp: 2; color: var(--m-muted); }
 
-  /* "Watch now" → ağ Play düyməsi (Figma) */
+  /* "Watch now" → masaüstü ilə eyni görünüş (home.css); yalnız ölçü fərqlidir */
   .watch-now-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
     width: 100%;
     max-width: 280px;
-    height: 44px;
+    height: 48px;
     margin-top: 4px;
-    border: 0;
-    border-radius: var(--m-radius);
-    background: #fff !important;
-    color: #000;
-    font-size: 16px;
     font-weight: 700;
-    box-shadow: none;
   }
-  .watch-now-btn::before {
-    content: "";
-    border-style: solid;
-    border-width: 7px 0 7px 12px;
-    border-color: transparent transparent transparent #000;
-  }
-  .watch-now-btn:hover { background: #e6e6e6 !important; box-shadow: none; transform: none; }
+  .watch-now-btn:hover { transform: none; }
   .watch-now-btn:active { transform: scale(0.98); }
 
   /* Hero slide: üfüqi swipe işləsin, şaquli sürüşmə səhifəyə getsin */
