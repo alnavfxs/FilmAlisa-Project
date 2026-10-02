@@ -1,7 +1,11 @@
+@import url(../../global/global.css);
+@import url(../../global/app-sidebar.css);
+
 body {
   background-color: var(--background-color);
   color: var(--white-color);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* ===========================================
@@ -25,6 +29,7 @@ body {
 .content {
   margin-left: 112px;
   padding: 74px 48px 32px;
+  max-width: 1400px;
 }
 
 /* ===========================================
@@ -34,7 +39,7 @@ body {
 .search-header {
   display: flex;
   align-items: center;
-  height: 36px;
+  min-height: 36px;
   margin-bottom: 32px;
 }
 
@@ -42,7 +47,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 20px;
+  margin: 0;
+  font-size: clamp(18px, 2vw + 12px, 20px);
   font-weight: 600;
 }
 
@@ -54,23 +60,24 @@ body {
 
 /* ===========================================
    MOVIE GRID
+   Sabit 4 sütun əvəzinə ekrana görə avtomatik sütun sayı
    =========================================== */
 
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(4, 292px);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 16px;
 }
 
 .movie-card {
-  width: 292px;
-  height: 440px;
+  width: 100%;
+  max-width: 292px;
 }
 
 .poster-wrap {
   position: relative;
-  width: 292px;
-  height: 440px;
+  width: 100%;
+  aspect-ratio: 292 / 440;
   border-radius: 16px;
   overflow: hidden;
 }
@@ -79,6 +86,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   transition: transform 0.2s ease;
 }
 
@@ -99,7 +107,7 @@ body {
 }
 
 .category-tag {
-  color: var(--neon-color, #0feffd);
+  color: var(--main-blue, #4a9eff);
   font-size: 12px;
 }
 
@@ -114,8 +122,10 @@ body {
 }
 
 .movie-title {
+  margin: 0;
   font-size: 15px;
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .empty-state {
@@ -127,4 +137,129 @@ body {
 
 .empty-state a {
   color: #0feffd;
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+/* Kiçik noutbuk / böyük planşet */
+@media (max-width: 1199.98px) {
+  .content {
+    padding: 56px 32px 32px;
+  }
+}
+
+/* Planşet — sidebar daha dar */
+@media (max-width: 991.98px) {
+  .content {
+    margin-left: 88px;
+    padding: 40px 24px 32px;
+  }
+
+  .search-header {
+    margin-bottom: 24px;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+    gap: 14px;
+  }
+
+  .movie-card {
+    max-width: none;
+  }
+}
+
+/* Mobil — sidebar aşağıya, naviqasiya paneli kimi */
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    padding: 0 12px !important;
+    z-index: 1000;
+    background-color: var(--background-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .sidebar-logo {
+    display: none !important;
+  }
+
+  .sidebar-nav {
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 420px;
+    gap: 0 !important;
+    margin: 0 !important;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 24px 16px calc(64px + 24px);
+  }
+
+  .search-header {
+    margin-bottom: 20px;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .poster-wrap {
+    border-radius: 12px;
+  }
+
+  .poster-overlay {
+    padding: 10px;
+  }
+
+  .movie-title {
+    font-size: 14px;
+  }
+
+  .star-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .empty-state {
+    font-size: 15px;
+  }
+}
+
+/* Çox kiçik telefonlar */
+@media (max-width: 359.98px) {
+  .movie-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-card {
+    max-width: 320px;
+    margin-inline: auto;
+  }
+}
+
+/* Hover olmayan (toxunma) cihazlarda zoom effekti söndürülür */
+@media (hover: none) {
+  .movie-card:hover .poster {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster {
+    transition: none;
+  }
 }
