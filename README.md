@@ -1,70 +1,68 @@
 # Filmalisa
 
-Film axtarış platforması: istifadəçi tərəfi (client) və admin panel. Saf **HTML / CSS / JavaScript** (build addımı yoxdur), məlumat hazır REST API-dən gəlir.
+Film arama platformu: kullanıcı tarafı (client) ve admin paneli. Saf **HTML / CSS / JavaScript** (build adımı yoktur), veriler hazır bir REST API'den gelmektedir.
 
-## Xüsusiyyətlər
+## Özellikler
 
-**İstifadəçi**
-- Qeydiyyat / giriş, profil (ad, şəkil, parol)
-- Ana səhifə: avtomatik dəyişən hero slaydı və kateqoriyalara görə film sıraları (ox düymələri, drag / swipe)
-- Film detalı: məlumat, aktyorlar, fragman modalı (YouTube / birbaşa video), şərhlər, oxşar filmlər
-- Axtarış və sevimlilər siyahısı
+**Kullanıcı**
+- Kayıt ol / Giriş yap, profil (ad, görsel, şifre)
+- Ana sayfa: otomatik değişen hero slaytı ve kategorilere göre film sıraları (ok tuşları, sürükleme / kaydırma - drag / swipe)
+- Film detayı: bilgi, oyuncular, fragman modalı (YouTube / doğrudan video), yorumlar, benzer filmler
+- Arama ve favoriler listesi
 
-**Admin panel**
-- Dashboard statistikası
-- Filmlər, kateqoriyalar, aktyorlar üzərində CRUD
-- İstifadəçilər, şərhlər və əlaqə mesajlarının idarəsi
+**Admin Paneli**
+- Dashboard istatistikleri
+- Filmler, kategoriler, oyuncular üzerinde CRUD işlemleri
+- Kullanıcılar, yorumlar ve iletişim mesajlarının yönetimi
 
-## Mobil dizayn
+## Mobil Tasarım
 
-Client səhifələri (home, search, favourite, detail, account, 404) `global/css/layout/mobile.css` ilə Figma mobil şablonuna uyğundur:
+Client sayfaları (`home`, `search`, `favourite`, `detail`, `account`, `404`), `global/css/layout/mobile.css` dosyası ile Figma mobil şablonuna tamamen uygundur:
 
-- `≤900px` — sidebar aşağı tab bara çevrilir (ikon + yazı)
-- `≤600px` — telefon dizaynı: home (üst bar, tam ekran hero, ağ Play düyməsi, kiçik poster sıraları), search ("Movies & TV" siyahısı, `Cancel`, 3 sütunlu nəticə), detail (yuxarıda fragman, tam enli Play, My List)
+- `≤900px` — Kenar çubuğu (sidebar) alt sekme çubuğuna (tab bar: ikon + yazı) dönüşür.
+- `≤600px` — Telefon tasarımı: home (üst bar, tam ekran hero, beyaz Play düğmesi, küçük poster sıraları), search ("Movies & TV" listesi, `Cancel`, 3 sütunlu sonuçlar), detail (yukarıda fragman, tam genişlikte Play, My List).
 
+## Kurulum
 
-## Quraşdırma
+Build gerektirmez. Projeyi bir **yerel sunucu (local server)** ile açın (`file://` protokolü ile API istekleri çalışmayabilir):
 
-Build tələb olunmur. Layihəni **lokal server** ilə aç (`file://` ilə API sorğuları işləməyə bilər):
-
-- VS Code → *Live Server* → `index.html`, və ya
+- VS Code → *Live Server* → `index.html`, veya
 - `npx serve .` / `python3 -m http.server 8000`
 
-Giriş nöqtələri:
+Giriş Noktaları:
 
-| Səhifə | Yol |
+| Sayfa | Yol (Path) |
 | --- | --- |
-| Landing | `index.html` |
-| İstifadəçi girişi | `client/login/login.html` |
-| Admin girişi | `admin/admin_panel/admin_panel.html` |
+| Landing (Karşılama) | `index.html` |
+| Kullanıcı Girişi | `client/login/login.html` |
+| Admin Girişi | `admin/admin_panel/admin_panel.html` |
 
-## Struktur
+## Proje Yapısı
 
-```
-index.html              Landing səhifəsi (style/style.css)
-client/                 İstifadəçi səhifələri (home, detail, search-panel, favourite, account, login, register)
-admin/                  Admin səhifələri (dashboard, movies, categories, actors, users, comments, contact)
+index.html              Landing sayfası (style/style.css)
+client/                 Kullanıcı sayfaları (home, detail, search-panel, favourite, account, login, register)
+admin/                  Admin sayfaları (dashboard, movies, categories, actors, users, comments, contact)
 global/
-  css/
-    global.css            Giriş nöqtəsi: tək fayl: reset + dizayn tokenləri + body + movie-card + toast + confirm-dialog + autofill (HTML-də <link> ilə qoşulur, @import yoxdur)
-    components/           neon-title, admin-modal, admin-pagination, admin-ui, text-popover
-    layout/               admin-layout, app-sidebar, mobile (responsiv)
-  js/
-    core/api.js           API qatı: sorğu, token/sessiya, xəta idarəsi, toast, confirmDialog
-    components/           layout (ortaq sidebar), movie-ui (film kartı, ulduzlar), admin-pagination, text-popover
-    pages/landing.js      Landing header (Sign in / profil menyusu), Contact formu
-assets/                 Şəkillər və ikonlar
-```
+css/
+global.css            Giriş noktası: tek dosya: reset + tasarım tokenleri + body + movie-card + toast + confirm-dialog + autofill (HTML'de  ile bağlanır, @import yoktur)
+components/           neon-title, admin-modal, admin-pagination, admin-ui, text-popover
+layout/               admin-layout, app-sidebar, mobile (duyarlı / responsive)
+js/
+core/api.js           API katmanı: istek, token/oturum, hata yönetimi, toast, confirmDialog
+components/           layout (ortak sidebar), movie-ui (film kartı, yıldızlar), admin-pagination, text-popover
+pages/landing.js      Landing header (Sign in / profil menüsü), İletişim formu
+assets/                 Görseller ve ikonlar
 
-## Arxitektura qeydləri
 
-- Bütün şəbəkə sorğuları `global/js/core/api.js` üzərindən keçir (`api.*` / `api.admin.*`). Rol (client/admin) sorğu yoluna görə seçilir, `401` cavabında sessiya təmizlənib login səhifəsinə yönləndirilir.
-- Səhifələr skriptləri bu ardıcıllıqla yükləyir: `api.js` → `layout.js` → `movie-ui.js` / `admin-pagination.js` → səhifənin öz JS-i.
-- İstifadəçidən və ya API-dən gələn mətn HTML-ə yazılanda **həmişə** `esc()` ilə escape olunur.
-- Qoruma: client səhifələri `requireClientAuth()`, admin səhifələri `requireAuth("admin")` ilə açılır. Bu yalnız UX qoruması; real icazə nəzarəti serverdədir.
+## Mimari Notlar
 
-## Məlum məhdudiyyətlər
+- Tüm ağ istekleri `global/js/core/api.js` üzerinden geçer (`api.*` / `api.admin.*`). Rol (client/admin) istek yoluna göre seçilir; `401` yanıtı alındığında oturum temizlenir ve kullanıcı giriş sayfasına yönlendirilir.
+- Sayfalar betikleri şu sırayla yükler: `api.js` → `layout.js` → `movie-ui.js` / `admin-pagination.js` → sayfanın kendi JS dosyası.
+- Kullanıcıdan veya API'den gelen metinler HTML'e yazılırken **her zaman** `esc()` fonksiyonu ile escape edilir (güvenlik için).
+- Güvenlik Koruması: client sayfaları `requireClientAuth()`, admin sayfaları ise `requireAuth("admin")` ile açılır. Bu yalnızca bir UX korumasıdır; gerçek yetkilendirme kontrolü sunucuda (backend) yapılır.
 
-- Token `localStorage`-da saxlanılır (backend `HttpOnly` cookie dəstəkləmir).
-- Profil şəkli (fayl yükləmə) yalnız həmin brauzerdə saxlanılır, server yalnız şəkil linki qəbul edir.
-- Landing-dəki TV animasiyası xarici host-dan (`filmalisa-green.vercel.app`) yüklənir.
+## Bilinen Sınırlamalar
+
+- Token `localStorage` içinde saklanır (backend `HttpOnly` cookie desteklemiyor).
+- Profil resmi (dosya yükleme) yalnızca ilgili tarayıcıda saklanır, sunucu yalnızca görsel bağlantısını (link) kabul eder.
+- Landing sayfasındaki TV animasyonu harici bir barındırıcıdan (`filmalisa-green.vercel.app`) yüklenir.
